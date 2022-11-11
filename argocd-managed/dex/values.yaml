@@ -1,0 +1,71 @@
+  # https://github.com/dexidp/helm-charts/blob/master/charts/dex/values.yaml
+dex: # set values for wrapper/umbrella chart
+  replicaCount: 2
+
+  envFrom:
+    - secretRef:
+        name: dex-secrets
+
+  config:
+    issuer: https://auth.oscarr.nl
+    storage:
+      type: kubernetes
+      config:
+        inCluster: true
+
+    oauth2:
+      skipApprovalScreen: true
+
+    connectors:
+      - type: github
+        id: github
+        name: GitHub
+        config:
+          clientID: $GITHUB_CLIENT_ID
+          clientSecret: $GITHUB_CLIENT_SECRET
+          redirectURI: https://auth.oscarr.nl/callback
+          orgs:
+            - name: bierteam
+
+    staticClients:
+      - id: proxmox
+        name: Proxmox
+        secretEnv: PROXMOX_CLIENT_SECRET
+        redirectURIs:
+          - "https://proxmox.oscarr.nl:8006"
+          - "https://proxmox.oscarr.nl"
+
+          - "https://pve01.oscarr.nl:8006"
+          - "https://pve01.oscarr.nl"
+          - "https://192.168.178.9:8006"
+          - "https://100.64.0.3:8006"
+          - "https://[2a05:f080:0:8ff::1:d1ed]:8006"
+
+          - "https://pve02.oscarr.nl:8006"
+          - "https://pve02.oscarr.nl"
+          - "https://192.168.123.200:8006"
+          - "https://100.64.0.1:8006"
+          - "https://[2a02:a470:edcd::c0c]:8006"
+
+          - "https://pve03.oscarr.nl:8006"
+          - "https://pve03.oscarr.nl"
+          - "https://192.168.99.203:8006"
+          - "https://100.64.0.5:8006"
+
+          - "https://pve04.oscarr.nl:8006"
+          - "https://pve04.oscarr.nl"
+          - "https://192.168.1.134:8006"
+          - "https://100.64.0.6:8006"
+
+      - id: kubernetes
+        name: "Kubernetes"
+        public: true
+        redirectURIs:
+          - http://localhost:8000
+          - http://localhost:18000
+
+      - id: argocd
+        name: "ArgoCD"
+        secretEnv: ARGOCD_CLIENT_SECRET
+        redirectURIs:
+          - https://argocd.lab.oscarr.nl/auth/callback

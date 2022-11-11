@@ -1,0 +1,14 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: dex
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`auth.oscarr.nl`)
+      kind: Rule
+      services:
+        - name: dex
+          port: 5556
