@@ -1,0 +1,26 @@
+  # https://github.com/traefik/traefik-helm-chart/blob/v18.1.0/traefik/values.yaml
+traefik: # set values for wrapper/umbrella chart
+  deployment:
+    kind: DaemonSet
+
+  ports:
+    web:
+      hostPort: 80
+      redirectTo: websecure
+    websecure:
+      hostPort: 443
+      http3:
+        enabled: true
+
+  service:
+    enabled: false
+
+  ingressRoute:
+    dashboard:
+      enabled: false
+
+  logs:
+    general:
+      level: DEBUG
+    access:
+      enabled: true
