@@ -1,0 +1,19 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: beer-import
+spec:
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: Never
+          terminationGracePeriodSeconds: 30
+          containers:
+          - image: bierteam/beer-import
+            imagePullPolicy: Always
+            name: beer-import
+  schedule: 0 9,22 * * *
+  failedJobsHistoryLimit: 3
+  successfulJobsHistoryLimit: 3
