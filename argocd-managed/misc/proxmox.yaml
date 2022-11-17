@@ -1,0 +1,47 @@
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: proxmox
+subsets:
+  - addresses:
+      # - ip: 100.64.0.3
+      - ip: 100.64.0.1
+      - ip: 100.64.0.5
+      - ip: 100.64.0.6
+    ports:
+      - port: 8006
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: proxmox
+spec:
+  clusterIP: None
+  ports:
+    - port: 443
+      targetPort: 8006
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: proxmox
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: HostRegexp(`proxmox.oscarr.nl`, `{subdomain:pve\d?\d?}.oscarr.nl`)
+      kind: Rule
+      services:
+        - name: proxmox
+          port: 443
+          sticky:
+            cookie:
+              httpOnly: true
+              name: cookie
+              secure: true
+              sameSite: none
+          passHostHeader: true
+          serversTransport: insecure

@@ -1,0 +1,41 @@
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: nas
+subsets:
+  - addresses:
+      - ip: 192.168.123.5
+    ports:
+      - port: 5001
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: nas
+spec:
+  clusterIP: None
+  ports:
+    - port: 443
+      targetPort: 5001
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: nas
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`nas.oscarr.nl`)
+      kind: Rule
+      services:
+        - name: nas
+          port: 443
+    - match: Host(`tmp.nas`)
+      kind: Rule
+      services:
+        - name: nas
+          port: 443
