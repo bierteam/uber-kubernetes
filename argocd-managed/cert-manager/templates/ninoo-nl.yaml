@@ -1,0 +1,35 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ninoo-nl
+spec:
+  secretName: ninoo-nl-tls
+  issuerRef:
+    name: letsencrypt
+    kind: Issuer
+  privateKey:
+    rotationPolicy: Always
+    algorithm: ECDSA
+  dnsNames:
+    - "ninoo.nl"
+    - "*.ninoo.nl"
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-tls-ninoo-nl
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`fake`)
+      kind: Rule
+      services:
+        - name: noop@internal
+          kind: TraefikService
+  tls:
+    secretName: ninoo-nl-tls
+    domains:
+      - main: "ninoo.nl"
+      - sans: ["*.ninoo.nl"]
