@@ -1,0 +1,14 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ninoo-nl
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`ninoo.nl`)
+      kind: Rule
+      services:
+        - name: ninoo-nl
+          port: 80

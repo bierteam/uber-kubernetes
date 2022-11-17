@@ -1,0 +1,29 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ninoo
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    namespace: ninoo
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: argocd-managed/ninoo
+    repoURL: https://github.com/bierteam/uber-kubernetes.git
+    targetRevision: HEAD
+
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    # https://github.com/argoproj/argo-cd/pull/10672
+    # coming in argocd 2.6
+    # managedNamespaceMetadata:
+    #   labels:
+    #     pod-security.kubernetes.io/enforce: baseline
+    # automated:
+    #   prune: true
+    #   selfHeal: true
