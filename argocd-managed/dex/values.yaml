@@ -1,4 +1,4 @@
-  # https://github.com/dexidp/helm-charts/blob/master/charts/dex/values.yaml
+# https://github.com/dexidp/helm-charts/blob/master/charts/dex/values.yaml
 dex: # set values for wrapper/umbrella chart
   replicaCount: 2
 

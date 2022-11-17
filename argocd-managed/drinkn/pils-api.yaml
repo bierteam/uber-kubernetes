@@ -19,13 +19,13 @@ spec:
         app: drinkn-pils-api
     spec:
       containers:
-      - image: bierteam/pils-api:v1
-        envFrom:
-        - secretRef:
-            name: drinkn-env
-            optional: false
-        imagePullPolicy: Always
-        name: drinkn-pils-api
+        - image: bierteam/pils-api:v1
+          envFrom:
+            - secretRef:
+                name: drinkn-env
+                optional: false
+          imagePullPolicy: Always
+          name: drinkn-pils-api
 ---
 apiVersion: v1
 kind: Service

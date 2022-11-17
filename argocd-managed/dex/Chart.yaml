@@ -5,4 +5,4 @@ version: 1.0.0
 dependencies:
   - name: dex
     version: 0.12.1
-    repository: 'https://charts.dexidp.io'
+    repository: "https://charts.dexidp.io"

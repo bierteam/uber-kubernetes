@@ -11,9 +11,13 @@ spec:
           restartPolicy: Never
           terminationGracePeriodSeconds: 30
           containers:
-          - image: bierteam/beer-import
-            imagePullPolicy: Always
-            name: beer-import
+            - image: bierteam/beer-import
+              imagePullPolicy: Always
+              name: beer-import
+              envFrom:
+                - secretRef:
+                    name: drinkn-env
+                    optional: false
   schedule: 0 9,22 * * *
   failedJobsHistoryLimit: 3
   successfulJobsHistoryLimit: 3

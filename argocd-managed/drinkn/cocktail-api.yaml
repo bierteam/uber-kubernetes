@@ -21,9 +21,9 @@ spec:
       containers:
         - image: bierteam/cocktail-api
           envFrom:
-          - secretRef:
-              name: drinkn-env
-              optional: false
+            - secretRef:
+                name: drinkn-env
+                optional: false
           imagePullPolicy: Always
           name: drinkn-cocktail-api
 ---

@@ -19,13 +19,13 @@ spec:
         app: drinkn-auth
     spec:
       containers:
-      - image: bierteam/auth
-        envFrom:
-        - secretRef:
-            name: drinkn-env
-            optional: false
-        imagePullPolicy: Always
-        name: drinkn-auth
+        - image: bierteam/auth
+          envFrom:
+            - secretRef:
+                name: drinkn-env
+                optional: false
+          imagePullPolicy: Always
+          name: drinkn-auth
 ---
 apiVersion: v1
 kind: Service

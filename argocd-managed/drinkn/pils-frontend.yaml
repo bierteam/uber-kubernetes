@@ -6,13 +6,12 @@ metadata:
     app: drinkn-frontend-v1
   name: drinkn-frontend-v1
 spec:
-  replicas: 3
-  revisionHistoryLimit: 10
+  replicas: 2
+  revisionHistoryLimit: 5
   selector:
     matchLabels:
       app: drinkn-frontend-v1
   strategy:
-
     type: RollingUpdate
   template:
     metadata:
@@ -20,9 +19,9 @@ spec:
         app: drinkn-frontend-v1
     spec:
       containers:
-      - image: bierteam/frontend:v1
-        imagePullPolicy: Always
-        name: drinkn-frontend-v1
+        - image: bierteam/frontend:v1
+          imagePullPolicy: Always
+          name: drinkn-frontend-v1
 ---
 apiVersion: v1
 kind: Service
