@@ -4,6 +4,7 @@
     "config:base",
     ":docker",
     ":automergeMinor",
+    ":skipStatusChecks",
     ":maintainLockFilesMonthly"
   ],
   "kubernetes": {
