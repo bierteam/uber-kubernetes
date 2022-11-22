@@ -1,10 +1,12 @@
+{{- range $domain := .Values.domains }}
+{{- $noDotsDomain :=  regexReplaceAll "\\W+" $domain "-" | nospace }}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: devopscar-nl
+  name: {{ $noDotsDomain }}
 spec:
-  secretName: devopscar-nl-tls
+  secretName: {{ $noDotsDomain }}-tls
   issuerRef:
     name: letsencrypt
     kind: Issuer
@@ -12,13 +14,13 @@ spec:
     rotationPolicy: Always
     algorithm: ECDSA
   dnsNames:
-    - "devopscar.nl"
-    - "*.devopscar.nl"
+    - "{{ $domain }}"
+    - "*.{{ $domain }}"
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
 metadata:
-  name: traefik-tls-devopscar-nl
+  name: traefik-tls-{{ $noDotsDomain }}
 spec:
   entryPoints:
     - websecure
@@ -29,7 +31,8 @@ spec:
         - name: noop@internal
           kind: TraefikService
   tls:
-    secretName: devopscar-nl-tls
+    secretName: {{ $noDotsDomain }}-tls
     domains:
-      - main: "devopscar.nl"
-      - sans: ["*.devopscar.nl"]
+      - main: "{{ $domain }}"
+      - sans: ["*.{{ $domain }}"]
+{{- end }}

@@ -1,2 +1,10 @@
+domains:
+  - oscarr.nl
+  - lab.oscarr.nl
+  - 0scar.nl
+  - ninoo.nl
+  - devopscar.nl
+  - ditiskapot.nl
+
 cert-manager: # set values for wrapper/umbrella chart
   installCRDs: true
