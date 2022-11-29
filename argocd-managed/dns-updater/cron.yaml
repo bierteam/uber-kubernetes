@@ -1,0 +1,24 @@
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: dns-updater
+spec:
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      template:
+        spec:
+          restartPolicy: Never
+          terminationGracePeriodSeconds: 30
+          containers:
+            - image: ghcr.io/bierteam/kubernetes-dns:sha-da09304
+              imagePullPolicy: Always
+              name: dns-updater
+              envFrom:
+                - secretRef:
+                    name: dns-updater-env
+                    optional: false
+  schedule: 0/5 * * * *
+  failedJobsHistoryLimit: 3
+  successfulJobsHistoryLimit: 3
