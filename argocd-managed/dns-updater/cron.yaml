@@ -12,7 +12,7 @@ spec:
           restartPolicy: Never
           terminationGracePeriodSeconds: 30
           containers:
-            - image: ghcr.io/bierteam/kubernetes-dns:sha-da09304
+            - image: ghcr.io/bierteam/kubernetes-dns:0.0.3
               imagePullPolicy: Always
               name: dns-updater
               envFrom:
