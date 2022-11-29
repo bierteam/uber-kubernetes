@@ -74,4 +74,4 @@ dex: # set values for wrapper/umbrella chart
         name: "Headscale"
         secretEnv: HEADSCALE_CLIENT_SECRET
         redirectURIs:
-          - https://headscale.oscarr.nl/oidc/callback
+          - https://headscale.oscarr.nl:443/oidc/callback
