@@ -2,17 +2,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: ninoo
+  name: metrics-server
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   destination:
-    namespace: ninoo
+    namespace: metrics-server
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: argocd-managed/ninoo
+    path: argocd-managed/metrics-server
     repoURL: https://github.com/bierteam/uber-kubernetes.git
     targetRevision: HEAD
 

@@ -1,0 +1,8 @@
+apiVersion: v2
+name: metrics-server-wrapper
+type: application
+version: 1.0.0
+dependencies:
+  - name: metrics-server
+    version: 6.2.4
+    repository: "https://charts.bitnami.com/bitnami"
