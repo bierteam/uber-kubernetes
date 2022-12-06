@@ -1,4 +1,4 @@
-# https://github.com/rook/rook/blob/release-1.10/deploy/charts/rook-ceph/values.yaml
+# https://github.com/rook/rook/blob/release-1.10/deploy/charts/rook-ceph-cluster/values.yaml
 rook-ceph-cluster: # set values for wrapper/umbrella chart
   cephClusterSpec:
     resources:
@@ -57,3 +57,49 @@ rook-ceph-cluster: # set values for wrapper/umbrella chart
         requests:
           cpu: "500m"
           memory: "100Mi"
+  cephFileSystems:
+    - name: ceph-filesystem
+      # see https://github.com/rook/rook/blob/master/Documentation/CRDs/Shared-Filesystem/ceph-filesystem-crd.md#filesystem-settings for available configuration
+      spec:
+        metadataPool:
+          replicated:
+            size: 3
+        dataPools:
+          - failureDomain: host
+            replicated:
+              size: 3
+            # Optional and highly recommended, 'data0' by default, see https://github.com/rook/rook/blob/master/Documentation/CRDs/Shared-Filesystem/ceph-filesystem-crd.md#pools
+            name: data0
+        metadataServer:
+          activeCount: 1
+          activeStandby: true
+          resources:
+            limits:
+              cpu: "1000m"
+              memory: "2Gi"
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+          priorityClassName: system-cluster-critical
+      storageClass:
+        enabled: true
+        isDefault: false
+        name: ceph-filesystem
+        # (Optional) specify a data pool to use, must be the name of one of the data pools above, 'data0' by default
+        pool: data0
+        reclaimPolicy: Delete
+        allowVolumeExpansion: true
+        mountOptions: []
+        # see https://github.com/rook/rook/blob/master/Documentation/ceph-filesystem.md#provision-storage for available configuration
+        parameters:
+          # The secrets contain Ceph admin credentials.
+          csi.storage.k8s.io/provisioner-secret-name: rook-csi-cephfs-provisioner
+          csi.storage.k8s.io/provisioner-secret-namespace: rook-ceph
+          csi.storage.k8s.io/controller-expand-secret-name: rook-csi-cephfs-provisioner
+          csi.storage.k8s.io/controller-expand-secret-namespace: rook-ceph
+          csi.storage.k8s.io/node-stage-secret-name: rook-csi-cephfs-node
+          csi.storage.k8s.io/node-stage-secret-namespace: rook-ceph
+          # Specify the filesystem type of the volume. If not specified, csi-provisioner
+          # will set default as `ext4`. Note that `xfs` is not recommended due to potential deadlock
+          # in hyperconverged settings where the volume is mounted on the same node as the osds.
+          csi.storage.k8s.io/fstype: ext4
