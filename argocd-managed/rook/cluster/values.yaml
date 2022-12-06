@@ -57,6 +57,16 @@ rook-ceph-cluster: # set values for wrapper/umbrella chart
         requests:
           cpu: "500m"
           memory: "100Mi"
+      # enable the ceph dashboard for viewing cluster status
+    dashboard:
+      enabled: true
+      # serve the dashboard under a subpath (useful when you are accessing the dashboard via a reverse proxy)
+      # urlPrefix: /ceph-dashboard
+      # serve the dashboard at the given port.
+      # port: 8443
+      # Serve the dashboard using SSL (if using ingress to expose the dashboard and `ssl: true` you need to set
+      # the corresponding "backend protocol" annotation(s) for your ingress controller of choice)
+      ssl: false
   cephBlockPools: []
   cephObjectStores: []
   cephFileSystems:

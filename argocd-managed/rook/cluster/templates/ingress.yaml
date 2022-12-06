@@ -1,0 +1,14 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: rook-ceph-mgr-dashboard
+spec:
+  entryPoints:
+    - websecure
+  routes:
+  - match: Host(`ceph.lab.oscarr.nl`)
+    kind: Rule
+    services:
+    - name: rook-ceph-mgr-dashboard
+      port: 7000
