@@ -1,0 +1,13 @@
+# https://github.com/cilium/cilium/blob/v1.12.3/install/kubernetes/cilium/values.yaml
+cilium: # set values for wrapper/umbrella chart
+  cluster:
+    id: 0
+    name: ubernerds
+  hubble:
+    enabled: false
+  ipam:
+    mode: kubernetes
+  ipv4:
+    enabled: true
+  ipv6:
+    enabled: true
