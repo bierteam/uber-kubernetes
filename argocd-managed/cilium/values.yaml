@@ -10,4 +10,4 @@ cilium: # set values for wrapper/umbrella chart
   ipv4:
     enabled: true
   ipv6:
-    enabled: true
+    enabled: false 
