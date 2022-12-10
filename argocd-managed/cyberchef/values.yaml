@@ -1,0 +1,3 @@
+# https://github.com/tamcore/cyberchef/blob/master/charts/cyberchef/values.yaml
+cyberchef: # set values for wrapper/umbrella chart
+  replicaCount: 2

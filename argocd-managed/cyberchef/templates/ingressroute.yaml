@@ -1,0 +1,39 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: cyberchef
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`cyberchef.lab.oscarr.nl`)
+      kind: Rule
+      services:
+        - name: cyberchef
+          port: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: cyberchef-redirect
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`cc.lab.oscarr.nl`)
+      kind: Rule
+      middlewares:
+        - name: cyberchef-redirect
+      services:
+        - name: noop@internal
+          kind: TraefikService
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: cyberchef-redirect
+spec:
+  redirectRegex:
+    regex: (.*)\.nl/(.*)
+    replacement: https://cyberchef.lab.oscarr.nl/${2}
