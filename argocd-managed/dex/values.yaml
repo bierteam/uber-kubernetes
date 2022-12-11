@@ -75,3 +75,10 @@ dex: # set values for wrapper/umbrella chart
         secretEnv: HEADSCALE_CLIENT_SECRET
         redirectURIs:
           - https://headscale.oscarr.nl:443/oidc/callback
+
+      - id: cloudflare
+        name: "Cloudflare"
+        secretEnv: Cloudflare_CLIENT_SECRET
+        redirectURIs:
+          - https://bierteam.cloudflareaccess.com/cdn-cgi/access/callback
+          - https://oscarr.cloudflareaccess.com/cdn-cgi/access/callback
