@@ -1,0 +1,49 @@
+# https://github.com/Addyvan/valheim-k8s/blob/valheim-k8s-1.2.0/chart/values.yaml
+valheim-k8s: # set values for wrapper/umbrella chart
+  worldName: mistlands
+  serverName: Gamedust
+  image:
+    repository: lloesche/valheim-server
+    tag: latest
+
+  passwordSecret: valheim-secrets
+
+  storage:
+    kind: persistentVolumeClaim
+    pvc:
+      size: 3Gi
+      storageClassName: ceph-filesystem
+
+  serverStorage:
+    kind: persistentVolumeClaim
+    pvc:
+      size: 10Gi
+      storageClassName: ceph-filesystem
+
+  networking:
+    serviceType: NodePort
+    gamePort: 2456
+    publishQueryPort: "true"
+
+  nodeSelector: {}
+  tolerations: {}
+  resources:
+    requests:
+      memory: "2Gi"
+      cpu: "1000m"
+    limits:
+      memory: "4Gi"
+      cpu: "2000m"
+
+  extraEnvironmentVars:
+    SERVER_PUBLIC: true
+    VALHEIM_PLUS: true
+  #   BACKUPS: true
+  #   BACKUPS_CRON: "0 * * * *"
+  #   BACKUPS_MAX_AGE: 3
+  #   POST_BACKUP_HOOK: "timeout 300 scp -i /extraVolumes/backup-ssh-key/ssh-privatekey -o StrictHostKeyChecking=no @BACKUP_FILE@ myself@example.com:~/valheim_backups/$(basename @BACKUP_FILE@)"
+
+  # extraVolumes:
+  # - type: secret
+  #   name: backup-ssh-key
+  #   defaultMode: 0600

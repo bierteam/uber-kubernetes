@@ -1,0 +1,8 @@
+apiVersion: v2
+name: velheim-wrapper
+type: application
+version: 1.0.0
+dependencies:
+  - name: valheim-k8s
+    version: 1.2.0
+    repository: "https://addyvan.github.io/valheim-k8s"
