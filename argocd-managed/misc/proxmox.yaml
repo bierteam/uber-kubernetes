@@ -11,7 +11,6 @@ subsets:
       - ip: 100.64.0.6
     ports:
       - port: 8006
-
 ---
 kind: Service
 apiVersion: v1
@@ -22,7 +21,6 @@ spec:
   ports:
     - port: 443
       targetPort: 8006
-
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
@@ -32,7 +30,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: HostRegexp(`proxmox.oscarr.nl`, `{subdomain:pve\d?\d?}.oscarr.nl`)
+    - match: Host(`proxmox.oscarr.nl`)
       kind: Rule
       services:
         - name: proxmox
@@ -45,3 +43,28 @@ spec:
               sameSite: none
           passHostHeader: true
           serversTransport: insecure
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: proxmox-redirect
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: HostRegexp(`{subdomain:pve\d?\d?}.oscarr.nl`)
+      kind: Rule
+      middlewares:
+        - name: proxmox-redirectregex
+      services:
+        - name: noop@internal
+          kind: TraefikService
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: proxmox-redirectregex
+spec:
+  redirectRegex:
+    regex: ^http[s]?://pve(.*).oscarr.nl/(.*)
+    replacement: https://pve${1}.oscarr.nl:8006/${2}
