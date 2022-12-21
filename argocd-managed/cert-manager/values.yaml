@@ -1,10 +1,18 @@
 domains:
-  - oscarr.nl
-  - lab.oscarr.nl
   - 0scar.nl
-  - ninoo.nl
   - devopscar.nl
   - ditiskapot.nl
+  - ditwerktniet.nl
+  - hetmagkapot.nl
+  - hetmoetkapot.nl
+  - ishetkapot.nl
+  - lab.oscarr.nl
+  - maghetkapot.nl
+  - maghetwerken.nl
+  - moethetwerken.nl
+  - ninoo.nl
+  - oscarr.nl
+  # - moethetkapot.nl
 
 cert-manager: # set values for wrapper/umbrella chart
   installCRDs: true
