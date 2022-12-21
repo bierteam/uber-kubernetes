@@ -60,9 +60,6 @@ dex: # set values for wrapper/umbrella chart
       - id: kubernetes
         name: "Kubernetes"
         public: true
-        redirectURIs:
-          - http://localhost:8000
-          - http://localhost:18000
 
       - id: argocd
         name: "ArgoCD"
