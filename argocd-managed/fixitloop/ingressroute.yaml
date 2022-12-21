@@ -1,0 +1,14 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: html-ingressroute
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`ditiskapot.nl`)
+      kind: Rule
+      services:
+        - name: html-service
+          port: 80
