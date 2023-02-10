@@ -19,11 +19,9 @@ spec:
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
-    # https://github.com/argoproj/argo-cd/pull/10672
-    # coming in argocd 2.6 (2023-1-9)
-    # managedNamespaceMetadata:
-    #   labels:
-    #     pod-security.kubernetes.io/enforce: baseline
+    managedNamespaceMetadata:
+      labels:
+        pod-security.kubernetes.io/enforce: baseline
     # automated:
     #   prune: true
     #   selfHeal: true

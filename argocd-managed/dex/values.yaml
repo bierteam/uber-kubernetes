@@ -73,9 +73,8 @@ dex: # set values for wrapper/umbrella chart
         redirectURIs:
           - https://headscale.oscarr.nl:443/oidc/callback
 
-      - id: cloudflare
-        name: "Cloudflare"
-        secretEnv: Cloudflare_CLIENT_SECRET
+      - id: rws
+        name: "Rijkswaterstaat"
+        secret: Rijkswaterstaat_CLIENT_SECRET
         redirectURIs:
-          - https://bierteam.cloudflareaccess.com/cdn-cgi/access/callback
-          - https://oscarr.cloudflareaccess.com/cdn-cgi/access/callback
+          - https://iam.cisvm.intranet.rws.nl/realms/master/broker/oscarr/endpoint
