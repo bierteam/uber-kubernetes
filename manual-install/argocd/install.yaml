@@ -17609,7 +17609,7 @@ spec:
             - /readonly/haproxy_init.sh
           command:
             - sh
-          image: haproxy:2.7.2-alpine
+          image: haproxy:2.7.3-alpine
           imagePullPolicy: IfNotPresent
           name: config-init
           securityContext:
