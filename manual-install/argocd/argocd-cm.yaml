@@ -15,7 +15,7 @@ data:
     requestedScopes: ["openid", "profile", "email", "groups"]
     requestedIDTokenClaims: {"groups": {"essential": true}}
   admin.enabled: "false"
-  statusBadgeEnabled: "true"
+  statusbadge.enabled: "true"
   resource.exclusions: |
     - apiGroups:
         - cilium.io
