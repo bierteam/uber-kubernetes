@@ -1,4 +1,4 @@
-# https://github.com/traefik/traefik-helm-chart/blob/v18.1.0/traefik/values.yaml
+# https://github.com/traefik/traefik-helm-chart/blob/v21.1.0/traefik/values.yaml
 traefik: # set values for wrapper/umbrella chart
   deployment:
     kind: DaemonSet
@@ -18,6 +18,11 @@ traefik: # set values for wrapper/umbrella chart
   ingressRoute:
     dashboard:
       enabled: false
+
+  updateStrategy:
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
 
   logs:
     general:
