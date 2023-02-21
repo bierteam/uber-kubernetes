@@ -14,6 +14,6 @@ spec:
     - namespace: "*"
       server: https://kubernetes.default.svc
   orphanedResources:
-    warn: true
+    warn: false
   sourceRepos:
     - https://github.com/bierteam/uber-kubernetes.git
