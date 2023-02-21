@@ -1,0 +1,31 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: app-of-apps
+  labels:
+    app.kubernetes.io/part-of: argocd
+  namespace: argocd
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  destination:
+    namespace: argocd
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    directory:
+      jsonnet: {}
+      recurse: true
+    path: argocd-managed/argocd-apps
+    repoURL: https://github.com/bierteam/uber-kubernetes.git
+    targetRevision: HEAD
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    managedNamespaceMetadata:
+      labels:
+        pod-security.kubernetes.io/enforce: baseline
+    automated:
+      prune: true
+      selfHeal: true

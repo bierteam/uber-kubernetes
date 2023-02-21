@@ -1,0 +1,19 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: default
+  namespace: argocd
+  annotations:
+    helm.sh/resource-policy: keep
+spec:
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+  destinations:
+    - namespace: "*"
+      server: https://kubernetes.default.svc
+  orphanedResources:
+    warn: true
+  sourceRepos:
+    - https://github.com/bierteam/uber-kubernetes.git

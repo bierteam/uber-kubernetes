@@ -1,0 +1,41 @@
+# https://github.com/argoproj/argo-helm/tree/argo-cd-5.22.1/charts/argo-cd
+argo-cd: # set values for wrapper/umbrella chart
+  configs:
+    cm:
+      application.instanceLabelKey: app.kubernetes.io/instance
+      url: https://argocd.lab.oscarr.nl
+      oidc.config: |
+        name: dex
+        issuer: https://auth.oscarr.nl
+        clientID: argocd
+        clientSecret: $oidc.dex.clientSecret
+        requestedScopes: ["openid", "profile", "email", "groups"]
+        requestedIDTokenClaims: {"groups": {"essential": true}}
+      admin.enabled: "false"
+      statusbadge.enabled: "true"
+      resource.exclusions: |
+        - apiGroups:
+            - cilium.io
+          kinds:
+            - CiliumIdentity
+          clusters:
+            - "*"
+    params:
+      # https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/#traefik-v22
+      server.insecure: true
+    rbac:
+      policy.default: 'role:admin'
+      policy.csv: |
+        p, role:org-admin, applications, *, */*, allow
+        p, role:org-admin, clusters, get, *, allow
+        p, role:org-admin, repositories, get, *, allow
+        p, role:org-admin, repositories, create, *, allow
+        p, role:org-admin, repositories, update, *, allow
+        p, role:org-admin, repositories, delete, *, allow
+        p, role:org-admin, logs, get, *, allow
+        p, role:org-admin, exec, create, */*, allow
+
+        g, bierteam, role:org-admin
+      scopes: "[groups]"
+    secret:
+      createSecret: false # handled by sealed secret
