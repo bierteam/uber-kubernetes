@@ -2,6 +2,7 @@
 
 | Name | Status | Project
 |------|--------|--------|
+| ArgoCD | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=argocd&revision=true)](https://argocd.lab.oscarr.nl/applications/argocd) | [Click](https://argo-cd.readthedocs.io/en/stable/)
 | App of apps | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=app-of-apps&revision=true)](https://argocd.lab.oscarr.nl/applications/app-of-apps) | [Click](https://argo-cd.readthedocs.io/en/stable/operator-manual/cluster-bootstrapping/#app-of-apps-pattern)
 | Cert Manager | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=cert-manager&revision=true)](https://argocd.lab.oscarr.nl/applications/cert-manager) | [Click](https://cert-manager.io/)
 | Cilium | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=cilium&revision=true)](https://argocd.lab.oscarr.nl/applications/cilium) | [Click](https://cilium.io/)
