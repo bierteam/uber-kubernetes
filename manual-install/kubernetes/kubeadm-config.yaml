@@ -1,0 +1,43 @@
+apiVersion: v1
+data:
+  ClusterConfiguration: |
+    apiServer:
+      certSANs:
+      - kubernetes.oscarr.nl
+      - kubernetes.lab.oscarr.nl
+      - k8s-1
+      - k8s-2
+      - k8s-3
+      - k8s-4
+      - k8s-1.oscarr.nl
+      - k8s-2.oscarr.nl
+      - k8s-3.oscarr.nl
+      - k8s-4.oscarr.nl
+      extraArgs:
+        authorization-mode: Node,RBAC
+        oidc-client-id: kubernetes
+        oidc-groups-claim: groups
+        oidc-issuer-url: https://auth.oscarr.nl
+        oidc-username-claim: preferred_username
+      timeoutForControlPlane: 4m0s
+    apiVersion: kubeadm.k8s.io/v1beta3
+    certificatesDir: /etc/kubernetes/pki
+    clusterName: kubernetes
+    controlPlaneEndpoint: localhost:6000
+    controllerManager: {}
+    dns: {}
+    etcd:
+      local:
+        dataDir: /var/lib/etcd
+    imageRepository: registry.k8s.io
+    kind: ClusterConfiguration
+    kubernetesVersion: v1.26.1
+    networking:
+      dnsDomain: cluster.local
+      podSubnet: 10.244.0.0/12
+      serviceSubnet: 10.96.0.0/12
+    scheduler: {}
+kind: ConfigMap
+metadata:
+  name: kubeadm-config
+  namespace: kube-system
