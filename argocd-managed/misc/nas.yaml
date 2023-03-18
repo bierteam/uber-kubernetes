@@ -34,8 +34,3 @@ spec:
       services:
         - name: nas
           port: 443
-    - match: Host(`tmp.nas`)
-      kind: Rule
-      services:
-        - name: nas
-          port: 443
