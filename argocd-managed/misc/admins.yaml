@@ -17,3 +17,6 @@ subjects:
   - apiGroup: rbac.authorization.k8s.io
     kind: User
     name: "https://auth.oscarr.nl#PeterOosterom"
+  - apiGroup: rbac.authorization.k8s.io
+    kind: User
+    name: "https://auth.oscarr.nl#xm0ur3r"
