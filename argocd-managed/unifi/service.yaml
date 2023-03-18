@@ -8,7 +8,9 @@ spec:
     app: unifi
   type: ClusterIP
   ports:
-    - port: 8443
+    - name: ui
+      port: 8443
       targetPort: 8443
-    - port: 8080
+    - name: inform
+      port: 8080
       targetPort: 8080
