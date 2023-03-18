@@ -11,6 +11,7 @@ spec:
       name: letsencrypt
     solvers:
       - dns01:
+          cnameStrategy: Follow
           cloudflare:
             apiTokenSecretRef:
               name: cloudflare-token-secret
