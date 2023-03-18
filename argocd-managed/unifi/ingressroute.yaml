@@ -12,6 +12,8 @@ spec:
       services:
         - name: unifi
           port: 8443
+          serversTransport: insecure
+          scheme: https
 # ---
 # apiVersion: traefik.containo.us/v1alpha1
 # kind: IngressRoute
@@ -26,3 +28,10 @@ spec:
 #       services:
 #         - name: unifi
 #           port: 8080
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: ServersTransport
+metadata:
+  name: insecure
+spec:
+  insecureSkipVerify: true
