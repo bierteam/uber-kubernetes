@@ -12,6 +12,7 @@ domains:
   - moethetwerken.nl
   - ninoo.nl
   - oscarr.nl
+  - bruinsma.it
   # - moethetkapot.nl
 
 cert-manager: # set values for wrapper/umbrella chart
