@@ -27,14 +27,29 @@ spec:
           image: "linuxserver/unifi-controller:7.3.83"
           name: unifi
           ports:
-            # - containerPort: 3478
-              # protocol: UDP
-            # - containerPort: 10001
-              # protocol: UDP
-            # - containerPort: 8080
-            # - containerPort: 8081
+          # https://help.ui.com/hc/en-us/articles/218506997-UniFi-Network-Required-Ports-Reference
+          # Device communication
+            - containerPort: 8080
+          # Web UI
             - containerPort: 8443
+          # Port used for stun
+            # - containerPort: 3478
+            #   protocol: UDP
+          # Port used for syslog capture
+            # - containerPort: 5514
+            #   protocol: UDP
+          # Guest portal HTTP redirection
+            # - containerPort: 8880
+          # Guest portal HTTPS redirection
+            # - containerPort: 8843
+          # Unifi mobile speed test
             # - containerPort: 6789
+          # Port used for device discovery
+            # - containerPort: 10001
+            #   protocol: UDP
+          # Make application discoverable on L2 network
+            # - containerPort: 1900
+            #   protocol: UDP
           volumeMounts:
             - mountPath: /config
               name: unifi

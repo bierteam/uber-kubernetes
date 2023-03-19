@@ -14,20 +14,20 @@ spec:
           port: 8443
           serversTransport: insecure
           scheme: https
-# ---
-# apiVersion: traefik.containo.us/v1alpha1
-# kind: IngressRoute
-# metadata:
-#   name: unifi-inform
-# spec:
-#   entryPoints:
-#     - inform
-#   routes:
-#     - match: Host(`unifi.oscarr.nl`)
-#       kind: Rule
-#       services:
-#         - name: unifi
-#           port: 8080
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: unifi-inform
+spec:
+  entryPoints:
+    - unifi-inform
+  routes:
+    - match: Host(`unifi.oscarr.nl`)
+      kind: Rule
+      services:
+        - name: unifi
+          port: 8080
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: ServersTransport
