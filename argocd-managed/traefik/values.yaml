@@ -9,13 +9,9 @@ traefik: # set values for wrapper/umbrella chart
       redirectTo: websecure
     websecure:
       hostPort: 443
-      http3:
-        enabled: true
     unifi-inform:
       hostPort: 8080
       port: 8080
-      http3:
-        enabled: true
 
   service:
     enabled: false
