@@ -1,0 +1,31 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: friend-tracker
+spec:
+  selector:
+    matchLabels:
+      app: friend-tracker
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: friend-tracker
+    spec:
+      containers:
+        - name: friend-tracker
+          image: ghcr.io/bierteam/runelite-live-friend-locations-api:1.0.1
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              memory: "32Mi"
+              cpu: "10m"
+            limits:
+              memory: "32Mi"
+              cpu: "10m"
+          envFrom:
+            - secretRef:
+                name: friend-tracker
+                optional: false

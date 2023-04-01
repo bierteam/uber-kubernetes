@@ -1,0 +1,14 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: friend-tracker
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`friend-tracker.lab.oscarr.nl`)
+      kind: Rule
+      services:
+        - name: friend-tracker
+          port: 80
