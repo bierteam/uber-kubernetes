@@ -30,3 +30,5 @@ traefik: # set values for wrapper/umbrella chart
       level: DEBUG
     access:
       enabled: true
+  
+  priorityClassName: system-cluster-critical
