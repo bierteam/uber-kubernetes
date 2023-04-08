@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: friend-tracker
-          image: ghcr.io/bierteam/runelite-live-friend-locations-api:1.0.3
+          image: ghcr.io/bierteam/runelite-live-friend-locations-api:1.1.0
           ports:
             - containerPort: 3000
           resources:
