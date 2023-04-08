@@ -20,11 +20,15 @@ spec:
             - containerPort: 3000
           resources:
             requests:
-              memory: "32Mi"
-              cpu: "10m"
+              memory: "64Mi"
+              cpu: "20m"
             limits:
-              memory: "32Mi"
-              cpu: "10m"
+              memory: "64Mi"
+              cpu: "20m"
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
           envFrom:
             - secretRef:
                 name: friend-tracker
