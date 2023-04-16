@@ -1,0 +1,35 @@
+argocdApps:
+  # - name: string (mandatory)
+  #   namespace: string (optional)
+  #   namespaceSecurity: bool (optional)
+  #   folder: string (optional)
+  #   autosync: bool (optional)
+  #   finalizer: bool (optional)
+  - name: cert-manager
+  - name: cilium
+    namespace: kube-system
+    namespaceSecurity: false
+  - name: cyberchef
+  - name: dex
+  - name: dns-updater
+  - name: drinkn
+  - name: fixitloop
+  - name: friend-tracker
+  - name: metrics-server
+  - name: misc
+  - name: ninoo
+  - name: rook-cluster
+    folder: rook/cluster
+    namespace: rook-ceph
+    namespaceSecurity: false
+  - name: rook-operator
+    folder: rook/operator
+    namespace: rook-ceph
+    namespaceSecurity: false
+  - name: sealed-secrets
+    namespace: kube-system
+    namespaceSecurity: false
+  - name: traefik
+    namespaceSecurity: false
+  - name: unifi
+  - name: valheim

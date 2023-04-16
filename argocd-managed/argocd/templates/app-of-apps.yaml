@@ -14,9 +14,6 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    directory:
-      jsonnet: {}
-      recurse: true
     path: argocd-managed/argocd-apps
     repoURL: https://github.com/bierteam/uber-kubernetes.git
     targetRevision: HEAD

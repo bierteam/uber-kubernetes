@@ -1,0 +1,46 @@
+{{- range $application := .Values.argocdApps }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: {{ $application.name }}
+  namespace: argocd
+  {{- if ne "false" ($application.finalizer | toString) }}
+  {{- include "finalizers" . | indent 2 }}
+  {{- end }}
+spec:
+  destination:
+    namespace: {{ $application.namespace | default $application.name }}
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: argocd-managed/{{ $application.folder | default $application.name }}
+    repoURL: https://github.com/bierteam/uber-kubernetes.git
+    targetRevision: HEAD
+  syncPolicy:
+    syncOptions:
+      - CreateNamespace=true
+    {{- if ne "false" ($application.namespaceSecurity | toString) }}
+    {{- include "security-labels" . | indent 4 }}
+    {{- end }}
+    {{- if ne "false" ($application.autosync | toString) }}
+    {{- include "autosync" . | indent 4 }}
+    {{- end }}
+{{- end }}
+
+{{- define "security-labels" }}
+managedNamespaceMetadata:
+  labels:
+    pod-security.kubernetes.io/enforce: baseline
+{{- end }}
+
+{{- define "finalizers" }}
+finalizers:
+  - resources-finalizer.argocd.argoproj.io
+{{- end }}
+
+{{- define "autosync" }}
+automated:
+  prune: true
+  selfHeal: true
+{{- end }}
