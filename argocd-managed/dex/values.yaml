@@ -72,9 +72,3 @@ dex: # set values for wrapper/umbrella chart
         secretEnv: HEADSCALE_CLIENT_SECRET
         redirectURIs:
           - https://headscale.oscarr.nl:443/oidc/callback
-
-      - id: rws
-        name: "Rijkswaterstaat"
-        secret: Rijkswaterstaat_CLIENT_SECRET
-        redirectURIs:
-          - https://iam.cisvm.intranet.rws.nl/realms/master/broker/oscarr/endpoint
