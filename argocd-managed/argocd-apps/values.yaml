@@ -1,14 +1,14 @@
 argocdApps:
   # - name: string (mandatory)
   #   namespace: string (optional)
-  #   namespaceSecurity: bool (optional)
+  #   podSecurity: privileged/baseline/restricted
   #   folder: string (optional)
   #   autosync: bool (optional)
   #   finalizer: bool (optional)
   - name: cert-manager
   - name: cilium
     namespace: kube-system
-    namespaceSecurity: false
+    podSecurity: privileged
   - name: cyberchef
   - name: dex
   - name: dns-updater
@@ -21,16 +21,16 @@ argocdApps:
   - name: rook-cluster
     folder: rook/cluster
     namespace: rook-ceph
-    namespaceSecurity: false
+    podSecurity: privileged
   - name: rook-operator
     folder: rook/operator
     namespace: rook-ceph
-    namespaceSecurity: false
+    podSecurity: privileged
   - name: sealed-secrets
     namespace: kube-system
-    namespaceSecurity: false
+    podSecurity: privileged
   - name: traefik
-    namespaceSecurity: false
+    podSecurity: privileged
   - name: unifi
   - name: valheim
   - name: oscarr

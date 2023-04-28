@@ -20,18 +20,16 @@ spec:
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
-    {{- if ne "false" ($application.namespaceSecurity | toString) }}
-    {{- include "security-labels" . | indent 4 }}
-    {{- end }}
+    managedNamespaceMetadata:
+      labels:
+        pod-security.kubernetes.io/enforce: {{ $application.podSecurity | default "baseline" | toString }}
+        {{- if ne $application.podSecurity "privileged" }}
+        pod-security.kubernetes.io/audit: restricted
+        pod-security.kubernetes.io/warn: restricted
+        {{- end }}
     {{- if ne "false" ($application.autosync | toString) }}
     {{- include "autosync" . | indent 4 }}
     {{- end }}
-{{- end }}
-
-{{- define "security-labels" }}
-managedNamespaceMetadata:
-  labels:
-    pod-security.kubernetes.io/enforce: baseline
 {{- end }}
 
 {{- define "finalizers" }}
