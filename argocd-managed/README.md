@@ -11,7 +11,8 @@
 | DNS Updater | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=dns-updater&revision=true)](https://argocd.lab.oscarr.nl/applications/dns-updater) | [Click](https://github.com/bierteam/kubernetes-dns)
 | Drinkn | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=drinkn&revision=true)](https://argocd.lab.oscarr.nl/applications/drinkn) | [Click](https://github.com/bierteam/drinkn)
 | Fix It Loop | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=fixitloop&revision=true)](https://argocd.lab.oscarr.nl/applications/fixitloop) |
-| Ninoo | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=ninoo&revision=true)](https://argocd.lab.oscarr.nl/applications/ninoo) |
+| Ninoo.nl | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=ninoo&revision=true)](https://argocd.lab.oscarr.nl/applications/ninoo) |
+| Oscarr.nl | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=oscarr&revision=true)](https://argocd.lab.oscarr.nl/applications/oscarr) |
 | Rook Cluster | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=rook-cluster&revision=true)](https://argocd.lab.oscarr.nl/applications/rook-cluster) | [Click](https://rook.io/)
 | Rook Operator | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=rook-operator&revision=true)](https://argocd.lab.oscarr.nl/applications/rook-operator) | [Click](https://rook.io/)
 | Sealed Secrets | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=sealed-secrets&revision=true)](https://argocd.lab.oscarr.nl/applications/sealed-secrets) | [Click](https://github.com/bitnami-labs/sealed-secrets)

@@ -33,3 +33,4 @@ argocdApps:
     namespaceSecurity: false
   - name: unifi
   - name: valheim
+  - name: oscarr
