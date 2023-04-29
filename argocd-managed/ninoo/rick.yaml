@@ -1,0 +1,130 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ninoo-nl
+data:
+  index.html: |
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="script.js"></script>
+        <link rel="stylesheet" href="style.css">
+      </head>
+      <body>
+        <iframe id="rick" width="560" height="315" src="https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ" title="YouTube video player" frameborder="0" allowfullscreen></iframe>
+        <button id="knop">Klik mij!</button>
+      </body>
+    </html>
+  style.css: |
+    #rick {
+      display: none;
+    }
+  script.js: |
+    window.onload = function() {
+      function playRick() {
+        const rick = document.getElementById('rick'); // get element
+        rick.style.display = 'block'; // unhide video
+        rick.requestFullscreen(); // enter full screen mode
+        rick.setAttribute('src', rick.getAttribute('src') + '?autoplay=1'); // autoplay video
+      }
+      document.getElementById("knop").addEventListener("click", playRick);
+    };
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ninoo-nl
+spec:
+  selector:
+    matchLabels:
+      app: ninoo-nl
+  replicas: 2
+  revisionHistoryLimit: 0
+  template:
+    metadata:
+      labels:
+        app: ninoo-nl
+    spec:
+      containers:
+        - name: ninoo-nl
+          image: joseluisq/static-web-server:2.16.0
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: ninoo-nl
+              mountPath: /public/
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "16Mi"
+            limits:
+              cpu: "10m"
+              memory: "16Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+      volumes:
+        - name: ninoo-nl
+          configMap:
+            name: ninoo-nl
+            items:
+              - key: index.html
+                path: index.html
+              - key: style.css
+                path: style.css
+              - key: script.js
+                path: script.js
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ninoo-nl
+spec:
+  selector:
+    app: ninoo-nl
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ninoo-nl
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`ninoo.nl`, `www.ninoo.nl`)
+      kind: Rule
+      middlewares:
+        - name: security-headers
+      services:
+        - name: ninoo-nl
+          port: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: security-headers
+spec:
+  headers:
+    stsSeconds: 31536000
+    # stsIncludeSubdomains: true
+    # stsPreload: true
+    # generated with https://report-uri.com/home/generate
+    contentSecurityPolicy: default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; frame-src youtube-nocookie.com www.youtube-nocookie.com; frame-ancestors 'none'; form-action 'none'; base-uri 'none'
+    referrerPolicy: no-referrer
+    contentTypeNosniff: true
+    frameDeny: true
+    # generated with https://www.permissionspolicy.com/
+    permissionsPolicy: accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=(), gamepad=(), speaker-selection=(), conversion-measurement=(), focus-without-user-activation=(), hid=(), idle-detection=(), interest-cohort=(), serial=(), sync-script=(), trust-token-redemption=(), window-placement=(), vertical-scroll=()

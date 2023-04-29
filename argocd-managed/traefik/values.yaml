@@ -9,6 +9,9 @@ traefik: # set values for wrapper/umbrella chart
       redirectTo: websecure
     websecure:
       hostPort: 443
+      #`TODO validate this default config`
+      # middlewares:
+      #   - security-headers@misc
     unifi-inform:
       hostPort: 8080
       port: 8080
@@ -20,6 +23,7 @@ traefik: # set values for wrapper/umbrella chart
     dashboard:
       enabled: false
 
+  # workaround to use traefik as DaemonSet instead of Deployment
   updateStrategy:
     rollingUpdate:
       maxUnavailable: 1
