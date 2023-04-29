@@ -76,6 +76,14 @@ spec:
             httpGet:
               path: /
               port: 80
+          securityContext:
+            allowPrivilegeEscalation: false
+            # TODO
+            # runAsNonRoot: true
+            # capabilities:
+            #   drop: ["ALL"]
+            seccompProfile:
+              type: RuntimeDefault
       volumes:
         - name: security-txt
           configMap:
@@ -130,11 +138,11 @@ metadata:
 spec:
   headers:
     stsSeconds: 31536000
-    stsIncludeSubdomains: true
+    # stsIncludeSubdomains: true
     # stsPreload: true
     # generated with https://report-uri.com/home/generate
     contentSecurityPolicy: default-src 'none'; img-src 'self'; frame-ancestors 'none'; form-action 'none'; base-uri 'none'
-    referrerPolicy: strict-origin
+    referrerPolicy: no-referrer
     contentTypeNosniff: true
     frameDeny: true
     # generated with https://www.permissionspolicy.com/
