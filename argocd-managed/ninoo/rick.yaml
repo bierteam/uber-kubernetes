@@ -16,7 +16,7 @@ data:
       </head>
       <body>
         <div class="bodyContainer">
-          <div id="player" allowfullscreen></div>
+          <div id="player" allow="autoplay; fullscreen"></div>
           <button id="button" class="button" role="button">Klik mij!</button>
           <a href="https://www.linkedin.com/in/nino-van-der-laan-baa3421ab/">
             <img src="linkedin.png" class="linkedin"/>
@@ -93,6 +93,8 @@ data:
           iframe.requestFullscreen()
         }
         player.playVideo()
+        player.unMute()
+        player.setVolume(100)
       }
       document.getElementById('button').addEventListener('click', playRick)
     }
@@ -114,7 +116,9 @@ data:
           'controls': 0,
           'modestbranding': 1,
           'rel': 0,
-          'showinfo': 0
+          'showinfo': 0,
+          'loop': 1,
+          'disablekb': 1
         }
       });
     }
@@ -226,4 +230,4 @@ spec:
     contentTypeNosniff: true
     frameDeny: true
     # generated with https://www.permissionspolicy.com/
-    permissionsPolicy: accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=(), gamepad=(), speaker-selection=(), conversion-measurement=(), focus-without-user-activation=(), hid=(), idle-detection=(), interest-cohort=(), serial=(), sync-script=(), trust-token-redemption=(), window-placement=(), vertical-scroll=()
+    permissionsPolicy: accelerometer=(), ambient-light-sensor=(), battery=(), camera=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=(), gamepad=(), speaker-selection=(), conversion-measurement=(), focus-without-user-activation=(), hid=(), idle-detection=(), interest-cohort=(), serial=(), sync-script=(), trust-token-redemption=(), window-placement=(), vertical-scroll=()
