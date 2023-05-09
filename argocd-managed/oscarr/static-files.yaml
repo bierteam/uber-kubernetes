@@ -1,0 +1,285 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: static-files
+data:
+  security.txt: |
+    -----BEGIN PGP SIGNED MESSAGE-----
+    Hash: SHA256
+
+    # This is the security.txt file for everything in our kubernetes cluster
+    # It is defined in this repo https://github.com/bierteam/uber-kubernetes
+
+    Contact: mailto:security@oscarr.nl
+    Contact: https://github.com/bierteam/uber-kubernetes/security/advisories/new
+    Expires: 2026-04-27T22:00:00.000Z
+    Encryption: https://keybase.io/oscrx/key.asc
+    Preferred-Languages: nl, en
+    Canonical: https://oscarr.nl/.well-known/security.txt
+    Acknowledgments: https://github.com/bierteam/uber-kubernetes/blob/main/SECURITY.md
+    Policy: https://github.com/bierteam/uber-kubernetes/blob/main/SECURITY.md
+
+    # Easily check the signature at: https://keybase.io/verify
+    -----BEGIN PGP SIGNATURE-----
+
+    iQIzBAEBCAAdFiEEpwez+rJ156oyNxEKZLg5wX4x8VEFAmRL8RoACgkQZLg5wX4x
+    8VEMzhAAz2HgWV8us5RHMeDKg+AP9YvS4/KdhSVXfmwVsfQ9sv1U7NNPjT9jrj9M
+    EaAQdOUmZJJjx+Xr4FRP9RM7lsV0OXZLStmb0uhlrPYnPTEEq9pu9b3G+7WF9kit
+    mcvJjQ9iBJUdhPP7gSbOhQHy0y17x0MkbeR4T+XRMKsOijobDQHVpnJrNStTIPLl
+    VdKL5O7FM6FCoonrXGnrtGVzXm5+imxW8XbQH9aB4tDSiDCtog7h8WdcWT/ZRikl
+    GVV1Rhqwgl0gVLfl1SkWT4v+H+8+UvO9IztgGn/U1ZKKNsGxtBf/eZrSpwoKLltu
+    FwJA02T4wpJNU19ghF0wL08PnioIFI7nP0IVK/ORi3fyZ9UsCRIIRmDKdcmrNBPs
+    ns/2yQSNX2j4tzUldkLI4q0DrZLovrGV7RfJEw6pvty/noyDMNe5CWk0c7aRWU/s
+    lakYv0hUqkUVZV9c5+gOjdq+QwHQFgq6TItsMCpaZU1GYmv9+EgQspVE/bRotg2R
+    qS+FM8a4UwtiaL49duHa8Io2pqieZeYexlPNew9yD+JKB4yX6hoD803UIIEbaIgu
+    EjbkhEoDhsbK8bSQrEKRnPdUz7u8NIie+rkRBYOp4jd3PaKj/1oi5nLjM2idpBsh
+    Yz+wYeKJvAY2OYEDKZB/xg40mqMm9WnrITmFfvcq8Jx1x3VSsk0=
+    =NJwf
+    -----END PGP SIGNATURE-----
+  keybase.txt: |
+    ==================================================================
+    https://keybase.io/oscrx
+    --------------------------------------------------------------------
+
+    I hereby claim:
+
+      * I am an admin of https://0scar.nl
+      * I am oscrx (https://keybase.io/oscrx) on keybase.
+      * I have a public key with fingerprint A707 B3FA B275 E7AA 3237  110A 64B8 39C1 7E31 F151
+
+    To do so, I am signing this object:
+
+    {
+      "body": {
+        "key": {
+          "eldest_kid": "010160dd78887488b3af3441f3353eecba2c3605e153458ad3a604e4bb200c608d690a",
+          "fingerprint": "a707b3fab275e7aa3237110a64b839c17e31f151",
+          "host": "keybase.io",
+          "key_id": "64b839c17e31f151",
+          "kid": "0101c914f4ca8c21e734d4a3f2e41ae2b65895d5de8538d92486b76d018f59913dcd0a",
+          "uid": "66c275e0c0a05383be44f1c121255419",
+          "username": "oscrx"
+        },
+        "merkle_root": {
+          "ctime": 1683637473,
+          "hash_meta": "a3f8e9494e102d61574ed8efde302a52456381be1cd3cf330742b7c608f30adf",
+          "seqno": 24430017
+        },
+        "revoke": {
+          "sig_ids": [
+            "cb2054f2c81407e2d507fb638bee3847b74be26201a0ea6766d61cd036e7f8940f"
+          ]
+        },
+        "service": {
+          "hostname": "0scar.nl",
+          "protocol": "https:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+      },
+      "ctime": 1683637500,
+      "expire_in": 157680000,
+      "prev": "491d4839160ac8f3f93a59c68a07ad8880b05bc4d279cac835fc9b5fbfd6333c",
+      "seqno": 89,
+      "tag": "signature"
+    }
+
+    which yields the signature:
+
+    -----BEGIN PGP MESSAGE-----
+
+    owFtU2tMVEcUXlYMCwZRibWVastt0qpFnbkz9wWV1gdtfTTS2BjBUJw7MxdWYHe5
+    d1lF4gMQXw3EVI1tNLFVo+JbsGg1xieGWNoKNdJia8RK1dqHNhaJinYu1Zgm/TWZ
+    M9/5zne+c2Z1fB+PL4odNk4ugnfej/rqpulh2RkxZZIZZKVSaplUwHsPXsi4E84t
+    8DMpVQIQQBUwpum6rmFdNxGxEMbQQkhBnFOTyBSpQOFQQVjRCUNEBZhj05QBoCrQ
+    mWoAIqVIlj+Qx+2Q7Q+EBS3RgGYii5iypnCNECQjDUJAVGzqyKBQ4whaUIEiMT/o
+    uBlCnEkcPsYfFDFxye2V9z/4Z7qpAbGFKdGpDLmGMMMEWTLHkHDZVBXdUJjCuK4g
+    nRky1lVTUxmAuqUYBkSMsl7dJf/WUamrFFBAgMAjk2NsQQplKCsKhoYLdLgdIEVc
+    oIMOtedLC1OkIm4XFPJcOxgMu87SsN99h6qOVKRhDYnuiJOfW8TDxDUFWTo3sIE5
+    BDJToaJhznRuMY6ATBQZKyrSockhZYiKAQANy6bmmmwhQJglRDi8OBCUUmWMEQBQ
+    ExJsHgkWcLe6488TpjlS6myJiuko+ESxJVMdYqBxmSlAs0zBb3KOdKyZGja5rMoA
+    EsCJqqmqECQsQSrXLN3AwJJyFrr17Iif9tK7c3rSP3AosccECoWgkB0MB2mwUETz
+    w+GQk+raEi4NubB53Mx9QpBr+gNMbIjIiHDb8QcDwiaB/K9jCgApEp8f8ts81+8i
+    FE3VAXCjIdGnoMQGZFhshNhZQoUtloGIYlBVJ0AjTOwwMIFiUsxkzaACgRSLGqZi
+    mRZTEUL0mYW6IXSSPMEpfAuQcInNpYVxK70o2hPl8wx7Ljl6e0z9/bqS6ztlbWDc
+    01/V1+t+KU9c7ICnkbXJCY9zapeWsp17mua8XInnLjvV9cmyhobZFzcU1xU1N06L
+    S96VEWtWP+xsavuz1n6j7d4O6VTbmE9/ngFGLf/m2MaX2pZHTTi8+WDPhDOZcS0/
+    vTXhbW9H0sctQ4rTW4ZW5T1e0XkNbw/ElG8e3jFRiuxobjj5qOLWj+t/PZS+NDTy
+    TfNdsGJO2j4r8fULyqZNx9a8M37Wg7Q5q2b2q7j9vT20I3pBHduSk6ZcWjc4c2JC
+    a/f9YNnv1YltXed/w/GrV536XJ3XPVZZ1LVhb+2Ng7PXd2d2J2bPDAxp5d05pSNW
+    +m/Gxx7fdcA5B3t2P9x24mxmmvxLSX31tVE9f7xSf8lXMejuEfVxz573Php915ry
+    qq/Dl35v1q2a6yv7xHc3xH03s8iw+3hTxm2IbR969LSnyhn86OKN9S2Tnq/IOr41
+    XOiM9lYu/+DyHT7X4x15YEHr9ITFTVfP9WTFTn1hwKHO4WcjA3x02e2eJKm8eeNn
+    dHz7lQVHPWzG5FUj9pePH/ZDxhf+xdVXb5RV7Zma1e96TXXMLunk5ZRJ48Y2nh4+
+    b3Ed7ewa/WJZUt3f0zNA5bYp2dEPmg519t/HJ3vXHtiZ+GHkvC/wV2P+/qVZ0wZJ
+    W8nXV9ccqd3SEapP3+1trsJffvtoTcwO2rcwnIwbI+2DWvduvnW/pL2p+HD/CyUJ
+    leXXQM1rZ6qWRK5I+Q/X1c4dWJO9JOkf
+    =fAU2
+    -----END PGP MESSAGE-----
+
+    And finally, I am proving ownership of this host by posting or
+    appending to this document.
+
+    View my publicly-auditable identity here: https://keybase.io/oscrx
+
+    ==================================================================
+    ==================================================================
+    https://keybase.io/oscrx
+    --------------------------------------------------------------------
+
+    I hereby claim:
+
+      * I am an admin of https://oscarr.nl
+      * I am oscrx (https://keybase.io/oscrx) on keybase.
+      * I have a public key with fingerprint A707 B3FA B275 E7AA 3237  110A 64B8 39C1 7E31 F151
+
+    To do so, I am signing this object:
+
+    {
+      "body": {
+        "key": {
+          "eldest_kid": "010160dd78887488b3af3441f3353eecba2c3605e153458ad3a604e4bb200c608d690a",
+          "fingerprint": "a707b3fab275e7aa3237110a64b839c17e31f151",
+          "host": "keybase.io",
+          "key_id": "64b839c17e31f151",
+          "kid": "0101c914f4ca8c21e734d4a3f2e41ae2b65895d5de8538d92486b76d018f59913dcd0a",
+          "uid": "66c275e0c0a05383be44f1c121255419",
+          "username": "oscrx"
+        },
+        "merkle_root": {
+          "ctime": 1683637544,
+          "hash_meta": "7e539d4f31e34f872e763e5bd22c2eee8edc9874dd626bcc92a471e82f911855",
+          "seqno": 24430020
+        },
+        "revoke": {
+          "sig_ids": [
+            "54372325ed018e7704ddac4bb6dddb44b55db2882faa2abf5dc5affee960334f0f"
+          ]
+        },
+        "service": {
+          "hostname": "oscarr.nl",
+          "protocol": "https:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+      },
+      "ctime": 1683637610,
+      "expire_in": 157680000,
+      "prev": "077949f3250d101fe91b3eb74e09e174bfa293763549329499a1d6f57dbd30be",
+      "seqno": 90,
+      "tag": "signature"
+    }
+
+    which yields the signature:
+
+    -----BEGIN PGP MESSAGE-----
+
+    owFtU2lsVUUUbmmxUNogSl5pgmhvIGWpOOtdHpTKUhRNEVARrOUx987c19flvXLf
+    7RZola2lKhFkkYKiEKFYLY1StDUYKaGgLGIiFC2KFIFCGoNAYtBg6twqISbOn8mc
+    +c53vvOdmXXJcTGDYnmr0V4Nb8yNPX7NjOEvZoeXKmaEVyr+pUqh6N9EERdRN1AY
+    4opfARBAFXCu6bquEV03MbMxIdDGmGIhLJMhC6uACkgxoTrjmKmACGKaCABLBTpX
+    DcCUDMUOhYPCKXFCYVfSMg1oJraZiTQqNMYwwhqEgKnE1LFhQU1gaEMKZWJ+JOpl
+    SHEmi4qJoYiMyUOgX97/4O/ptgxIbGIx3UJQaJhwwrCNBIFMIFOlukE55UKnWOcG
+    IrpqaioHULepYUDMLd6vu/SfOqrlKQUWYEDisSkIsaEFEUSUEmh4wKhwwqxYSHQk
+    ajkVSlWGUiycwiIRcCIR13PWckPePVR1rGKNEiK7Y9H8QLFwmUzTBMUGJzaGAhNb
+    15DQVCyoyRGykBBCF9wy5BQ4V5FqWpaBGNGg0JFtQKhTKkVExZJwRPEjQjAACEgJ
+    jiiLFAqvejQUlKZFFX+uQgnWED7oICq8joWmAcnKLDk2lXNuEmJSyk2kS27GEDNt
+    yi3KbFsIQwVYqgO2klfl1XPKQlY/vTene/0zx5kYLpKKSpyIG7EiRTKc77olUb/n
+    i1tZ4uHKhRn4lyFghsJcPhGZUSacaCgSlj5J5H8tUyHIUERFScgRgZCHoJqqA7m8
+    OqLMm7umGcSwMaKAyydgCwOaWJgaEcAQUCOmzZAhiTAlBkYSajDIVZtq3OQYmOKe
+    h4YkdVlQckrjwswtdYRSlVg3AMfHxA6KeciXFt+QsO/PT0p7GpE2LPHutxo4wPtT
+    MYmD778bydo4tK8iqak4MnbxtRuHcc/mW3vbhvTOavju1Oyc7turXyq7PD0zLemV
+    M7GXj0SPPh1Nf4aPnb5jXnJSyrrdoccqt4VD71+d80ZyF1Audd8qOL8ic+Fq397j
+    q9be7GZnyyfX73n+2+25feNeLe2Ys+/jO229LfGpJ/JOzMvuTB9zYHzfk12HG3LO
+    pyxfk5r/RfvIZZvEgPqVn50PF7V3Zq7t4Wdqqlo2Pb674eFd3+9/a/6sjTcvXNyy
+    0q1M2zouY+Tc7J6zSUOqr7dun5QxdExRWeKM2mDtomXnyrduyJi/K+tkeeWDddnl
+    Ax8ZHvfBFV0pssIpVsHQr5Y6m6cV+mZO7ikI/Fhc/Vf8zobRY5qHFbenH9kZ9q/6
+    pbG1pmZm6vyNEzqv1i/4Iz94rO2BgwkJwWXnOhsn9rKE1h3f3PeRdfT0Dp77O++e
+    kLW+AObnbWgePopc7DrRfNHX3rbGD0eddsZXTVvknimNuZ05e0ZjTVf9gSmHfb79
+    gJ5a/3oerHs2ZXHquetkueNP83fUTvo084WcQTVTWsqr67/eFvfuc8m+BbNWTxjy
+    cjAO4MxDuC9hX8eS3sU5H753DFxqaqj9Qb82NZCK3JMX3vw89/it6XpcGvjJSN81
+    d+ajyxdenao98aXS4o5e05a+pGlq6ewO9Ur3b9aKn5vbK95O21NSlzD8zqHJTx0Y
+    7H8HT7syImtE54KmLa9t+rXsbw==
+    =nNk6
+    -----END PGP MESSAGE-----
+
+    And finally, I am proving ownership of this host by posting or
+    appending to this document.
+
+    View my publicly-auditable identity here: https://keybase.io/oscrx
+
+    ==================================================================
+    ==================================================================
+    https://keybase.io/oscrx
+    --------------------------------------------------------------------
+
+    I hereby claim:
+
+      * I am an admin of https://devopscar.nl
+      * I am oscrx (https://keybase.io/oscrx) on keybase.
+      * I have a public key with fingerprint A707 B3FA B275 E7AA 3237  110A 64B8 39C1 7E31 F151
+
+    To do so, I am signing this object:
+
+    {
+      "body": {
+        "key": {
+          "eldest_kid": "010160dd78887488b3af3441f3353eecba2c3605e153458ad3a604e4bb200c608d690a",
+          "fingerprint": "a707b3fab275e7aa3237110a64b839c17e31f151",
+          "host": "keybase.io",
+          "key_id": "64b839c17e31f151",
+          "kid": "0101c914f4ca8c21e734d4a3f2e41ae2b65895d5de8538d92486b76d018f59913dcd0a",
+          "uid": "66c275e0c0a05383be44f1c121255419",
+          "username": "oscrx"
+        },
+        "service": {
+          "hostname": "devopscar.nl",
+          "protocol": "https:"
+        },
+        "type": "web_service_binding",
+        "version": 1
+      },
+      "ctime": 1683637653,
+      "expire_in": 157680000,
+      "prev": "fea7e47688f514185ef27e2ad719d616a994113fa29ca0d99ca8da19f5926cdc",
+      "seqno": 91,
+      "tag": "signature"
+    }
+
+    which yields the signature:
+
+    -----BEGIN PGP MESSAGE-----
+
+    owFtVG1MFEcYPr5ycK2eUMRWiwmrafHgdGe/9xQkQRGJ1QAtEYO9zu7OHlvOu2P3
+    uIIoVg39MMBhUVNTKDEVtGDSC9KWYvADTcBApQkU09ICtRBTjG0gaaUI2D2q6Z/O
+    j5nMO8/zvM/7zmRql4UZIkOkDv5GBZjODun7TTBI+7afLccEt1SG2cqxIrS0IKeE
+    NK+9SJEwG4YDHDC4JLEcx7EUxwkklEmKAjJJ0iRCogAJkWRwGgGapGgOSiRkcApR
+    gkDguMjgnMTwOMSSMVlxOZDqURWXV5eFLM4KpAwFgqURCyFJkCwAOGQogSN5EbCI
+    BDKggU4sdGtBhm5OgBraqLj1mL6xL9n7H/x/vkUeUDIlQk4kAGJJSqIgKROIAhAR
+    AkNzPC3REuJokpN4guIYgWUkHHAyzfOAlERpyXfJv3kYMegUF3GI63hSQBQlAxEQ
+    gKBpCvBBoIZUFzyAdLRbE9VS7HAypod8ioiCXQ2W8fRYQj63RxOhutHl1Ike1e11
+    i26nflLo9Xo0W5DpLfMEoe8gwf5UxC4oLklvos7wIVVT3C7MBnSk6FWCqoDhSIZk
+    GZpMxlCpR1GRXQkiaJbhcH0E8yCfLikjyCJKj3J5Mg0owNFIJlhEQIkFvMQABvI8
+    BYB+OQQvQlzi9ZmTIOD1vhCMKIlYsK5ilxuz8UA3Ch26qKY4XNBboiLssOnDUDLc
+    EBJpiI9LCL9gvDzXVnK/hWCjTc9eXkRo8NkZTFErnkVqvzMvxA91c2PmgpitPtx/
+    LNBrSe1p6Hw4sGH19bLzxozAeff2JJ/zs017Tbmm2W+rjYaw6np0cXjLltNVlY9m
+    rEdOWwvHA3V55oPzl9JWd9Q8uTY2R49B7DkrPFObV29KnKVfDT/6TXxXW6//x/mi
+    LiHv6id06eKavsTnY+/GDV7bKQx3Rw3XfhQad7jpFGm7FbYhYSh61b72ueM9f+V3
+    DAyux2hpYdixuC1r0bH/yYG2hxMv7s7n68atd8iMnMfGqYKUtkpH2ss2OtoQtqIn
+    888995NiA+c2HV0z4Fd/XeTS0wmm8muD/YuKHb/Pd97cPJHf9p7p7Uv0SM7fyx88
+    OHkuoiCjM2awtaFvbXcVMm5mj6vLtMs1FzT71kB6rnOn5UpVmX+yv2OEjb1tNLc0
+    /pLd1Gi7NWH2tI5Gv3Kkrrnoj0Nf7uhXTAPl7+ZGzFaPR45Ysiino+aDgt74K7ss
+    +xNuZx16M9NinbnoO/X5+pIGWZ65c+/Eyvebbm7T5OLXXjobNWNbPp7SntT88Qu9
+    jx+l1Wd99frkUM5ukHAscyWltqzNX4cv/LCn1jKV6okJG+kO5LbjnT8lWQdHuD77
+    rpPNo7ModbTY4Hf69c+kOONGXI/Ln29unKzw3jVNvtH/6dT091fV8awzbzVMrzMl
+    nGjFrZPZq4oT835O6YAWb6W492DX9Xv/AA==
+    =aald
+    -----END PGP MESSAGE-----
+
+    And finally, I am proving ownership of this host by posting or
+    appending to this document.
+
+    View my publicly-auditable identity here: https://keybase.io/oscrx
+
+    ==================================================================

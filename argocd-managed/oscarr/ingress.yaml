@@ -1,0 +1,82 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: static-files
+spec:
+  selector:
+    app: static-files
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: security-txt
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Path(`/.well-known/security.txt`)
+      kind: Rule
+      priority: 100 # high prio to overwrite any ingressroute
+      middlewares:
+        - name: security-txt-redirect
+        - name: security-headers
+      services:
+        - name: static-files
+          port: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: security-txt-redirect
+spec:
+  redirectRegex:
+    regex: .*
+    replacement: https://oscarr.nl/.well-known/security.txt
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: keybase-txt
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`oscarr.nl`, `0scar.nl`, `devopscar.nl`) && Path(`/.well-known/keybase.txt`, `/keybase.txt`)
+      kind: Rule
+      middlewares:
+        - name: keybase-txt-redirect
+        - name: security-headers
+      services:
+        - name: static-files
+          port: 80
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: keybase-txt-redirect
+spec:
+  redirectRegex:
+    regex: https://(.*).nl/keybase.txt
+    replacement: https://${1}.nl/.well-known/keybase.txt
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: security-headers
+spec:
+  headers:
+    stsSeconds: 31536000
+    # stsIncludeSubdomains: true
+    # stsPreload: true
+    # generated with https://report-uri.com/home/generate
+    contentSecurityPolicy: default-src 'none'; img-src 'self'; frame-ancestors 'none'; form-action 'none'; base-uri 'none'
+    referrerPolicy: no-referrer
+    contentTypeNosniff: true
+    frameDeny: true
+    # generated with https://www.permissionspolicy.com/
+    permissionsPolicy: accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), cross-origin-isolated=(), display-capture=(), document-domain=(), encrypted-media=(), execution-while-not-rendered=(), execution-while-out-of-viewport=(), fullscreen=(), geolocation=(), gyroscope=(), keyboard-map=(), magnetometer=(), microphone=(), midi=(), navigation-override=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), sync-xhr=(), usb=(), web-share=(), xr-spatial-tracking=(), clipboard-read=(), clipboard-write=(), gamepad=(), speaker-selection=(), conversion-measurement=(), focus-without-user-activation=(), hid=(), idle-detection=(), interest-cohort=(), serial=(), sync-script=(), trust-token-redemption=(), window-placement=(), vertical-scroll=()

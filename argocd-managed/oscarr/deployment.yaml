@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: static-files
+spec:
+  selector:
+    matchLabels:
+      app: static-files
+  replicas: 2
+  revisionHistoryLimit: 0
+  template:
+    metadata:
+      labels:
+        app: static-files
+    spec:
+      containers:
+        - name: nginx
+          image: joseluisq/static-web-server:2.16.0
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: static-files
+              mountPath: /public/.well-known/
+          resources:
+            requests:
+              cpu: "10m"
+              memory: "16Mi"
+            limits:
+              cpu: "10m"
+              memory: "16Mi"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+          securityContext:
+            allowPrivilegeEscalation: false
+            # TODO
+            # runAsNonRoot: true
+            # capabilities:
+            #   drop: ["ALL"]
+            seccompProfile:
+              type: RuntimeDefault
+      volumes:
+        - name: static-files
+          configMap:
+            name: static-files
+            items:
+            - key: security.txt
+              path: security.txt
+            - key: keybase.txt
+              path: keybase.txt
