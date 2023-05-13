@@ -1,0 +1,67 @@
+# This is a static pod placed in /etc/kubernetes/manifests
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: haproxy
+  namespace: kube-system
+spec:
+  initContainers:
+    - name: config
+      image: alpine
+      command:
+        - sh
+        - -c
+      args:
+        - |
+          cat <<EOF > /workdir/haproxy.cfg
+          defaults
+              log stdout format short daemon
+              log stderr format short daemon notice
+              retries          1
+              timeout queue    20s
+              timeout connect  5s
+              timeout client   20s
+              timeout server   20s
+              timeout check    10s
+
+          frontend apiserver
+              bind :::6000
+              mode tcp
+              option tcplog
+              default_backend apiserver
+
+          backend apiserver
+              mode tcp
+              option httpchk GET /healthz
+              http-check expect status 200
+              option ssl-hello-chk
+              balance roundrobin
+              server k8s-1 fdd3:a7d6:38c5::3:6443 check fall 3 rise 2
+              server k8s-2 fdd3:a7d6:38c5::7:6443 check fall 3 rise 2
+              server k8s-3 fdd3:a7d6:38c5::8:6443 check fall 3 rise 2
+          EOF
+      volumeMounts:
+        - name: workdir
+          mountPath: /workdir
+  containers:
+    - name: haproxy
+      resources:
+        requests:
+          cpu: 10m
+          memory: 50Mi
+        limits:
+          cpu: 50m
+          memory: 200Mi
+      image: haproxy:2.7.8
+      volumeMounts:
+        - name: workdir
+          mountPath: /usr/local/etc/haproxy
+  hostNetwork: true
+  priorityClassName: system-node-critical
+  securityContext:
+    seccompProfile:
+      type: RuntimeDefault
+  volumes:
+    - name: workdir
+      emptyDir: {}
