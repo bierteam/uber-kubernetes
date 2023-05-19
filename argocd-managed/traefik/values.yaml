@@ -1,4 +1,4 @@
-# https://github.com/traefik/traefik-helm-chart/blob/v21.1.0/traefik/values.yaml
+# https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml
 traefik: # set values for wrapper/umbrella chart
   deployment:
     kind: DaemonSet
@@ -8,7 +8,10 @@ traefik: # set values for wrapper/umbrella chart
       hostPort: 80
       redirectTo: websecure
     websecure:
+      # asDefault: true # supported in Traefik v3
       hostPort: 443
+      http3:
+        enabled: true
       #`TODO validate this default config`
       # middlewares:
       #   - security-headers@misc
@@ -23,7 +26,7 @@ traefik: # set values for wrapper/umbrella chart
     dashboard:
       enabled: false
 
-  # workaround to use traefik as DaemonSet instead of Deployment
+  # Workaround to use traefik as DaemonSet instead of Deployment
   updateStrategy:
     rollingUpdate:
       maxUnavailable: 1
@@ -36,3 +39,7 @@ traefik: # set values for wrapper/umbrella chart
       enabled: true
   
   priorityClassName: system-cluster-critical
+
+  tlsOptions:
+    default:
+      minVersion: VersionTLS13
