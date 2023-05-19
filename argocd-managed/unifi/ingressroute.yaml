@@ -1,5 +1,5 @@
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: unifi-ui
@@ -15,7 +15,7 @@ spec:
           serversTransport: insecure
           scheme: https
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: unifi-inform
@@ -29,7 +29,7 @@ spec:
         - name: unifi
           port: 8080
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: ServersTransport
 metadata:
   name: insecure

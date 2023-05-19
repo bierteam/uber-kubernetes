@@ -22,7 +22,7 @@ spec:
     - port: 443
       targetPort: 8006
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: proxmox
@@ -44,7 +44,7 @@ spec:
           passHostHeader: true
           serversTransport: insecure
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: proxmox-redirect
@@ -60,7 +60,7 @@ spec:
         - name: noop@internal
           kind: TraefikService
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: proxmox-redirectregex

@@ -11,7 +11,7 @@ spec:
     - port: 80
       targetPort: 80
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: security-txt
@@ -29,7 +29,7 @@ spec:
         - name: static-files
           port: 80
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: security-txt-redirect
@@ -38,7 +38,7 @@ spec:
     regex: .*
     replacement: https://oscarr.nl/.well-known/security.txt
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: keybase-txt
@@ -55,7 +55,7 @@ spec:
         - name: static-files
           port: 80
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: Middleware
 metadata:
   name: keybase-txt-redirect
