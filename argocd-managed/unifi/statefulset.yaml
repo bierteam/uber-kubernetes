@@ -24,7 +24,7 @@ spec:
               value: "1000"
             - name: PUID
               value: "1000"
-          image: "linuxserver/unifi-controller:7.4.156"
+          image: "linuxserver/unifi-controller:7.4.162"
           name: unifi
           ports:
           # https://help.ui.com/hc/en-us/articles/218506997-UniFi-Network-Required-Ports-Reference
