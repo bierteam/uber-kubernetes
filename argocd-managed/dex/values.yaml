@@ -73,8 +73,14 @@ dex: # set values for wrapper/umbrella chart
         redirectURIs:
           - https://headscale.oscarr.nl:443/oidc/callback
 
-      - id: oauth2-proxy
-        name: "Oauth2 Proxy"
-        secretEnv: OAUTH2_PROXY_CLIENT_SECRET
+      - id: proxy-oscarr
+        name: "Oauth2 Proxy oscarr.nl"
+        secretEnv: PROXY_OSCARR_CLIENT_SECRET
         redirectURIs:
           - https://proxy.lab.oscarr.nl/oauth2/callback
+
+      - id: proxy-bruinsma
+        name: "Oauth2 Proxy bruinsma.it"
+        secretEnv: PROXY_BRUINSMA_CLIENT_SECRET
+        redirectURIs:
+          - https://login.bruinsma.it/oauth2/callback
