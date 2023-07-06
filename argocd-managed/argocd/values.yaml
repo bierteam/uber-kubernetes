@@ -24,7 +24,7 @@ argo-cd: # set values for wrapper/umbrella chart
       # https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/#traefik-v22
       server.insecure: true
     rbac:
-      policy.default: 'role:admin'
+      policy.default: "role:admin"
       policy.csv: |
         p, role:org-admin, applications, *, */*, allow
         p, role:org-admin, clusters, get, *, allow
