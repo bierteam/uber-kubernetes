@@ -17,6 +17,12 @@ spec:
     path: argocd-managed/{{ $application.folder | default $application.name }}
     repoURL: https://github.com/bierteam/uber-kubernetes.git
     targetRevision: HEAD
+    {{- if $application.valuesFile }}
+    helm:
+      valueFiles:
+        - {{ $application.valuesFile | toString }}
+        # - "values-test.yaml"
+    {{- end }}
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
