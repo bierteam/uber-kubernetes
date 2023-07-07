@@ -1,0 +1,16 @@
+variant: oscarr
+oauth2-proxy:
+  config:
+    existingSecret: oauth2-proxy-secrets
+    configFile: |-
+      reverse_proxy = true
+      email_domains = [ "*" ]
+      upstreams = [ "static://202" ]
+      provider = "oidc"
+      provider_display_name = "auth.oscarr.nl"
+      oidc_issuer_url = "https://auth.oscarr.nl"
+      code_challenge_method = "S256"
+      silence_ping_logging = true
+      redirect_url = "https://proxy.lab.oscarr.nl/oauth2/callback"
+      cookie_domains = [ ".oscarr.nl" ]
+      whitelist_domains = [ ".oscarr.nl" ]

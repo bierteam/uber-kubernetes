@@ -1,36 +1,47 @@
-# ---
-# kind: Endpoints
-# apiVersion: v1
-# metadata:
-#   name: octoprint
-# subsets:
-#   - addresses:
-#       - ip: 192.168.178.240
-#     ports:
-#       - port: 5000
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: octoprint
+subsets:
+  - addresses:
+      - ip: 192.168.178.240
+    ports:
+      - port: 5000
 
-# ---
-# kind: Service
-# apiVersion: v1
-# metadata:
-#   name: octoprint
-# spec:
-#   clusterIP: None
-#   ports:
-#     - port: 80
-#       targetPort: 5000
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: octoprint
+spec:
+  clusterIP: None
+  ports:
+    - port: 80
+      targetPort: 5000
 
-# ---
-# apiVersion: traefik.containo.us/v1alpha1
-# kind: IngressRoute
-# metadata:
-#   name: octoprint
-# spec:
-#   entryPoints:
-#     - websecure
-#   routes:
-#     - match: Host(`octo.bruinsma.it`)
-#       kind: Rule
-#       services:
-#         - name: octoprint
-#           port: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: octoprint
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`octo.bruinsma.it`)
+      kind: Rule
+      middlewares:
+        - name: proxy-bruinsma
+      services:
+        - name: octoprint
+          port: 80
+
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: proxy-bruinsma
+spec:
+  forwardAuth:
+    address: http://oauth2-proxy.proxy-bruinsma

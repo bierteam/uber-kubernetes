@@ -1,0 +1,18 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: oath-proxy
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      {{ if eq .Values.variant "oscarr" }}
+      match: Host(`proxy.lab.oscarr.nl`) || HostRegexp(`{subdomain:.*}.oscarr.nl`) && PathPrefix(`/oauth2/`)
+      {{ else if eq .Values.variant "bruinsma" }}
+      match: Host(`login.bruinsma.it`) || HostRegexp(`{subdomain:.*}.bruinsma.it`) && PathPrefix(`/oauth2/`)
+      {{ end }}
+      services:
+        - name: oauth2-proxy
+          port: 80

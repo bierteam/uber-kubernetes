@@ -34,3 +34,9 @@ argocdApps:
   - name: unifi
   - name: valheim
   - name: oscarr
+  - name: proxy-oscarr
+    folder: oauth2-proxy
+    valuesFile: values-oscarr.yaml
+  - name: proxy-bruinsma
+    folder: oauth2-proxy
+    valuesFile: values-bruinsma.yaml

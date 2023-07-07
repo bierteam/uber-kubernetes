@@ -50,7 +50,7 @@ spec:
           configMap:
             name: static-files
             items:
-            - key: security.txt
-              path: security.txt
-            - key: keybase.txt
-              path: keybase.txt
+              - key: security.txt
+                path: security.txt
+              - key: keybase.txt
+                path: keybase.txt

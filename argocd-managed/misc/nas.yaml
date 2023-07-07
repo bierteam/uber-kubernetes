@@ -17,7 +17,7 @@ metadata:
 spec:
   clusterIP: None
   ports:
-    - port: 443
+    - port: 5001
       targetPort: 5001
 
 ---
@@ -33,4 +33,4 @@ spec:
       kind: Rule
       services:
         - name: nas
-          port: 443
+          port: 5001
