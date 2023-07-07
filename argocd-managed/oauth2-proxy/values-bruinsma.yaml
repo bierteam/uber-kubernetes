@@ -1,5 +1,6 @@
 variant: bruinsma
 oauth2-proxy:
+  fullnameOverride: oauth2-proxy
   config:
     existingSecret: oauth2-proxy-secrets
     configFile: |-
