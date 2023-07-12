@@ -144,7 +144,7 @@ spec:
     spec:
       containers:
         - name: ninoo-nl
-          image: joseluisq/static-web-server:2.19.0
+          image: joseluisq/static-web-server:2.20.0
           ports:
             - containerPort: 80
           volumeMounts:
