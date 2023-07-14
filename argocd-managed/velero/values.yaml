@@ -1,0 +1,52 @@
+# https://github.com/vmware-tanzu/helm-charts/blob/main/charts/velero/values.yaml
+velero: # set values for wrapper/umbrella chart
+  extraObjects:
+    # There is a chicken and egg issue here (again xd) with SealedSecrets
+    # use the plain secret below for restores and create an extra api key on: 
+    # https://secure.backblaze.com/app_keys.htm
+    # after that you can restore the sealed secret private keys from the backup
+    # and after that you can deploy sealed secrets itself and argocd
+    # - apiVersion: v1
+    #   kind: Secret
+    #   metadata:
+    #     name: velero-secret
+    #   stringData:
+    #     config: |
+    #       [default]
+    #       aws_access_key_id=<KeyID>
+    #       aws_secret_access_key=<ApplicationKey>
+    - apiVersion: bitnami.com/v1alpha1
+      kind: SealedSecret
+      metadata:
+        name: velero-secret
+        namespace: velero
+      spec:
+        encryptedData:
+          config: AgCHXhfqRXHg68eLL2HozR7WY/oMUAfkKrFGZqeUGi0YsaV7DY7rkG2r1k+enD+bpOXSpNCabtBEKl+Un3QeDLdnGEURnfRu34Xdb9Bxe8pWs50FrpYzCorFW/TJG2qLIQ/KjXcw43Cq0GxcdNRyWr8zS7w/zBtzzEwGbgcbuI5OFfQ3kp8i86T8A1Enzx7ys7iu+khnnVuQEPysXulyzS1VpNTOfCJLIgvXJPTKVb6hwsn7Q1vqViFdXGhfSSIAWgBdYvxz495aezyAIYhpGSLRvp9JtXD9YeRDvlVxFn/WA/WrNU0zYBFMcdW3Wz8l2IhdUuvPW9cPU5Hv1RxCzGAkeSeFjhr/xV1TXGCO/1zidm9oEKH1uzl3RrPfXJFDZ96hVaS4i4dTtuYKK/oFuP06at9EYgTkTaT5uYrQtQxfgagMsn0D+8IF83O6206CCJJYGxZNWS8Wv8RoxxVJ5mZkxkPWUBnWS5SbvJ97LWWHLLPsQE+6YY4GVTKIhoat+8dmR6jvRqCAS5mP+/ZBHyTlFttUPKtqQMHl5QuO4txNLRFrh0FtTVfK3i+40VxJV9Eq6Ane4DPyJjiwKux9zhoI5cz40S1iwI4ieAtPP/2rMu+MhsoHCU0HZxbTfaS/KX9gCAhC0iUSUmeol8H+qsVB933vPgHOCPPZa14YQ1TfX3KYnKCt/b4ujJAgR8EWofP8UA+WiDK9xnvOPLYAr4UyUKLpGmPSBWODzxGCTZMZMES3t0Etd3jVz+KvvhKTr1F8vr+yECyN7Iilzdeam/8A5D3CoI+9uC2mD3QF9qX/WSgMXfGiDDaEQIthUWGWU5sHh9Do3lXJMkLT+tA=
+  configuration:
+    existingSecret: true
+    snapshotsEnabled: false
+    volumeSnapshotLocation: []
+    backupStorageLocation:
+      - provider: aws
+        bucket: uber-kubernetes-backup
+        credential:
+          name: velero-secret
+          key: config
+        config: 
+          region: backblaze
+          s3ForcePathStyle: true
+          s3Url: https://s3.eu-central-003.backblazeb2.com
+  initContainers:
+    - name: velero-plugin-for-aws
+      image: docker.io/velero/velero-plugin-for-aws:v1.7.0
+      imagePullPolicy: IfNotPresent
+      volumeMounts:
+        - mountPath: /target
+          name: plugins
+  schedules:
+    nightly:
+      schedule: "0 3 * * *"
+      template:
+        storageLocation: default
+        ttl: "720h"
