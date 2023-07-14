@@ -40,3 +40,4 @@ argocdApps:
   - name: proxy-bruinsma
     folder: oauth2-proxy
     valuesFile: values-bruinsma.yaml
+  - name: velero

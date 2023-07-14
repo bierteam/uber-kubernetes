@@ -1,1 +1,7 @@
-helm upgrade --install traefik traefik/traefik --version 18.1.0 -n traefik --values values.yaml --set installCRDs=true
+# Installing
+
+```shell
+helm dependency update
+helm template traefik --values values.yaml --namespace traefik . > tmp.yaml
+kubectl apply -f tmp.yaml --namespace traefik
+```
