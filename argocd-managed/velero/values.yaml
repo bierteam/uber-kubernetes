@@ -27,6 +27,7 @@ velero: # set values for wrapper/umbrella chart
     existingSecret: true
     snapshotsEnabled: false
     volumeSnapshotLocation: []
+    storeValidationFrequency: 15m
     backupStorageLocation:
       - provider: aws
         bucket: uber-kubernetes-backup
