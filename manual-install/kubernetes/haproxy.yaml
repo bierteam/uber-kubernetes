@@ -21,8 +21,8 @@ spec:
               retries          1
               timeout queue    20s
               timeout connect  5s
-              timeout client   20s
-              timeout server   20s
+              timeout client   600s
+              timeout server   600s
               timeout check    10s
 
           frontend apiserver
