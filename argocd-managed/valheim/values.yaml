@@ -1,4 +1,4 @@
-# https://github.com/Addyvan/valheim-k8s/blob/valheim-k8s-1.2.0/chart/values.yaml
+# https://github.com/Addyvan/valheim-k8s/blob/main/chart/values.yaml
 valheim-k8s: # set values for wrapper/umbrella chart
   worldName: mistlands
   serverName: Gamedust

@@ -7,7 +7,7 @@ metadata:
   name: drinkn-frontend-v1
 spec:
   replicas: 2
-  revisionHistoryLimit: 5
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app: drinkn-frontend-v1

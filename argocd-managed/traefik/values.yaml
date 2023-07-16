@@ -2,6 +2,7 @@
 traefik: # set values for wrapper/umbrella chart
   deployment:
     kind: DaemonSet
+    revisionHistoryLimit: "0"
 
   ports:
     web:

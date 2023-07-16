@@ -5,6 +5,7 @@ metadata:
   name: html-deployment
 spec:
   replicas: 2
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app: html

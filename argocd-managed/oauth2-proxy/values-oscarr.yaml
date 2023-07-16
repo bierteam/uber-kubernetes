@@ -1,5 +1,7 @@
 variant: oscarr
-oauth2-proxy:
+# https://github.com/oauth2-proxy/manifests/blob/main/helm/oauth2-proxy/values.yaml
+oauth2-proxy: # set values for wrapper/umbrella chart
+  revisionHistoryLimit: "0"
   fullnameOverride: oauth2-proxy
   config:
     existingSecret: oauth2-proxy-secrets
