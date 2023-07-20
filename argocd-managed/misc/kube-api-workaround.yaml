@@ -1,0 +1,38 @@
+# This is only meant to circumvent firewalls
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: kube-api
+  namespace: kube-system
+spec:
+  type: ClusterIP
+  selector:
+    component: kube-apiserver
+  ports:
+    - port: 6443
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: kube-api
+  namespace: kube-system
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`kubernetes.oscarr.nl`)
+      kind: Rule
+      services:
+        - name: kube-api
+          port: 6443 # direct connection to a random kube-api pod
+          scheme: https
+          serversTransport: insecure # vpn ip's are not included in the certificate
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: insecure
+  namespace: kube-system
+spec:
+  insecureSkipVerify: true
