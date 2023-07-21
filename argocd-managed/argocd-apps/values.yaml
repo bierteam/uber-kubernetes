@@ -41,8 +41,5 @@ argocdApps:
     folder: oauth2-proxy
     valuesFile: values-bruinsma.yaml
   - name: velero
-<<<<<<< HEAD
     podSecurity: privileged
-=======
   - name: prometheus
->>>>>>> 92481ea (Add prometheus stack)
