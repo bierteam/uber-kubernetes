@@ -5,9 +5,12 @@ cilium: # set values for wrapper/umbrella chart
     name: ubernerds
   hubble:
     enabled: false
-  ipam:
-    mode: kubernetes
   ipv4:
     enabled: true
   ipv6:
-    enabled: false
+    enabled: true
+  kubeProxyReplacement: strict
+  k8sServiceHost: localhost
+  k8sServicePort: 6000
+  hostPort:
+    enabled: true
