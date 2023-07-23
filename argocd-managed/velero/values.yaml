@@ -38,7 +38,6 @@ velero: # set values for wrapper/umbrella chart
           region: backblaze
           s3ForcePathStyle: true
           s3Url: https://s3.eu-central-003.backblazeb2.com
-  deployNodeAgent: true
   initContainers:
     - name: velero-plugin-for-aws
       image: docker.io/velero/velero-plugin-for-aws:v1.7.0
@@ -46,6 +45,21 @@ velero: # set values for wrapper/umbrella chart
       volumeMounts:
         - mountPath: /target
           name: plugins
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  deployNodeAgent: true
+  nodeAgent:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
   schedules:
     nightly:
       schedule: "0 3 * * *"
