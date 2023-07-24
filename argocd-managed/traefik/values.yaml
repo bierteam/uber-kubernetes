@@ -13,9 +13,8 @@ traefik: # set values for wrapper/umbrella chart
       hostPort: 443
       http3:
         enabled: true
-      #`TODO validate this default config`
-      # middlewares:
-      #   - security-headers@misc
+      middlewares:
+        - traefik-hsts@kubernetescrd
     unifi-inform:
       hostPort: 8080
       port: 8080
