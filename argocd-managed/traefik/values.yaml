@@ -4,12 +4,25 @@ traefik: # set values for wrapper/umbrella chart
     kind: DaemonSet
     revisionHistoryLimit: "0"
 
+  image:
+    tag: v3.0
+  experimental:
+    v3:
+      # -- Enable traefik version 3
+      enabled: true
+    kubernetesGateway:
+      # -- Enable traefik experimental GatewayClass CRD
+      enabled: false
+      gateway:
+        # -- Enable traefik regular kubernetes gateway
+        enabled: true
+
   ports:
     web:
       hostPort: 80
       redirectTo: websecure
     websecure:
-      # asDefault: true # supported in Traefik v3
+      asDefault: true
       hostPort: 443
       http3:
         enabled: true
