@@ -17,3 +17,4 @@ spec:
     warn: false
   sourceRepos:
     - https://github.com/bierteam/uber-kubernetes.git
+    - https://github.com/bierteam/drinkn.git
