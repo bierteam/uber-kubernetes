@@ -1,0 +1,2 @@
+# The templating braces are meant for ArgoCD and not helm
+{{ .Files.Get "files/applicationset-drinkn.yaml" }}

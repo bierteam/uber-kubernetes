@@ -1,0 +1,71 @@
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: drinkn
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ['missingkey=invalid']
+  generators:
+    - pullRequest:
+        github:
+          owner: bierteam
+          repo: drinkn
+          tokenRef:
+            secretName: github-token
+            key: token # prevent rate limiting
+          labels:
+            - preview
+        requeueAfterSeconds: 1800
+  template: # https://argo-cd.readthedocs.io/en/release-2.7/operator-manual/applicationset/Generators-Pull-Request/#template
+    metadata:
+      name: 'drinkn-pr-{{ .number }}'
+      labels:
+        app.kubernetes.io/instance: drinkn
+      annotations:
+        link.argocd.argoproj.io/external-link: 'https://github.com/bierteam/drinkn/pull/{{ .number }}'
+    spec:
+      destination:
+        namespace: 'drinkn-pr-{{ .number }}'
+        name: 'in-cluster'
+      project: restricted
+      source:
+        repoURL: 'https://github.com/bierteam/drinkn.git'
+        targetRevision: '{{ .branch }}'
+        path: charts/drinkn
+        helm:
+          parameters:
+            - name: image.tag
+              value: 'sha-{{ .head_short_sha_7 }}'
+            - name: fqdn
+              value: 'drinkn-pr-{{ .number }}.lab.oscarr.nl'
+            - name: pr.enabled
+              value: 'true'
+            - name: pr.number
+              value: '{{ .number }}'
+            - name: pr.ref
+              value: '{{ .branch }}'
+            - name: replicas
+              value: '1'
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+        managedNamespaceMetadata:
+          labels:
+            pod-security.kubernetes.io/warn: restricted
+            pod-security.kubernetes.io/enforce: baseline
+        syncOptions:
+          - CreateNamespace=true
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: github-token
+  namespace: argocd
+  annotations:
+    a8r.io/description: "Expires on Wed, Aug 7 2024. https://github.com/settings/tokens?type=beta"
+spec:
+  encryptedData:
+    token: AgC7pZfL5b+XPpkNGlClayocdOXD5dVkMLhOGJYVTV097b3Om2sFANA82woIWZkPcl90lBBYKA/Ldlkt0MRHfQU0pTQVy6ovsJxs47mHSsZ+Z4IpmrZ4LE5whkrzLNXAqpHd886JvSpjL+uHSX/FJ1qQamQlt4cIHoIfGAK1zN+7jFwV72ECAc5bEtrGytXI0wapED8F93naBaFhaZDde4/LXIq3A5+/X9x6hj4i+a95ydXKLdHiU9DucOcCXWK+TO2f8Lh63/5UtPPPnlV/diwuMsE5CxrW0t6hKuKygi7C9L/zQEuBITOuo0Ee72lKbyP6Px204oPmh0ksslvl8xxUzmMn+QP4aLOteMNTna14Qit2p6hcNll+7aAuF0K11TJAMtV/EgkrmynPLGQl2IWQOyx0/4z3wQij48fRhEU5cUCYc0RmJq5TtB2XjuvMWT+Uuq7fLjo2NwsLbxdtRoBblmhlgNYIB84HwLCQzQyxE8TNJChHCBBd9GUVKMbuf/1hi38bD0CgGgj9gdy1oswaqvvT7ZNqnidUhQX3pDSVMlkXGc2E1aOBQ1x+d2vzqJY5CMDXUi9czNtaYjPqXcdQKiyzRisjnaAGE/x1yEVVjJzg7uiljMOueACDDAMmuHDQbwii6KkEzqEAN8lXjTRSeaqeF6A3wD1EogD1WeAKRnQ9nWywQ12C2EIiRZp3SnVgOIuOcwoBr6edFBwrs8DwOBQl5ezrbgNvlNuUnAGJP1QqG+Lqx6GeL3Wt9HyrnBW3qcTGiribmYRpMxNUy3kAgBWl75TxiCEgiywfROh6mk7EiJVjC0ivC+cibEA=
