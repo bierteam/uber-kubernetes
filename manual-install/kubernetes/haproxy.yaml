@@ -53,7 +53,7 @@ spec:
         limits:
           cpu: 50m
           memory: 200Mi
-      image: haproxy:2.8.1
+      image: haproxy:2.8.2
       volumeMounts:
         - name: workdir
           mountPath: /usr/local/etc/haproxy
