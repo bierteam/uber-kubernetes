@@ -29,7 +29,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: HostRegexp(`oscarr.nl`, `0scar.nl`, `{subdomain:.*}.oscarr.nl`, `{subdomain:.*}.0scar.nl`, `{subdomain:.*}.lab.oscarr.nl`)
+    - match: HostRegexp(`oscarr.nl`, `0scar.nl`, `{subdomain:.*}.oscarr.nl`, `{subdomain:.*}.0scar.nl`)
       kind: Rule
       priority: 1
       services:
@@ -37,8 +37,9 @@ spec:
           port: 443
           passHostHeader: true
           serversTransport: insecure
-    - match: Host(`teslamate.lab.oscarr.nl`)
+    - match: HostRegexp(`{subdomain:.*}.lab.oscarr.nl`)
       kind: Rule
+      priority: 10
       middlewares:
         - name: proxy-oscarr
       services:

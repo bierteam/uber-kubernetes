@@ -9,6 +9,16 @@ spec:
   routes:
     - match: Host(`ceph.lab.oscarr.nl`)
       kind: Rule
+      middlewares:
+        - name: proxy-oscarr
       services:
         - name: rook-ceph-mgr-dashboard
           port: 7000
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: proxy-oscarr
+spec:
+  forwardAuth:
+    address: http://oauth2-proxy.proxy-oscarr

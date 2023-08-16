@@ -27,6 +27,7 @@ velero: # set values for wrapper/umbrella chart
     existingSecret: true
     snapshotsEnabled: false
     volumeSnapshotLocation: []
+    storeValidationFrequency: 15m
     backupStorageLocation:
       - provider: aws
         bucket: uber-kubernetes-backup
@@ -39,11 +40,26 @@ velero: # set values for wrapper/umbrella chart
           s3Url: https://s3.eu-central-003.backblazeb2.com
   initContainers:
     - name: velero-plugin-for-aws
-      image: docker.io/velero/velero-plugin-for-aws:v1.7.0
+      image: docker.io/velero/velero-plugin-for-aws:v1.7.1
       imagePullPolicy: IfNotPresent
       volumeMounts:
         - mountPath: /target
           name: plugins
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  deployNodeAgent: true
+  nodeAgent:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
   schedules:
     nightly:
       schedule: "0 3 * * *"

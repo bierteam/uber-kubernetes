@@ -15,6 +15,8 @@ spec:
     metadata:
       labels:
         app: unifi
+      annotations:
+        backup.velero.io/backup-volumes: unifi
     spec:
       containers:
         - env:

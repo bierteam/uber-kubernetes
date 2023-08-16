@@ -1,5 +1,7 @@
-# https://github.com/argoproj/argo-helm/tree/argo-cd-5.22.1/charts/argo-cd
+# https://github.com/argoproj/argo-helm/blob/main/charts/argo-cd/values.yaml
 argo-cd: # set values for wrapper/umbrella chart
+  global:
+    revisionHistoryLimit: 0
   configs:
     cm:
       application.instanceLabelKey: app.kubernetes.io/instance

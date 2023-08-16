@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 data:
   ClusterConfiguration: |
@@ -31,11 +32,9 @@ data:
         dataDir: /var/lib/etcd
     imageRepository: registry.k8s.io
     kind: ClusterConfiguration
-    kubernetesVersion: v1.26.1
+    kubernetesVersion: v1.27.4
     networking:
-      dnsDomain: cluster.local
-      podSubnet: 10.244.0.0/12
-      serviceSubnet: 10.96.0.0/12
+      serviceSubnet: fd00:beef::/112,10.96.0.0/12
     scheduler: {}
 kind: ConfigMap
 metadata:
