@@ -1,4 +1,9 @@
+---
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubelet-config
+  namespace: kube-system
 data:
   kubelet: |
     apiVersion: kubelet.config.k8s.io/v1beta1
@@ -17,7 +22,8 @@ data:
         cacheUnauthorizedTTL: 0s
     cgroupDriver: systemd
     clusterDNS:
-    - 10.96.0.10
+      - 10.96.0.10
+      - fd00:beef::a
     clusterDomain: cluster.local
     cpuManagerReconcilePeriod: 0s
     evictionPressureTransitionPeriod: 0s
@@ -46,7 +52,3 @@ data:
     streamingConnectionIdleTimeout: 0s
     syncFrequency: 0s
     volumeStatsAggPeriod: 0s
-kind: ConfigMap
-metadata:
-  name: kubelet-config
-  namespace: kube-system

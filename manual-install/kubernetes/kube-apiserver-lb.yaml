@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: haproxy
+  name: kube-apiserver-lb
   namespace: kube-system
 spec:
   initContainers:
@@ -27,6 +27,7 @@ spec:
 
           frontend apiserver
               bind :::6000
+              bind :::8443
               mode tcp
               option tcplog
               default_backend apiserver
