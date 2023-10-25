@@ -40,7 +40,7 @@ velero: # set values for wrapper/umbrella chart
           s3Url: https://s3.eu-central-003.backblazeb2.com
   initContainers:
     - name: velero-plugin-for-aws
-      image: docker.io/velero/velero-plugin-for-aws:v1.8.0
+      image: docker.io/velero/velero-plugin-for-aws:v1.8.1
       imagePullPolicy: IfNotPresent
       volumeMounts:
         - mountPath: /target
