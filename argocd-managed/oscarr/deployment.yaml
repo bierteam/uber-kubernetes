@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: nginx
-          image: joseluisq/static-web-server:2.20.2
+          image: joseluisq/static-web-server:2.23.0
           ports:
             - containerPort: 80
           volumeMounts:

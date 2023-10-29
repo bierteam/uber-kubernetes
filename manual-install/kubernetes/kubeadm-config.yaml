@@ -1,19 +1,23 @@
 ---
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kubeadm-config
+  namespace: kube-system
 data:
   ClusterConfiguration: |
     apiServer:
       certSANs:
-      - kubernetes.oscarr.nl
-      - kubernetes.lab.oscarr.nl
-      - k8s-1
-      - k8s-2
-      - k8s-3
-      - k8s-4
-      - k8s-1.oscarr.nl
-      - k8s-2.oscarr.nl
-      - k8s-3.oscarr.nl
-      - k8s-4.oscarr.nl
+        - kubernetes.oscarr.nl
+        - kubernetes
+        - kubernetes.default
+        - kubernetes.default.svc
+        - kubernetes.default.svc.cluster.local
+        - fd00:beef::1
+        - 10.96.0.1
+        - localhost
+        - ::1
+        - 127.0.0.1
       extraArgs:
         authorization-mode: Node,RBAC
         oidc-client-id: kubernetes
@@ -32,11 +36,8 @@ data:
         dataDir: /var/lib/etcd
     imageRepository: registry.k8s.io
     kind: ClusterConfiguration
-    kubernetesVersion: v1.27.4
+    kubernetesVersion: v1.28.0
     networking:
-      serviceSubnet: fd00:beef::/112,10.96.0.0/12
+      dnsDomain: cluster.local
+      serviceSubnet: 10.96.0.0/12,fd00:beef::/112
     scheduler: {}
-kind: ConfigMap
-metadata:
-  name: kubeadm-config
-  namespace: kube-system
