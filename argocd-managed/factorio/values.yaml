@@ -21,7 +21,7 @@ factorio-server-charts: # set values for wrapper/umbrella chart
       - even-distribution
       - Fill4Me
       - FNEI
-      - Rate%20Calculator
+      - RateCalculator
       - Squeak%20Through
 
   factorioServer:
