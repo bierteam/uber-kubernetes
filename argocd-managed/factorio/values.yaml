@@ -1,7 +1,7 @@
 # https://github.com/SQLJames/factorio-server-charts/blob/main/charts/factorio-server-charts/values.yaml
 factorio-server-charts: # set values for wrapper/umbrella chart
   image:
-    # renovate: repository=docker.io/factoriotools/factorio
+    # renovate: datasource=docker image=docker.io/factoriotools/factorio
     tag: "1.1.91"
   service:
     type: ClusterIP
