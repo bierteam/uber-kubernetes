@@ -38,7 +38,7 @@ spec:
               http-check expect status 200
               option ssl-hello-chk
               balance roundrobin
-              server k8s-1 fdd3:a7d6:38c5::3:6443 check fall 3 rise 2
+              server k8s-1 fdd3:a7d6:38c5::13:6443 check fall 3 rise 2
               server k8s-2 fdd3:a7d6:38c5::7:6443 check fall 3 rise 2
               server k8s-3 fdd3:a7d6:38c5::8:6443 check fall 3 rise 2
           EOF
