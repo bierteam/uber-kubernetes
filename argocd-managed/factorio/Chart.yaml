@@ -1,0 +1,8 @@
+apiVersion: v2
+name: factorio-wrapper
+type: application
+version: 1.0.0
+dependencies:
+  - name: factorio-server-charts
+    version: 1.2.5
+    repository: https://sqljames.github.io/factorio-server-charts/

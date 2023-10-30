@@ -7,7 +7,8 @@ traefik: # set values for wrapper/umbrella chart
   ports:
     web:
       hostPort: 80
-      redirectTo: websecure
+      redirectTo:
+        port: websecure
     websecure:
       # asDefault: true # supported in Traefik v3
       hostPort: 443
@@ -18,6 +19,10 @@ traefik: # set values for wrapper/umbrella chart
     unifi-inform:
       hostPort: 8080
       port: 8080
+    factorio:
+      hostPort: 34210
+      port: 34210
+      protocol: UDP
 
   service:
     enabled: false

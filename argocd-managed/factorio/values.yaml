@@ -1,0 +1,43 @@
+# https://github.com/SQLJames/factorio-server-charts/blob/main/charts/factorio-server-charts/values.yaml
+factorio-server-charts: # set values for wrapper/umbrella chart
+  image:
+    # renovate: image=factoriotools/factorio
+    tag: "1.1.91"
+  service:
+    type: ClusterIP
+    port: 31497
+  persistence:
+    storageClassName: ceph-filesystem
+  rcon:
+    external: false
+  account:
+    accountSecret: account-secret
+  mods:
+    enabled: true
+    portal:
+      - Alien%20Biomes
+      - balanced-waterfill
+      - Bottleneck
+      - even-distribution
+      - Fill4Me
+      - FNEI
+      - Rate%20Calculator
+      - Squeak%20Through
+
+  factorioServer:
+    save_name: "Techforce1"
+    generate_new_save: false
+  import_save:
+    source_url: https://oscarr.nl/TF1_single.zip
+  server_settings:
+    name: Techforce1
+    description: "Factorio running on Kubernetes. Join with techforce-factorio.oscarr.nl"
+    tags:
+      - modded
+    visibility:
+      public: true
+    require_user_verification: true
+    only_admins_can_pause_the_game: false
+  white_list:
+    - oscrx
+    - Shineless
