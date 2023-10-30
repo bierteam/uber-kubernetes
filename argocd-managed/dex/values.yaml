@@ -27,6 +27,15 @@ dex: # set values for wrapper/umbrella chart
           redirectURI: https://auth.oscarr.nl/callback
           orgs:
             - name: bierteam
+      - type: gitlab
+        id: gitlab
+        name: Techforce1 GitLab
+        config:
+          clientID: $GITLAB_APPLICATION_ID
+          clientSecret: $GITLAB_CLIENT_SECRET
+          redirectURI: https://auth.oscarr.nl/callback
+          groups:
+            - techforce1
 
     staticClients:
       - id: proxmox
