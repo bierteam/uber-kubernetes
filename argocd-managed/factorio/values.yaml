@@ -1,0 +1,4 @@
+# https://github.com/SQLJames/factorio-server-charts/blob/main/charts/factorio-server-charts/values.yaml
+factorio-server-charts: # set values for wrapper/umbrella chart
+  image:
+    tag: "1.1.91"

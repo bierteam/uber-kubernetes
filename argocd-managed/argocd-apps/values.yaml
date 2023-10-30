@@ -82,3 +82,6 @@ argocdApps:
     name: velero
     folder: argocd-managed/velero
     podSecurity: privileged
+  -
+    name: factorio
+    folder: argocd-managed/factorio

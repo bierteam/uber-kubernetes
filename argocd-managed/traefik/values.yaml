@@ -18,6 +18,9 @@ traefik: # set values for wrapper/umbrella chart
     unifi-inform:
       hostPort: 8080
       port: 8080
+    factorio:
+      hostPort: 8080
+      port: 8080
 
   service:
     enabled: false

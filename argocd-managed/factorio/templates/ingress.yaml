@@ -1,0 +1,12 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteUDP
+metadata:
+  name: factorio
+spec:
+  entryPoints:
+    - factorio
+  routes:
+    - services:
+        - name: foo
+          port: 8080
