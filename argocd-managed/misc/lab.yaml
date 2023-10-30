@@ -37,6 +37,13 @@ spec:
           port: 443
           passHostHeader: true
           serversTransport: insecure
+    - match: Host(`hass.lab.oscarr.nl`)
+      kind: Rule
+      services:
+        - name: docker02
+          port: 443
+          passHostHeader: true
+          serversTransport: insecure
     - match: HostRegexp(`{subdomain:.*}.lab.oscarr.nl`)
       kind: Rule
       priority: 10
