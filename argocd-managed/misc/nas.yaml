@@ -8,7 +8,9 @@ subsets:
       - ip: 192.168.123.5
     ports:
       - port: 5001
-
+        name: synology
+      - port: 80
+        name: web
 ---
 kind: Service
 apiVersion: v1
@@ -19,7 +21,10 @@ spec:
   ports:
     - port: 5001
       targetPort: 5001
-
+      name: synology
+    - port: 80
+      targetPort: 80
+      name: web
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -34,3 +39,8 @@ spec:
       services:
         - name: nas
           port: 5001
+    - match: Host(`oscarr.nl`, `0scar.nl`)
+      kind: Rule
+      services:
+        - name: nas
+          port: 80
