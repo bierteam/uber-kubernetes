@@ -41,3 +41,4 @@ factorio-server-charts: # set values for wrapper/umbrella chart
   white_list:
     - oscrx
     - Shineless
+    - BlockCat
