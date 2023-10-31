@@ -54,3 +54,7 @@ end
 
 k8s-1 & k8s-2 & k8s-3 & k8s-4 -- Mesh VPN key exchange --- VPN[headscale.oscarr.nl]
 ```
+
+## Connecting to the cluster
+
+How to connect to the cluster is described [here](CONNECTING.md)
