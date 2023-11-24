@@ -23,6 +23,7 @@ spec:
     managedNamespaceMetadata:
       labels:
         pod-security.kubernetes.io/enforce: baseline
-    automated:
-      prune: true
-      selfHeal: true
+    # TODO
+    # automated:
+    #   prune: true
+    #   selfHeal: true

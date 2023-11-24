@@ -23,6 +23,7 @@ velero: # set values for wrapper/umbrella chart
       spec:
         encryptedData:
           config: AgCHXhfqRXHg68eLL2HozR7WY/oMUAfkKrFGZqeUGi0YsaV7DY7rkG2r1k+enD+bpOXSpNCabtBEKl+Un3QeDLdnGEURnfRu34Xdb9Bxe8pWs50FrpYzCorFW/TJG2qLIQ/KjXcw43Cq0GxcdNRyWr8zS7w/zBtzzEwGbgcbuI5OFfQ3kp8i86T8A1Enzx7ys7iu+khnnVuQEPysXulyzS1VpNTOfCJLIgvXJPTKVb6hwsn7Q1vqViFdXGhfSSIAWgBdYvxz495aezyAIYhpGSLRvp9JtXD9YeRDvlVxFn/WA/WrNU0zYBFMcdW3Wz8l2IhdUuvPW9cPU5Hv1RxCzGAkeSeFjhr/xV1TXGCO/1zidm9oEKH1uzl3RrPfXJFDZ96hVaS4i4dTtuYKK/oFuP06at9EYgTkTaT5uYrQtQxfgagMsn0D+8IF83O6206CCJJYGxZNWS8Wv8RoxxVJ5mZkxkPWUBnWS5SbvJ97LWWHLLPsQE+6YY4GVTKIhoat+8dmR6jvRqCAS5mP+/ZBHyTlFttUPKtqQMHl5QuO4txNLRFrh0FtTVfK3i+40VxJV9Eq6Ane4DPyJjiwKux9zhoI5cz40S1iwI4ieAtPP/2rMu+MhsoHCU0HZxbTfaS/KX9gCAhC0iUSUmeol8H+qsVB933vPgHOCPPZa14YQ1TfX3KYnKCt/b4ujJAgR8EWofP8UA+WiDK9xnvOPLYAr4UyUKLpGmPSBWODzxGCTZMZMES3t0Etd3jVz+KvvhKTr1F8vr+yECyN7Iilzdeam/8A5D3CoI+9uC2mD3QF9qX/WSgMXfGiDDaEQIthUWGWU5sHh9Do3lXJMkLT+tA=
+  revisionHistoryLimit: "0"
   configuration:
     existingSecret: true
     snapshotsEnabled: false

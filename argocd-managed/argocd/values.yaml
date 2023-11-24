@@ -11,9 +11,10 @@ argo-cd: # set values for wrapper/umbrella chart
         issuer: https://auth.oscarr.nl
         clientID: argocd
         clientSecret: $oidc.dex.clientSecret
-        requestedScopes: ["openid", "profile", "email", "groups"]
-        requestedIDTokenClaims: {"groups": {"essential": true}}
+        cliClientID: argocd-cli
       admin.enabled: "false"
+      users.anonymous.enabled: "true"
+      server.rbac.log.enforce.enable: "true"
       statusbadge.enabled: "true"
       resource.exclusions: |
         - apiGroups:
@@ -22,22 +23,24 @@ argo-cd: # set values for wrapper/umbrella chart
             - CiliumIdentity
           clusters:
             - "*"
+        - apiGroups:
+            - velero.io
+          kinds:
+            - Backup
+          clusters:
+            - "*"
     params:
       # https://argo-cd.readthedocs.io/en/stable/operator-manual/ingress/#traefik-v22
       server.insecure: true
     rbac:
-      policy.default: "role:admin"
       policy.csv: |
-        p, role:org-admin, applications, *, */*, allow
-        p, role:org-admin, clusters, get, *, allow
-        p, role:org-admin, repositories, get, *, allow
-        p, role:org-admin, repositories, create, *, allow
-        p, role:org-admin, repositories, update, *, allow
-        p, role:org-admin, repositories, delete, *, allow
-        p, role:org-admin, logs, get, *, allow
-        p, role:org-admin, exec, create, */*, allow
+        p, role:anonymous, applicationsets, get, *, allow
+        p, role:anonymous, applications, get, *, allow
+        p, role:anonymous, logs, *, *, deny
 
-        g, bierteam, role:org-admin
-      scopes: "[groups]"
+        g, oscrx, role:admin
+        g, bierteam, role:admin
+      policy.default: role:anonymous
+      scopes: '[groups, preferred_username]'
     secret:
       createSecret: false # handled by sealed secret
