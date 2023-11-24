@@ -73,7 +73,7 @@ dex: # set values for wrapper/umbrella chart
 
       - id: argocd
         name: "ArgoCD"
-        secretEnv: ARGOCD_CLIENT_SECRET
+        public: true
         redirectURIs:
           - https://argocd.lab.oscarr.nl/auth/callback
           - http://localhost:8085/auth/callback
