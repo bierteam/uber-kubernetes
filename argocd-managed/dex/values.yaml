@@ -76,6 +76,7 @@ dex: # set values for wrapper/umbrella chart
         secretEnv: ARGOCD_CLIENT_SECRET
         redirectURIs:
           - https://argocd.lab.oscarr.nl/auth/callback
+          - http://localhost:8085/auth/callback
 
       - id: headscale
         name: "Headscale"
