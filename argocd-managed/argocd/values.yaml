@@ -34,12 +34,14 @@ argo-cd: # set values for wrapper/umbrella chart
       server.insecure: true
     rbac:
       policy.csv: |
-        p, role:anonymous, applicationsets, get, *, allow
         p, role:anonymous, applications, get, *, allow
-        p, role:anonymous, logs, *, *, deny
 
-        g, oscrx, role:admin
         g, bierteam, role:admin
+        g, oscrx, role:admin
+        g, NvdLaan, role:admin
+        g, PeterOosterom, role:admin
+        g, xm0ur3r, role:admin
+
       policy.default: role:anonymous
       scopes: '[groups, preferred_username]'
     secret:
