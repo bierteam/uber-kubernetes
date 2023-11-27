@@ -4,21 +4,31 @@ kind: CronJob
 metadata:
   name: dns-updater
 spec:
+  schedule: 0/5 * * * *
+  failedJobsHistoryLimit: 3
+  successfulJobsHistoryLimit: 3
   jobTemplate:
     spec:
       backoffLimit: 1
       template:
         spec:
+          nodeSelector:
+            dualstack: "true"
           restartPolicy: Never
           terminationGracePeriodSeconds: 30
           containers:
             - image: ghcr.io/bierteam/kubernetes-dns:0.0.3
+              securityContext:
+                seccompProfile:
+                  type: RuntimeDefault
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                runAsNonRoot: true
               imagePullPolicy: Always
               name: dns-updater
               envFrom:
                 - secretRef:
                     name: dns-updater-env
                     optional: false
-  schedule: 0/5 * * * *
-  failedJobsHistoryLimit: 3
-  successfulJobsHistoryLimit: 3

@@ -1,3 +1,4 @@
+---
 argocdApps:
   # - name: string (mandatory)
   #   folder: string (mandatory)
@@ -23,7 +24,8 @@ argocdApps:
   -
     name: dns-updater
     folder: argocd-managed/dns-updater
-  - 
+    podSecurity: restricted
+  -
     name: drinkn
     folder: charts/drinkn
     repository: drinkn
