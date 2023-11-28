@@ -5,7 +5,7 @@ metadata:
   name: docker02
 subsets:
   - addresses:
-      - ip: 192.168.122.227
+      - ip: fd7a:115c:a1e0::3
     ports:
       - port: 443
 ---

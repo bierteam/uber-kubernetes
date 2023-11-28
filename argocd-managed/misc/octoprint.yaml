@@ -5,7 +5,7 @@ metadata:
   name: octoprint
 subsets:
   - addresses:
-      - ip: 192.168.178.240
+      - ip: 192.168.178.240 # TODO add octoprint to tailscale
     ports:
       - port: 5000
 
