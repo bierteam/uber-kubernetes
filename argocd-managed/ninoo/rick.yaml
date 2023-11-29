@@ -225,7 +225,7 @@ spec:
     stsIncludeSubdomains: true
     # stsPreload: true
     # generated with https://report-uri.com/home/generate
-    contentSecurityPolicy: default-src 'none'; script-src 'self' https://www.youtube.com; style-src 'self'; img-src 'self'; frame-src youtube.com www.youtube.com; frame-ancestors 'none'; form-action 'none'; base-uri 'none'
+    contentSecurityPolicy: default-src 'none'; script-src 'self' https://www.youtube.com; style-src 'self'; img-src 'self'; frame-src https://youtube.com https://www.youtube.com; frame-ancestors 'none'; form-action 'none'; base-uri 'none'
     referrerPolicy: strict-origin
     contentTypeNosniff: true
     frameDeny: true
