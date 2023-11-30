@@ -14,6 +14,7 @@ traefik: # set values for wrapper/umbrella chart
       hostPort: 443
       http3:
         enabled: true
+        advertisedPort: 443
       middlewares:
         - traefik-hsts@kubernetescrd
     unifi-inform:
