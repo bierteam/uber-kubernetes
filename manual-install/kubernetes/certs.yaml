@@ -3,38 +3,39 @@
 #
 # mv /etc/kubernetes/pki/apiserver.{crt,key} /tmp
 # kubeadm init phase certs apiserver --config certs.yaml
+---
 apiVersion: kubeadm.k8s.io/v1beta3
 certificatesDir: /etc/kubernetes/pki
 kind: ClusterConfiguration
 apiServer:
   certSANs:
-  - kubernetes.oscarr.nl
-  - kubernetes
-  - kubernetes.default
-  - kubernetes.default.svc
-  - kubernetes.default.svc.cluster.local
-  - fd00:beef::1
-  - 10.96.0.1
-  - localhost
-  - ::1
-  - 127.0.0.1
+    - kubernetes.oscarr.nl
+    - kubernetes
+    - kubernetes.default
+    - kubernetes.default.svc
+    - kubernetes.default.svc.cluster.local
+    - fd00:beef::1
+    - 10.96.0.1
+    - localhost
+    - ::1
+    - 127.0.0.1
 
-  - k8s-1
-  - k8s-1.oscarr.nl
-  - fdd3:a7d6:38c5::3
-  - 100.64.0.3
-  - 2a05:f080:0:8ff:88d6:1dff:fe6e:9639
-  - 192.168.178.224
+    - k8s-1
+    - k8s-1.oscarr.nl
+    - fdd3:a7d6:38c5::3
+    - 100.64.0.3
+    - 2a05:f080:0:8ff:88d6:1dff:fe6e:9639
+    - 192.168.178.224
 
-  - k8s-2
-  - k8s-2.oscarr.nl
-  - fdd3:a7d6:38c5::7
-  - 100.64.0.7
-  - 192.168.123.222
-  - 2a02:a470:edcd:0:1c81:e9ff:fe0f:f507
+    - k8s-2
+    - k8s-2.oscarr.nl
+    - fdd3:a7d6:38c5::7
+    - 100.64.0.7
+    - 192.168.123.222
+    - 2a02:a470:edcd:0:1c81:e9ff:fe0f:f507
 
-  - k8s-3
-  - k8s-3.oscarr.nl
-  - fdd3:a7d6:38c5::8
-  - 100.64.0.8
-  - 192.168.99.165
+    - k8s-3
+    - k8s-3.oscarr.nl
+    - fdd3:a7d6:38c5::8
+    - 100.64.0.8
+    - 192.168.99.165
