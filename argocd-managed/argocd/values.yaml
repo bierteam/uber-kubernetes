@@ -2,6 +2,8 @@
 argo-cd: # set values for wrapper/umbrella chart
   global:
     revisionHistoryLimit: 0
+  controller:
+    dynamicClusterDistribution: true
   configs:
     cm:
       application.instanceLabelKey: app.kubernetes.io/instance
