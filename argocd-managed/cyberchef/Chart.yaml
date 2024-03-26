@@ -4,5 +4,5 @@ type: application
 version: 1.0.0
 dependencies:
   - name: cyberchef
-    version: v10.8.2
+    version: v10.9.0
     repository: "https://tamcore.github.io/cyberchef"
