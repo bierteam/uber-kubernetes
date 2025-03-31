@@ -4,5 +4,5 @@ type: application
 version: 1.0.0
 dependencies:
   - name: factorio-server-charts
-    version: 1.2.5
+    version: 2.5.2
     repository: https://sqljames.github.io/factorio-server-charts/
