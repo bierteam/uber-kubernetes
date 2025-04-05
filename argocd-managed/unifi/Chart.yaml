@@ -1,0 +1,8 @@
+apiVersion: v2
+name: unifi-wrapper
+type: application
+version: 1.0.0
+dependencies:
+  - name: community-operator
+    version: 0.12.0
+    repository: https://mongodb.github.io/helm-charts

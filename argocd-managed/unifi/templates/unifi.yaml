@@ -11,23 +11,55 @@ spec:
   selector:
     matchLabels:
       app: unifi
+  volumeClaimTemplates:
+    - metadata:
+        name: unifi
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 3Gi
   template:
     metadata:
       labels:
         app: unifi
-      annotations:
-        backup.velero.io/backup-volumes: unifi
     spec:
+      restartPolicy: Always
       containers:
-        - env:
+        - name: unifi
+          resources:
+            limits:
+              cpu: 1000m
+              memory: 1024Mi
+          env:
             - name: MEM_LIMIT
               value: "1024"
+            - name: TZ
+              value: Europe/Amsterdam
             - name: PGID
               value: "1000"
             - name: PUID
               value: "1000"
-          image: "linuxserver/unifi-controller:7.5.187"
-          name: unifi
+            - name: MONGO_HOST
+              value: mongodb-svc
+            - name: MONGO_PORT
+              value: "27017"
+            - name: MONGO_DBNAME
+              value: unifi
+            - name: MONGO_AUTHSOURCE
+              value: admin
+            - name: MONGO_USER
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-admin-unifi
+                  key: username
+            - name: MONGO_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-admin-unifi
+                  key: password
+          image: ghcr.io/linuxserver/unifi-network-application:9.0.114
           ports:
             # https://help.ui.com/hc/en-us/articles/218506997-UniFi-Network-Required-Ports-Reference
             # Device communication
@@ -55,8 +87,16 @@ spec:
           volumeMounts:
             - mountPath: /config
               name: unifi
-      restartPolicy: Always
-      volumes:
-        - name: unifi
-          persistentVolumeClaim:
-            claimName: unifi
+          readinessProbe:
+            httpGet:
+              path: /status
+              port: 8080
+            periodSeconds: 10
+            failureThreshold: 1
+          livenessProbe:
+            httpGet:
+              path: /status
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            failureThreshold: 5

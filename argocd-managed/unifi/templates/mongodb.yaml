@@ -1,0 +1,34 @@
+---
+apiVersion: mongodbcommunity.mongodb.com/v1
+kind: MongoDBCommunity
+metadata:
+  name: mongodb
+spec:
+  members: 1
+  type: ReplicaSet
+  version: 8.0.6
+  security:
+    authentication:
+      ignoreUnknownUsers: false
+      modes:
+        - SCRAM
+  statefulSet:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: mongod
+              resources:
+                limits:
+                  cpu: 1000m
+                  memory: 1024Mi
+  users:
+    - name: unifi
+      passwordSecretRef:
+        name: mongo-init-pass
+      scramCredentialsSecretName: unifi
+      roles:
+        - name: dbOwner
+          db: unifi
+        - name: dbOwner
+          db: unifi_stat

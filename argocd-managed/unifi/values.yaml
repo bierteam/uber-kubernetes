@@ -1,0 +1,4 @@
+community-operator:
+  # operator:
+  #   watchNamespace: "*" # cluster wide install
+  createResource: false

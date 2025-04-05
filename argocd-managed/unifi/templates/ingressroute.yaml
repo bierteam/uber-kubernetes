@@ -23,7 +23,7 @@ spec:
   entryPoints:
     - unifi-inform
   routes:
-    - match: Host(`unifi.oscarr.nl`)
+    - match: PathPrefix(`/`)
       kind: Rule
       services:
         - name: unifi
