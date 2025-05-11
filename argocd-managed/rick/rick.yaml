@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: ninoo-nl
+  name: rick
 data:
   index.html: |
     <!DOCTYPE html>
@@ -130,25 +130,25 @@ binaryData:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ninoo-nl
+  name: rick
 spec:
   selector:
     matchLabels:
-      app: ninoo-nl
+      app: rick
   replicas: 2
   revisionHistoryLimit: 0
   template:
     metadata:
       labels:
-        app: ninoo-nl
+        app: rick
     spec:
       containers:
-        - name: ninoo-nl
+        - name: rick
           image: joseluisq/static-web-server:2.36.1
           ports:
             - containerPort: 80
           volumeMounts:
-            - name: ninoo-nl
+            - name: rick
               mountPath: /public/
           resources:
             requests:
@@ -174,9 +174,9 @@ spec:
             seccompProfile:
               type: RuntimeDefault
       volumes:
-        - name: ninoo-nl
+        - name: rick
           configMap:
-            name: ninoo-nl
+            name: rick
             items:
               - key: index.html
                 path: index.html
@@ -190,10 +190,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ninoo-nl
+  name: rick
 spec:
   selector:
-    app: ninoo-nl
+    app: rick
   type: ClusterIP
   ports:
     - port: 80
@@ -202,17 +202,17 @@ spec:
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: ninoo-nl
+  name: rick
 spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`ninoo.nl`, `www.ninoo.nl`)
+    - match: Host(`ninoo.nl`, `www.ninoo.nl`, `www.doktermarjolein.nl`, `doktermarjolein.nl`, `www.0scar.nl`, `0scar.nl`)
       kind: Rule
       middlewares:
         - name: security-headers
       services:
-        - name: ninoo-nl
+        - name: rick
           port: 80
 ---
 apiVersion: traefik.io/v1alpha1

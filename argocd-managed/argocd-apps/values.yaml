@@ -1,89 +1,50 @@
 ---
 argocdApps:
   # - name: string (mandatory)
-  #   folder: string (mandatory)
+  #   folder: string (optional)
   #   namespace: string (optional)
   #   podSecurity: privileged/baseline/restricted (optional)
   #   repository: string (optional)
   #   autosync: bool (optional)
   #   finalizer: bool (optional)
-  -
-    name: cert-manager
-    folder: argocd-managed/cert-manager
-  -
-    name: cilium
-    folder: argocd-managed/cilium
+  - name: cert-manager
+  - name: cilium
     namespace: kube-system
     podSecurity: privileged
-  -
-    name: cyberchef
-    folder: argocd-managed/cyberchef
-  -
-    name: dex
-    folder: argocd-managed/dex
-  -
-    name: dns-updater
-    folder: argocd-managed/dns-updater
+  - name: cyberchef
+  - name: dex
+  - name: dns-updater
     podSecurity: restricted
-  -
-    name: drinkn
+  - name: drinkn
     folder: charts/drinkn
     repository: drinkn
-  -
-    name: fixitloop
-    folder: argocd-managed/fixitloop
-  -
-    name: friend-tracker
-    folder: argocd-managed/friend-tracker
-  -
-    name: metrics-server
-    folder: argocd-managed/metrics-server
-  -
-    name: misc
-    folder: argocd-managed/misc
-  -
-    name: ninoo
-    folder: argocd-managed/ninoo
-  -
-    name: rook-cluster
+  - name: factorio
+  - name: fixitloop
+  - name: friend-tracker
+  - name: metrics-server
+  - name: misc
+  - name: rick
+  - name: rook-cluster
     folder: argocd-managed/rook/cluster
     namespace: rook-ceph
     podSecurity: privileged
-  -
-    name: rook-operator
+  - name: rook-operator
     folder: argocd-managed/rook/operator
     namespace: rook-ceph
     podSecurity: privileged
-  -
-    name: sealed-secrets
-    folder: argocd-managed/sealed-secrets
+  - name: sealed-secrets
     namespace: kube-system
     podSecurity: privileged
-  -
-    name: traefik
-    folder: argocd-managed/traefik
+  - name: traefik
     podSecurity: privileged
-  -
-    name: unifi
-    folder: argocd-managed/unifi
-  -
-    name: valheim
-    folder: argocd-managed/valheim
-  -
-    name: oscarr
-    folder: argocd-managed/oscarr
-  -
-    name: proxy-oscarr
+  - name: unifi
+  - name: oscarr
+  - name: proxy-oscarr
     folder: argocd-managed/oauth2-proxy
     valuesFile: values-oscarr.yaml
-  -
-    name: proxy-bruinsma
+  - name: proxy-bruinsma
     folder: argocd-managed/oauth2-proxy
     valuesFile: values-bruinsma.yaml
-  -
-    name: velero
-    folder: argocd-managed/velero
+  - name: valheim
+  - name: velero
     podSecurity: privileged
-  -
-    name: factorio
-    folder: argocd-managed/factorio

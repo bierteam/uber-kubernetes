@@ -14,7 +14,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: "{{ $application.folder }}" # TODO use application.name here as default
+    path: {{ default (print "argocd-managed/" $application.name) $application.folder }}
     repoURL: https://github.com/bierteam/{{ $application.repository | default "uber-kubernetes" }}.git
     targetRevision: HEAD
     {{- if $application.valuesFile }}
