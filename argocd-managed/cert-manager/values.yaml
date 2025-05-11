@@ -1,19 +1,20 @@
 domains:
   - 0scar.nl
+  - bruinsma.it
   - devopscar.nl
   - ditiskapot.nl
   - ditwerktniet.nl
+  - doktermarjolein.nl
   - hetmagkapot.nl
   - hetmoetkapot.nl
   - ishetkapot.nl
   - lab.oscarr.nl
   - maghetkapot.nl
   - maghetwerken.nl
+  # - moethetkapot.nl
   - moethetwerken.nl
   - ninoo.nl
   - oscarr.nl
-  - bruinsma.it
-  # - moethetkapot.nl
 
 # https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml
 cert-manager: # set values for wrapper/umbrella chart
