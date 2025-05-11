@@ -21,7 +21,7 @@ spec:
   routes:
     - match: Path(`/.well-known/security.txt`)
       kind: Rule
-      priority: 100 # high prio to overwrite any ingressroute
+      priority: 1000 # high prio to overwrite any ingressroute
       middlewares:
         - name: security-txt-redirect
         - name: security-headers
@@ -47,6 +47,7 @@ spec:
     - websecure
   routes:
     - match: Host(`oscarr.nl`, `0scar.nl`, `devopscar.nl`) && Path(`/.well-known/keybase.txt`, `/keybase.txt`)
+      priority: 1000
       kind: Rule
       middlewares:
         - name: keybase-txt-redirect

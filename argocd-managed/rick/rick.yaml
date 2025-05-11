@@ -8,7 +8,7 @@ data:
     <!DOCTYPE html>
     <html>
       <head>
-        <!-- https://github.com/bierteam/uber-kubernetes/blob/main/argocd-managed/ninoo/rick.yaml -->
+        <!-- https://github.com/bierteam/uber-kubernetes/blob/main/argocd-managed/rick/rick.yaml -->
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="script.js"></script>
@@ -17,10 +17,50 @@ data:
       <body>
         <div class="bodyContainer">
           <div id="player" allow="autoplay; fullscreen"></div>
+
           <button id="button" class="button" role="button">Klik mij!</button>
+
           <a id=linkedin  href="https://www.linkedin.com/in/rick-astley-978941125/">
             <img src="linkedin.png" class="linkedin"/>
           </a>
+
+          <div class="language-picker">
+            <select id="lang-select">
+              <option value="">🌐</option>
+              <option value="en">English</option>
+              <option value="nl">Nederlands</option>
+              <option value="fr">Français</option>
+              <option value="de">Deutsch</option>
+              <option value="es">Español</option>
+              <option value="it">Italiano</option>
+              <option value="pt">Português</option>
+              <option value="sv">Svenska</option>
+              <option value="fi">Suomi</option>
+              <option value="da">Dansk</option>
+              <option value="no">Norsk</option>
+              <option value="pl">Polski</option>
+              <option value="cs">Čeština</option>
+              <option value="ro">Română</option>
+              <option value="hu">Magyar</option>
+              <option value="tr">Türkçe</option>
+              <option value="ru">Русский</option>
+              <option value="ja">日本語</option>
+              <option value="zh">中文</option>
+              <option value="ko">한국어</option>
+              <option value="hi">हिन्दी</option>
+              <option value="bn">বাংলা</option>
+              <option value="ta">தமிழ்</option>
+              <option value="te">తెలుగు</option>
+              <option value="mr">मराठी</option>
+              <option value="ur">اردو</option>
+              <option value="gu">ગુજરાતી</option>
+              <option value="kn">ಕನ್ನಡ</option>
+              <option value="ml">മലയാളം</option>
+              <option value="pa">ਪੰਜਾਬੀ</option>
+              <option value="or">ଓଡ଼ିଆ</option>
+              <option value="as">অসমীয়া</option>
+            </select>
+          </div>
         </div>
       </body>
     </html>
@@ -34,11 +74,30 @@ data:
     #player {
       display: none;
     }
+    .language-picker {
+      position: fixed;
+      bottom: 15px;
+      right: 15px;
+      z-index: 1000;
+      background: white;
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+      padding: 2px 5px;
+    }
+    .language-picker select {
+      border: none;
+      background: transparent;
+      font-size: 12px;
+      padding: 4px;
+      cursor: pointer;
+      font-family: sans-serif;
+    }
     .button {
       background-color: #ffffff;
       border: 1px solid #222222;
       border-radius: 8px;
       box-sizing: border-box;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.15);
       color: #222222;
       cursor: pointer;
       display: inline-block;
@@ -172,9 +231,19 @@ data:
         or: "ମୋତେ କ୍ଲିକ୍ କରନ୍ତୁ!",
         as: "মোৰ ওপৰত ক্লিক কৰক!"
       }
-      const userLang = navigator.language.slice(0, 2)
       const button = document.getElementById('button')
-      button.textContent = buttonTranslations[userLang] || buttonTranslations['nl']
+      const langSelect = document.getElementById('lang-select')
+
+      function setButtonText(langCode) {
+        const code = langCode || navigator.language.slice(0, 2)
+        button.textContent = buttonTranslations[code] || buttonTranslations['en']
+      }
+      langSelect.addEventListener('change', () => {
+        const selected = langSelect.value
+        setButtonText(selected)
+      })
+      // Initial load
+      setButtonText()
     })
 
 binaryData:
