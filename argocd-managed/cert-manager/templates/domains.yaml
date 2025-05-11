@@ -16,4 +16,23 @@ spec:
   dnsNames:
     - "{{ $domain }}"
     - "*.{{ $domain }}"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-tls-{{ $noDotsDomain }}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`fake`)
+      kind: Rule
+      services:
+        - name: noop@internal
+          kind: TraefikService
+  tls:
+    secretName: {{ $noDotsDomain }}-tls
+    domains:
+      - main: "{{ $domain }}"
+      - sans: ["*.{{ $domain }}"]
 {{- end }}
