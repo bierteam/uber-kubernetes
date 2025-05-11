@@ -1,42 +1,46 @@
 # https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml
 traefik: # set values for wrapper/umbrella chart
   deployment:
-    kind: DaemonSet
+    # kind: DaemonSet
     revisionHistoryLimit: "0"
 
   ports:
     web:
-      hostPort: 80
+      expose: true
+      # hostPort: 80
       redirectTo:
         port: websecure
     websecure:
+      expose: true
       # asDefault: true # supported in Traefik v3
-      hostPort: 443
+      # hostPort: 443
       http3:
         enabled: true
         advertisedPort: 443
       middlewares:
         - traefik-hsts@kubernetescrd
     unifi-inform:
-      hostPort: 8080
+      expose: true
+      # hostPort: 8080
       port: 8080
     factorio:
-      hostPort: 34210
+      expose: true
+      # hostPort: 34210
       port: 34210
       protocol: UDP
 
-  service:
-    enabled: false
+  # service:
+  #   enabled: false
 
   ingressRoute:
     dashboard:
       enabled: false
 
   # Workaround to use traefik as DaemonSet instead of Deployment
-  updateStrategy:
-    rollingUpdate:
-      maxUnavailable: 1
-      maxSurge: 0
+  # updateStrategy:
+  #   rollingUpdate:
+  #     maxUnavailable: 1
+  #     maxSurge: 0
 
   logs:
     general:

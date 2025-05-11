@@ -8,35 +8,35 @@ argocdApps:
   #   autosync: bool (optional)
   #   finalizer: bool (optional)
   - name: cert-manager
-  - name: cilium
-    namespace: kube-system
-    podSecurity: privileged
+  # - name: cilium
+  #   namespace: kube-system
+  #   podSecurity: privileged
   - name: cyberchef
   - name: dex
-  - name: dns-updater
-    podSecurity: restricted
+  # - name: dns-updater
+  #   podSecurity: restricted
   - name: drinkn
     folder: charts/drinkn
     repository: drinkn
-  - name: factorio
+  # - name: factorio
   - name: fixitloop
-  - name: friend-tracker
-  - name: metrics-server
+  # - name: friend-tracker
+  # - name: metrics-server
   - name: misc
   - name: rick
-  - name: rook-cluster
-    folder: argocd-managed/rook/cluster
-    namespace: rook-ceph
-    podSecurity: privileged
-  - name: rook-operator
-    folder: argocd-managed/rook/operator
-    namespace: rook-ceph
-    podSecurity: privileged
+  # - name: rook-cluster
+  #   folder: argocd-managed/rook/cluster
+  #   namespace: rook-ceph
+  #   podSecurity: privileged
+  # - name: rook-operator
+  #   folder: argocd-managed/rook/operator
+  #   namespace: rook-ceph
+  #   podSecurity: privileged
   - name: sealed-secrets
     namespace: kube-system
     podSecurity: privileged
   - name: traefik
-    podSecurity: privileged
+    # podSecurity: privileged
   - name: unifi
   - name: oscarr
   - name: proxy-oscarr
@@ -45,6 +45,6 @@ argocdApps:
   - name: proxy-bruinsma
     folder: argocd-managed/oauth2-proxy
     valuesFile: values-bruinsma.yaml
-  - name: valheim
+  # - name: valheim
   - name: velero
     podSecurity: privileged
