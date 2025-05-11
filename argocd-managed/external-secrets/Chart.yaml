@@ -1,0 +1,8 @@
+apiVersion: v2
+name: external-secrets-wrapper
+type: application
+version: 1.0.0
+dependencies:
+  - name: external-secrets
+    version: 0.16.2
+    repository: oci://ghcr.io/external-secrets/charts
