@@ -47,6 +47,7 @@ spec:
     - websecure
   routes:
     - match: Host(`oscarr.nl`, `0scar.nl`, `devopscar.nl`) && Path(`/.well-known/keybase.txt`, `/keybase.txt`)
+      priority: 1000
       kind: Rule
       middlewares:
         - name: keybase-txt-redirect
