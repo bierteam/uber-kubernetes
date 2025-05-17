@@ -27,7 +27,8 @@ traefik: # set values for wrapper/umbrella chart
       expose:
         default: true
       # hostPort: 8080
-      port: 8080
+      port: 8081
+      exposedPort: 8080
     factorio:
       expose:
         default: true
