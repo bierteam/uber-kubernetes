@@ -39,7 +39,7 @@ spec:
       services:
         - name: nas
           port: 5001
-    - match: Host(`oscarr.nl`, `0scar.nl`)
+    - match: Host(`oscarr.nl`)
       kind: Rule
       services:
         - name: nas

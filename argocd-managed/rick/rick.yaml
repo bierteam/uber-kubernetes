@@ -330,7 +330,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`ninoo.nl`, `www.ninoo.nl`, `www.doktermarjolein.nl`, `doktermarjolein.nl`, `www.0scar.nl`, `0scar.nl`)
+    - match: Host(`ninoo.nl`) || Host(`doktermarjolein.nl`) || Host(`0scar.nl`)
       kind: Rule
       middlewares:
         - name: security-headers
