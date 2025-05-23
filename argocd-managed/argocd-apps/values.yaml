@@ -49,3 +49,4 @@ argocdApps:
   # - name: valheim
   - name: velero
     podSecurity: privileged
+  - name: prometheus
