@@ -59,7 +59,7 @@ spec:
                 secretKeyRef:
                   name: mongodb-admin-unifi
                   key: password
-          image: ghcr.io/linuxserver/unifi-network-application:9.1.120
+          image: ghcr.io/linuxserver/unifi-network-application:9.2.87
           ports:
             # https://help.ui.com/hc/en-us/articles/218506997-UniFi-Network-Required-Ports-Reference
             # Device communication
