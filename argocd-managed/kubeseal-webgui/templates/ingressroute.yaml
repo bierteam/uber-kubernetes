@@ -1,0 +1,14 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: kubeseal-webgui
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - kind: Rule
+      match: Host(`kubeseal.lab.oscarr.nl`)
+      services:
+        - name: kubeseal-webgui
+          port: 8080

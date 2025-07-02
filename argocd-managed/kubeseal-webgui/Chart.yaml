@@ -1,0 +1,8 @@
+apiVersion: v2
+name: kubeseal-webgui-wrapper
+type: application
+version: 1.0.0
+dependencies:
+  - name: kubeseal-webgui
+    version: 6.0.3
+    repository: https://jaydee94.github.io/kubeseal-webgui

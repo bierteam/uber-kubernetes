@@ -1,0 +1,4 @@
+# https://github.com/Jaydee94/kubeseal-webgui/blob/master/chart/kubeseal-webgui/values.yaml
+kubeseal-webgui: # set values for wrapper/umbrella chart
+  sealedSecrets:
+    autoFetchCert: true

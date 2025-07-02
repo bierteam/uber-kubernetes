@@ -22,6 +22,7 @@ argocdApps:
   # - name: factorio
   - name: fixitloop
   # - name: friend-tracker
+  - name: kubeseal-webgui
   # - name: metrics-server
   - name: misc
   - name: rick
