@@ -2,3 +2,5 @@
 kubeseal-webgui: # set values for wrapper/umbrella chart
   sealedSecrets:
     autoFetchCert: true
+    controllerName: sealed-secrets
+    controllerNamespace: kube-system
