@@ -34,11 +34,11 @@ issuers:
     profile: tlsserver
     http01: true
   -
-    name: letsencrypt-sortlived
+    name: letsencrypt-shortlived
     profile: shortlived
     dns01: true
-  - 
-    name: letsencrypt-sortlived-http01
+  -
+    name: letsencrypt-shortlived-http01
     profile: shortlived
     http01: true
   - 
