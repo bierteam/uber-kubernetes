@@ -1,6 +1,7 @@
 domains:
   - name: 0scar.nl
-    issuer: letsencrypt-shortlived
+    issuer: letsencrypt-tlsserver
+    # issuer: letsencrypt-shortlived
   - name: bruinsma.it
   - name: devopscar.nl
   - name: ditiskapot.nl
