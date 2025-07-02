@@ -16,6 +16,44 @@ domains:
   - ninoo.nl
   - oscarr.nl
 
+issuers:
+  -
+    name: letsencrypt
+    profile: classic
+    dns01: true
+  -
+    name: letsencrypt-http01
+    profile: classic
+    http01: true
+  - 
+    name: letsencrypt-tlsserver
+    profile: tlsserver
+    dns01: true
+  -
+    name: letsencrypt-tlsserver-http01
+    profile: tlsserver
+    http01: true
+  -
+    name: letsencrypt-sortlived
+    profile: shortlived
+    dns01: true
+  - 
+    name: letsencrypt-sortlived-http01
+    profile: shortlived
+    http01: true
+  - 
+    name: letsencrypt-staging-shortlived
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    profile: shortlived
+    dns01: true
+    account-key: letsencrypt-staging
+  - 
+    name: letsencrypt-staging-shortlived-http01
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    profile: shortlived
+    http01: true
+    account-key: letsencrypt-staging
+
 # https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml
 cert-manager: # set values for wrapper/umbrella chart
   installCRDs: true

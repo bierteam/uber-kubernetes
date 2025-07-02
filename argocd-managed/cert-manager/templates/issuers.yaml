@@ -1,0 +1,27 @@
+{{- range $issuer := .Values.issuers }}
+---
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ $issuer.name }}
+spec:
+  acme:
+    server: {{ $issuer.server | default "https://acme-v02.api.letsencrypt.org/directory" }}
+    email: {{ $issuer.email | default "oscar@oscarr.nl" }}
+    privateKeySecretRef:
+      name: {{ $issuer.account_key | default "letsencrypt" }}
+    profile: {{ $issuer.profile | default "classic" }}
+    solvers:
+    {{- if $issuer.dns01 }}
+      - dns01:
+          cnameStrategy: Follow
+          cloudflare:
+            apiTokenSecretRef:
+              name: cloudflare-token-secret
+              key: api-token
+    {{- else if $issuer.http01 }}
+      - http01:
+          ingress:
+            class: traefik
+    {{- end }}
+{{- end }}
