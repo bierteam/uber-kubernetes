@@ -1,5 +1,5 @@
 {{- range $domain := .Values.domains }}
-{{- $noDotsDomain :=  regexReplaceAll "\\W+" $domain "-" | nospace }}
+{{- $noDotsDomain :=  regexReplaceAll "\\W+" $domain.name "-" | nospace }}
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -8,14 +8,14 @@ metadata:
 spec:
   secretName: {{ $noDotsDomain }}-tls
   issuerRef:
-    name: letsencrypt
+    name: {{ $domain.issuer | default "letsencrypt" }}
     kind: Issuer
   privateKey:
     rotationPolicy: Always
     algorithm: ECDSA
   dnsNames:
-    - "{{ $domain }}"
-    - "*.{{ $domain }}"
+    - "{{ $domain.name }}"
+    - "*.{{ $domain.name }}"
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
@@ -33,6 +33,6 @@ spec:
   tls:
     secretName: {{ $noDotsDomain }}-tls
     domains:
-      - main: "{{ $domain }}"
-      - sans: ["*.{{ $domain }}"]
+      - main: "{{ $domain.name }}"
+      - sans: ["*.{{ $domain.name }}"]
 {{- end }}

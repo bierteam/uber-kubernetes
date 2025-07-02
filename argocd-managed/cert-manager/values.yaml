@@ -1,20 +1,22 @@
 domains:
-  - 0scar.nl
-  - bruinsma.it
-  - devopscar.nl
-  - ditiskapot.nl
-  - ditwerktniet.nl
-  - doktermarjolein.nl
-  - hetmagkapot.nl
-  - hetmoetkapot.nl
-  - ishetkapot.nl
-  - lab.oscarr.nl
-  - maghetkapot.nl
-  - maghetwerken.nl
-  # - moethetkapot.nl
-  - moethetwerken.nl
-  - ninoo.nl
-  - oscarr.nl
+  - name: 0scar.nl
+    issuer: letsencrypt-shortlived
+  - name: bruinsma.it
+  - name: devopscar.nl
+  - name: ditiskapot.nl
+  - name: ditwerktniet.nl
+  - name: doktermarjolein.nl
+  - name: hetmagkapot.nl
+  - name: hetmoetkapot.nl
+  - name: ishetkapot.nl
+  - name: lab.oscarr.nl
+    issuer: letsencrypt-tlsserver
+  - name: maghetkapot.nl
+  - name: maghetwerken.nl
+  # - name: moethetkapot.nl
+  - name: moethetwerken.nl
+  - name: ninoo.nl
+  - name: oscarr.nl
 
 issuers:
   -
