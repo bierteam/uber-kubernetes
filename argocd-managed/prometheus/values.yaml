@@ -1,0 +1,5 @@
+grafana:
+  admin:
+    existingSecret: "kibana-credentials"
+    userKey: KIBANA_USERNAME
+    passwordKey: KIBANA_PASSWORD
