@@ -68,35 +68,41 @@ dex: # set values for wrapper/umbrella chart
           - "https://100.64.0.6:8006"
 
       - id: kubernetes
-        name: "Kubernetes"
+        name: Kubernetes
         public: true
 
       - id: argocd
-        name: "ArgoCD"
+        name: ArgoCD
         secretEnv: ARGOCD_CLIENT_SECRET
         redirectURIs:
           - https://argocd.lab.oscarr.nl/auth/callback
 
       - id: argocd-cli
-        name: "ArgoCD CLI"
+        name: ArgoCD CLI
         public: true
         redirectURIs:
           - http://localhost:8085/auth/callback
 
       - id: headscale
-        name: "Headscale"
+        name: Headscale
         secretEnv: HEADSCALE_CLIENT_SECRET
         redirectURIs:
           - https://headscale.oscarr.nl:443/oidc/callback
 
       - id: proxy-oscarr
-        name: "Oauth2 Proxy oscarr.nl"
+        name: Oauth2 Proxy oscarr.nl
         secretEnv: PROXY_OSCARR_CLIENT_SECRET
         redirectURIs:
           - https://proxy.lab.oscarr.nl/oauth2/callback
 
       - id: proxy-bruinsma
-        name: "Oauth2 Proxy bruinsma.it"
+        name: Oauth2 Proxy bruinsma.it
         secretEnv: PROXY_BRUINSMA_CLIENT_SECRET
         redirectURIs:
           - https://login.bruinsma.it/oauth2/callback
+
+      - id: rancher
+        name: Rancher
+        secretEnv: RANCHER_CLIENT_SECRET
+        redirectURIs:
+          - https://rancher.lab.oscarr.nl/verify-auth

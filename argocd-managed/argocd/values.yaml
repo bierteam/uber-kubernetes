@@ -6,7 +6,6 @@ argo-cd: # set values for wrapper/umbrella chart
     dynamicClusterDistribution: true
   configs:
     cm:
-      application.instanceLabelKey: app.kubernetes.io/instance
       url: https://argocd.lab.oscarr.nl
       oidc.config: |
         name: dex
@@ -19,12 +18,6 @@ argo-cd: # set values for wrapper/umbrella chart
       server.rbac.log.enforce.enable: "true"
       statusbadge.enabled: "true"
       resource.exclusions: |
-        - apiGroups:
-            - cilium.io
-          kinds:
-            - CiliumIdentity
-          clusters:
-            - "*"
         - apiGroups:
             - velero.io
           kinds:
