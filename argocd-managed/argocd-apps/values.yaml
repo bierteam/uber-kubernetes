@@ -18,7 +18,7 @@ argocdApps:
   - name: drinkn
     folder: charts/drinkn
     repository: drinkn
-  - name: external-secrets
+  # - name: external-secrets
   # - name: factorio
   - name: fixitloop
   # - name: friend-tracker
