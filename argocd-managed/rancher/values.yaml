@@ -1,6 +1,0 @@
-# https://github.com/rancher/rancher/blob/main/chart/values.yaml
-rancher: # set values for wrapper/umbrella chart
-  auditLog:
-    enabled: true
-  ingress:
-    enabled: false

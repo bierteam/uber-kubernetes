@@ -23,10 +23,10 @@ argocdApps:
   - name: fixitloop
   # - name: friend-tracker
   - name: kubeseal-webgui
+  - name: longhorn
+    namespace: longhorn-system
   # - name: metrics-server
   - name: misc
-  - name: rancher
-    namespace: cattle-system
   - name: rick
   # - name: rook-cluster
   #   folder: argocd-managed/rook/cluster

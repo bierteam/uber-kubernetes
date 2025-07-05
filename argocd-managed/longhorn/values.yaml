@@ -1,0 +1,4 @@
+# https://github.com/longhorn/charts/blob/v1.9.x/charts/longhorn/values.yaml
+longhorn: # set values for wrapper/umbrella chart
+  preUpgradeChecker:
+    jobEnabled: false
