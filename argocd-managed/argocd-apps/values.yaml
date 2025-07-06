@@ -25,6 +25,7 @@ argocdApps:
   - name: kubeseal-webgui
   - name: longhorn
     namespace: longhorn-system
+    podSecurity: privileged
   # - name: metrics-server
   - name: misc
   - name: rick

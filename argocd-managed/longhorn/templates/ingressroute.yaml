@@ -8,7 +8,7 @@ spec:
     - websecure
   routes:
     - kind: Rule
-      match: Host(`rancher.lab.oscarr.nl`)
+      match: Host(`longhorn.lab.oscarr.nl`)
       services:
-        - name: rancher
+        - name: longhorn-ui
           port: 80
