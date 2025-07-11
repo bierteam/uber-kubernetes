@@ -35,10 +35,10 @@ spec:
         pod-security.kubernetes.io/audit: restricted
         pod-security.kubernetes.io/warn: restricted
         {{- end }}
-        argocd.argoproj.io/instance: {{ $application.name }}
-      annotations:
-        argocd.argoproj.io/tracking-id: >-
-          {{ $application.name }}:app/Namespace:{{ $namespace }}/{{ $namespace }}
+      #   argocd.argoproj.io/instance: {{ $application.name }}
+      # annotations:
+      #   argocd.argoproj.io/tracking-id: >-
+      #     {{ $application.name }}:app/Namespace:{{ $namespace }}/{{ $namespace }}
     {{- if ne "false" ($application.autosync | toString) }}
     {{- include "autosync" . | indent 4 }}
     {{- end }}
