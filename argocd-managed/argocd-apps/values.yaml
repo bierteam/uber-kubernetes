@@ -11,6 +11,8 @@ argocdApps:
   # - name: cilium
   #   namespace: kube-system
   #   podSecurity: privileged
+  - name: cnpg
+    namespace: cnpg-system
   - name: cyberchef
   - name: dex
   # - name: dns-updater
