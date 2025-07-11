@@ -28,9 +28,8 @@ spec:
   destinations:
   - name: in-cluster
     namespace: drinkn-pr-*
-  clusterResourceWhitelist:
-  - group: ""
-    kind: Namespace
+  - name: in-cluster
+    namespace: drinkn-hooks
   namespaceResourceWhitelist:
   - group: '*'
     kind: '*'
