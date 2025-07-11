@@ -26,6 +26,7 @@ spec:
   syncPolicy:
     syncOptions:
       - CreateNamespace=true
+      - ServerSideApply={{- $application.serverSideApply | default "true" }}
     managedNamespaceMetadata:
       labels:
         pod-security.kubernetes.io/enforce: {{ $application.podSecurity | default "baseline" | toString }}
