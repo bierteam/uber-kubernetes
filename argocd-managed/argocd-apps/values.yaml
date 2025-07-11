@@ -20,6 +20,7 @@ argocdApps:
   - name: drinkn
     folder: charts/drinkn
     repository: drinkn
+  - name: drinkn-hooks
   # - name: external-secrets
   # - name: factorio
   - name: fixitloop
