@@ -56,6 +56,10 @@ spec:
           labels:
             pod-security.kubernetes.io/warn: restricted
             pod-security.kubernetes.io/enforce: baseline
+            argocd.argoproj.io/instance: my-argocd-application-name
+          annotations:
+            argocd.argoproj.io/tracking-id: >-
+              drinkn-pr-{{ .number }}:app/Namespace:drinkn-pr-{{ .number }}/drinkn-pr-{{ .number }}
         syncOptions:
           - CreateNamespace=true
 ---

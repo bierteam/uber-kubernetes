@@ -1,4 +1,5 @@
 {{- range $application := .Values.argocdApps }}
+{{- $namespace := $application.namespace | default $application.name }}
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: Application
@@ -10,7 +11,7 @@ metadata:
   {{- end }}
 spec:
   destination:
-    namespace: {{ $application.namespace | default $application.name }}
+    namespace: {{ $namespace }}
     server: https://kubernetes.default.svc
   project: default
   source:
@@ -34,6 +35,10 @@ spec:
         pod-security.kubernetes.io/audit: restricted
         pod-security.kubernetes.io/warn: restricted
         {{- end }}
+        argocd.argoproj.io/instance: {{ $application.name }}
+      annotations:
+        argocd.argoproj.io/tracking-id: >-
+          {{ $application.name }}:app/Namespace:{{ $namespace }}/{{ $namespace }}
     {{- if ne "false" ($application.autosync | toString) }}
     {{- include "autosync" . | indent 4 }}
     {{- end }}
