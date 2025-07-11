@@ -31,11 +31,14 @@ spec:
     - name: in-cluster
       namespace: drinkn-hooks
   clusterResourceBlacklist:
-    - group: '*'
-      kind: '*'
+    - group: "*"
+      kind: "*"
+  clusterResourceWhitelist:
+    - group: ""
+      kind: "Namespace"
   namespaceResourceWhitelist:
-    - group: '*'
-      kind: '*'
+    - group: "*"
+      kind: "*"
   orphanedResources:
     warn: true
   sourceRepos:
