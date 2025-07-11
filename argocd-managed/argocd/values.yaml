@@ -16,7 +16,7 @@ argo-cd: # set values for wrapper/umbrella chart
       admin.enabled: "false"
       users.anonymous.enabled: "true"
       server.rbac.log.enforce.enable: "true"
-      statusbadge.url: https://argocd.lab.oscarr.nl
+      statusbadge.url: https://argocd.lab.oscarr.nl/
       statusbadge.enabled: "true"
       resource.exclusions: |
         - apiGroups:
