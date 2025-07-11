@@ -26,13 +26,16 @@ metadata:
   namespace: argocd
 spec:
   destinations:
-  - name: in-cluster
-    namespace: drinkn-pr-*
-  - name: in-cluster
-    namespace: drinkn-hooks
+    - name: in-cluster
+      namespace: drinkn-pr-*
+    - name: in-cluster
+      namespace: drinkn-hooks
+  clusterResourceBlacklist:
+    - group: '*'
+      kind: '*'
   namespaceResourceWhitelist:
-  - group: '*'
-    kind: '*'
+    - group: '*'
+      kind: '*'
   orphanedResources:
     warn: true
   sourceRepos:
