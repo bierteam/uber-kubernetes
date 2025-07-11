@@ -1,0 +1,3 @@
+# https://github.com/cloudnative-pg/charts/blob/main/charts/cluster/values.yaml
+cluster: # set values for wrapper/umbrella chart
+  type: postgis
