@@ -18,6 +18,7 @@ spec:
   sourceRepos:
     - https://github.com/bierteam/uber-kubernetes.git
     - https://github.com/bierteam/drinkn.git
+    - https://github.com/bierteam/wildlife-api.git
 ---
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
@@ -43,3 +44,4 @@ spec:
     warn: true
   sourceRepos:
     - https://github.com/bierteam/drinkn.git
+    - https://github.com/bierteam/wildlife-api.git
