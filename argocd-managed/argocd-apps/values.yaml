@@ -58,3 +58,5 @@ argocdApps:
     podSecurity: privileged
   - name: test
   - name: wildlife-api
+    folder: charts
+    repository: wildlife-api
