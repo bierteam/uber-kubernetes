@@ -60,3 +60,6 @@ argocdApps:
   - name: wildlife-api
     folder: charts
     repository: wildlife-api
+  - name: wildlife-frontend
+    folder: charts
+    repository: wildlife-frontend
