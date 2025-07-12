@@ -57,3 +57,4 @@ argocdApps:
   - name: velero
     podSecurity: privileged
   - name: test
+  - name: wildlife-api
