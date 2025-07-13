@@ -26,9 +26,9 @@ argocdApps:
   - name: fixitloop
   # - name: friend-tracker
   - name: kubeseal-webgui
-  - name: longhorn
-    namespace: longhorn-system
-    podSecurity: privileged
+  # - name: longhorn
+  #   namespace: longhorn-system
+  #   podSecurity: privileged
   # - name: metrics-server
   - name: misc
   - name: rick
@@ -56,7 +56,6 @@ argocdApps:
   # - name: valheim
   - name: velero
     podSecurity: privileged
-  - name: test
   - name: wildlife-api
     folder: charts
     repository: wildlife-api
