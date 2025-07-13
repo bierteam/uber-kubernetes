@@ -1,6 +1,5 @@
 domains:
   - name: 0scar.nl
-    issuer: letsencrypt-tlsserver
     # issuer: letsencrypt-shortlived
   - name: bruinsma.it
   - name: devopscar.nl
@@ -11,7 +10,6 @@ domains:
   - name: hetmoetkapot.nl
   - name: ishetkapot.nl
   - name: lab.oscarr.nl
-    issuer: letsencrypt-tlsserver
   - name: maghetkapot.nl
   - name: maghetwerken.nl
   # - name: moethetkapot.nl
@@ -20,38 +18,34 @@ domains:
   - name: oscarr.nl
 
 issuers:
-  -
-    name: letsencrypt
+  # https://letsencrypt.org/docs/profiles/#classic
+  - name: letsencrypt
     profile: classic
     dns01: true
-  -
-    name: letsencrypt-http01
+  - name: letsencrypt-http01
     profile: classic
     http01: true
-  - 
-    name: letsencrypt-tlsserver
+  # https://letsencrypt.org/docs/profiles/#tlsserver
+  - name: letsencrypt-tlsserver
     profile: tlsserver
     dns01: true
-  -
-    name: letsencrypt-tlsserver-http01
+  - name: letsencrypt-tlsserver-http01
     profile: tlsserver
     http01: true
-  -
-    name: letsencrypt-shortlived
+  # https://letsencrypt.org/docs/profiles/#shortlived
+  - name: letsencrypt-shortlived
     profile: shortlived
     dns01: true
-  -
-    name: letsencrypt-shortlived-http01
+  - name: letsencrypt-shortlived-http01
     profile: shortlived
     http01: true
-  - 
-    name: letsencrypt-staging-shortlived
+  # https://letsencrypt.org/docs/staging-environment/
+  - name: letsencrypt-staging-shortlived
     server: https://acme-staging-v02.api.letsencrypt.org/directory
     profile: shortlived
     dns01: true
     account-key: letsencrypt-staging
-  - 
-    name: letsencrypt-staging-shortlived-http01
+  - name: letsencrypt-staging-shortlived-http01
     server: https://acme-staging-v02.api.letsencrypt.org/directory
     profile: shortlived
     http01: true
