@@ -1,2 +1,4 @@
 cluster:
   type: postgis
+  initdb:
+    database: wildlife
