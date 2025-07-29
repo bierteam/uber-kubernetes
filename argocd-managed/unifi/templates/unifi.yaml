@@ -12,7 +12,9 @@ spec:
     matchLabels:
       app: unifi
   volumeClaimTemplates:
-    - metadata:
+    - apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
         name: unifi
       spec:
         accessModes:

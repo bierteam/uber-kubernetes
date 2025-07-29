@@ -24,6 +24,7 @@ spec:
                   memory: 1024Mi
   users:
     - name: unifi
+      db: admin
       passwordSecretRef:
         name: mongo-init-pass
       scramCredentialsSecretName: unifi
