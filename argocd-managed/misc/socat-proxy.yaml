@@ -1,0 +1,141 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: socat-proxy
+  namespace: kube-system
+spec:
+  selector:
+    matchLabels:
+      app: socat-proxy
+  template:
+    metadata:
+      labels:
+        app: socat-proxy
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      restartPolicy: Always
+      priorityClassName: system-node-critical
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: "tpc-80"
+          image: docker.io/alpine/socat:1.8.0.3
+          args:
+            - "TCP6-LISTEN:80,reuseaddr,fork,nodelay,keepalive"
+            - "TCP4:127.0.0.1:80"
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: false
+            capabilities:
+              add:
+                - "NET_BIND_SERVICE"
+              drop:
+                - "ALL"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 10Mi
+            limits:
+              cpu: 20m
+              memory: 20Mi
+        - name: "tpc-443"
+          image: docker.io/alpine/socat:1.8.0.3
+          args:
+            - "TCP6-LISTEN:443,reuseaddr,fork,nodelay,keepalive"
+            - "TCP4:127.0.0.1:443"
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: false
+            capabilities:
+              add:
+                - "NET_BIND_SERVICE"
+              drop:
+                - "ALL"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 10Mi
+            limits:
+              cpu: 20m
+              memory: 20Mi
+        - name: "tpc-8080"
+          image: docker.io/alpine/socat:1.8.0.3
+          args:
+            - "TCP6-LISTEN:8080,reuseaddr,fork,nodelay,keepalive"
+            - "TCP4:127.0.0.1:8080"
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: false
+            capabilities:
+              add:
+                - "NET_BIND_SERVICE"
+              drop:
+                - "ALL"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 10Mi
+            limits:
+              cpu: 20m
+              memory: 20Mi
+        - name: "udp-80"
+          image: docker.io/alpine/socat:1.8.0.3
+          args:
+            - "UDP6-LISTEN:80,reuseaddr,fork"
+            - "UDP4:127.0.0.1:80"
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: false
+            capabilities:
+              add:
+                - "NET_BIND_SERVICE"
+              drop:
+                - "ALL"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 10Mi
+            limits:
+              cpu: 20m
+              memory: 20Mi
+        - name: "udp-443"
+          image: docker.io/alpine/socat:1.8.0.3
+          args:
+            - "UDP6-LISTEN:443,reuseaddr,fork"
+            - "UDP4:127.0.0.1:443"
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: false
+            capabilities:
+              add:
+                - "NET_BIND_SERVICE"
+              drop:
+                - "ALL"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 10Mi
+            limits:
+              cpu: 20m
+              memory: 20Mi
+        - name: "udp-8080"
+          image: docker.io/alpine/socat:1.8.0.3
+          args:
+            - "UDP6-LISTEN:8080,reuseaddr,fork"
+            - "UDP4:127.0.0.1:8080"
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: false
+            capabilities:
+              add:
+                - "NET_BIND_SERVICE"
+              drop:
+                - "ALL"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 10Mi
+            limits:
+              cpu: 20m
+              memory: 20Mi
