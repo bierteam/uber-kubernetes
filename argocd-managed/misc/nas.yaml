@@ -5,7 +5,7 @@ metadata:
   name: nas
 subsets:
   - addresses:
-      - ip: 100.64.0.12 # TODO fix this legacy ip
+      - ip: 192.168.123.5
     ports:
       - port: 5001
         name: synology
