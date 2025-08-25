@@ -2,6 +2,9 @@
 argo-cd: # set values for wrapper/umbrella chart
   global:
     revisionHistoryLimit: 0
+    image:
+      repository: quay.io/argoproj/argocd
+      tag: v3.1.0
   controller:
     dynamicClusterDistribution: true
   configs:
