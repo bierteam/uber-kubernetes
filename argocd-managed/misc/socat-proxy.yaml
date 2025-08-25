@@ -139,3 +139,23 @@ spec:
             limits:
               cpu: 20m
               memory: 20Mi
+        - name: "udp-31497"
+          image: docker.io/alpine/socat:1.8.0.3
+          args:
+            - "UDP6-LISTEN:31497,reuseaddr,fork"
+            - "UDP4:127.0.0.1:31497"
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: false
+            capabilities:
+              add:
+                - "NET_BIND_SERVICE"
+              drop:
+                - "ALL"
+          resources:
+            requests:
+              cpu: 10m
+              memory: 10Mi
+            limits:
+              cpu: 20m
+              memory: 20Mi

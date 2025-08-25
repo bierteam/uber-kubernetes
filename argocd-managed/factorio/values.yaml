@@ -1,44 +1,38 @@
 # https://github.com/SQLJames/factorio-server-charts/blob/main/charts/factorio-server-charts/values.yaml
 factorio-server-charts: # set values for wrapper/umbrella chart
+  hostNetworkEnabled: false
   image:
     repository: docker.io/factoriotools/factorio
     tag: "2.0.65"
   service:
     type: ClusterIP
     port: 31497
-  persistence:
-    storageClassName: ceph-filesystem
   rcon:
     external: false
   account:
-    accountSecret: account-secret
-  mods:
-    enabled: true
-    portal:
-      - Alien%20Biomes
-      - balanced-waterfill
-      - Bottleneck
-      - even-distribution
-      - Fill4Me
-      - FNEI
-      - RateCalculator
-      - Squeak%20Through
+    accountSecret: secret
+  # mods:
+  #   enabled: true
+  #   portal:
+  #     - Alien%20Biomes
+  #     - balanced-waterfill
+  #     - Bottleneck
+  #     - even-distribution
+  #     - Fill4Me
+  #     - FNEI
+  #     - RateCalculator
+  #     - Squeak%20Through
 
   factorioServer:
-    save_name: "Techforce1"
     generate_new_save: false
+    save_name: "server peter"
   import_save:
-    source_url: https://oscarr.nl/TF1_single.zip
+    source_url: https://oscarr.nl/server%20peter.zip
   server_settings:
-    name: Techforce1
-    description: "Factorio running on Kubernetes. Join with techforce-factorio.oscarr.nl"
-    tags:
-      - modded
+    name: GameDust
+    description: "Factorio running on Kubernetes. Join with gamedust.oscarr.nl"
     visibility:
       public: true
     require_user_verification: true
-    only_admins_can_pause_the_game: false
-  white_list:
-    - oscrx
-    - Shineless
-    - BlockCat
+  serverPassword:
+    passwordSecret: secret

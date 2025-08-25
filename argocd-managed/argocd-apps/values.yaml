@@ -22,7 +22,7 @@ argocdApps:
     repository: drinkn
   - name: drinkn-hooks
   # - name: external-secrets
-  # - name: factorio
+  - name: factorio
   - name: fixitloop
   # - name: friend-tracker
   - name: kubeseal-webgui

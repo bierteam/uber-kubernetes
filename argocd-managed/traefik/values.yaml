@@ -1,14 +1,12 @@
 # https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml
 traefik: # set values for wrapper/umbrella chart
   deployment:
-    # kind: DaemonSet
     revisionHistoryLimit: 0
 
   ports:
     web:
       expose:
         default: true
-      # hostPort: 80
       redirections:
         entryPoint:
           to: websecure
@@ -17,7 +15,6 @@ traefik: # set values for wrapper/umbrella chart
       expose:
         default: true
       # asDefault: true # supported in Traefik v3
-      # hostPort: 443
       http3:
         enabled: true
         advertisedPort: 443
@@ -26,18 +23,13 @@ traefik: # set values for wrapper/umbrella chart
     unifi-inform:
       expose:
         default: true
-      # hostPort: 8080
       port: 8081
       exposedPort: 8080
     factorio:
       expose:
         default: true
-      # hostPort: 34210
-      port: 34210
+      port: 31497
       protocol: UDP
-
-  # service:
-  #   enabled: false
 
   ingressRoute:
     dashboard:
