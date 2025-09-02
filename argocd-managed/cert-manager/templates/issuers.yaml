@@ -12,13 +12,24 @@ spec:
       name: {{ $issuer.account_key | default "letsencrypt" }}
     profile: {{ $issuer.profile | default "classic" }}
     solvers:
-    {{- if $issuer.dns01 }}
+    {{- if $issuer.cloudflare }}
       - dns01:
           cnameStrategy: Follow
           cloudflare:
             apiTokenSecretRef:
               name: cloudflare-token-secret
               key: api-token
+    {{- else if $issuer.servfail }}
+      - dns01:
+          cnameStrategy: Follow
+          webhook:
+            groupName: acme.zacharyseguin.ca
+            solverName: pdns
+            config:
+              host: https://beta.servfail.network
+              apiKeySecretRef:
+                name: servfail-api-key
+                key: key
     {{- else if $issuer.http01 }}
       - http01:
           ingress:

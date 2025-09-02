@@ -15,6 +15,7 @@ domains:
   # - name: moethetkapot.nl
   - name: moethetwerken.nl
   - name: n14f.nl
+    issuer: letsencrypt-staging-shortlived-servfail
   - name: ninoo.nl
   - name: oscarr.nl
 
@@ -22,21 +23,21 @@ issuers:
   # https://letsencrypt.org/docs/profiles/#classic
   - name: letsencrypt
     profile: classic
-    dns01: true
+    cloudflare: true
   - name: letsencrypt-http01
     profile: classic
     http01: true
   # https://letsencrypt.org/docs/profiles/#tlsserver
   - name: letsencrypt-tlsserver
     profile: tlsserver
-    dns01: true
+    cloudflare: true
   - name: letsencrypt-tlsserver-http01
     profile: tlsserver
     http01: true
   # https://letsencrypt.org/docs/profiles/#shortlived
   - name: letsencrypt-shortlived
     profile: shortlived
-    dns01: true
+    cloudflare: true
   - name: letsencrypt-shortlived-http01
     profile: shortlived
     http01: true
@@ -44,12 +45,17 @@ issuers:
   - name: letsencrypt-staging-shortlived
     server: https://acme-staging-v02.api.letsencrypt.org/directory
     profile: shortlived
-    dns01: true
+    cloudflare: true
     account-key: letsencrypt-staging
   - name: letsencrypt-staging-shortlived-http01
     server: https://acme-staging-v02.api.letsencrypt.org/directory
     profile: shortlived
     http01: true
+    account-key: letsencrypt-staging
+  - name: letsencrypt-staging-shortlived-servfail
+    server: https://acme-staging-v02.api.letsencrypt.org/directory
+    profile: shortlived
+    servfail: true
     account-key: letsencrypt-staging
 
 # https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml
