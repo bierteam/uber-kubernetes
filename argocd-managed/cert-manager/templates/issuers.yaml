@@ -27,6 +27,7 @@ spec:
             solverName: pdns
             config:
               host: https://beta.servfail.network
+              serverID: ns1.famfo.xyz.
               apiKeySecretRef:
                 name: servfail-api-key
                 key: key
