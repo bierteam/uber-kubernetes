@@ -1,0 +1,19 @@
+# https://github.com/kubernetes-sigs/external-dns/blob/master/charts/external-dns/values.yaml
+external-dns: # set values for wrapper/umbrella chart
+  image:
+    repository: registry.k8s.io/external-dns/external-dns
+    tag: v0.19.0
+  provider:
+    name: cloudflare
+  sources:
+    - crd
+    - service
+    - ingress
+    - traefik-proxy
+  policy: sync
+  env:
+    - name: CF_API_TOKEN
+      valueFrom:
+        secretKeyRef:
+          name: cloudflare
+          key: token
