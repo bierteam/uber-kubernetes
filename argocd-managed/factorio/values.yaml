@@ -3,7 +3,7 @@ factorio-server-charts: # set values for wrapper/umbrella chart
   hostNetworkEnabled: false
   image:
     repository: docker.io/factoriotools/factorio
-    tag: "2.0.66"
+    tag: "2.0.67"
   service:
     type: ClusterIP
     port: 31497
