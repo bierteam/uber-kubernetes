@@ -1,0 +1,96 @@
+---
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: ninoo-nl
+spec:
+  endpoints:
+    - dnsName: ninoo.nl
+      recordTTL: 1
+      recordType: CNAME
+      targets:
+        - kubernetes.oscarr.nl
+    - dnsName: "*.ninoo.nl"
+      recordTTL: 1
+      recordType: CNAME
+      targets:
+        - kubernetes.oscarr.nl
+    - dnsName: ninoo.nl
+      recordTTL: 1
+      recordType: CAA
+      targets:
+        - 0 issue letsencrypt.org
+        - 0 issuewild letsencrypt.org
+        - 0 iodef mailto:caa@oscarr.nl
+---
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: devopscar-nl
+spec:
+  endpoints:
+    - dnsName: devopscar.nl
+      recordTTL: 1
+      recordType: CNAME
+      targets:
+        - kubernetes.oscarr.nl
+    - dnsName: "*.devopscar.nl"
+      recordTTL: 1
+      recordType: CNAME
+      targets:
+        - kubernetes.oscarr.nl
+    - dnsName: devopscar.nl
+      recordTTL: 1
+      recordType: CAA
+      targets:
+        - 0 issue letsencrypt.org
+        - 0 issuewild letsencrypt.org
+        - 0 iodef mailto:caa@oscarr.nl
+    - dnsName: devopscar.nl
+      recordTTL: 1
+      recordType: TXT
+      targets:
+        - v=spf1 -all
+    - dnsName: _keybase.devopscar.nl
+      recordTTL: 1
+      recordType: TXT
+      targets:
+        - keybase-site-verification=IkBr0bljo6ldzMAmo1qRacy1frBihmnGYJ0J8slDKRw
+---
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: oscarr-nl
+spec:
+  endpoints:
+    - dnsName: oscarr.nl
+      recordTTL: 1
+      recordType: CNAME
+      targets:
+        - kubernetes.oscarr.nl
+    - dnsName: oscarr.nl
+      recordTTL: 1
+      recordType: CAA
+      targets:
+        - 0 issue letsencrypt.org
+        - 0 issuewild letsencrypt.org
+        - 0 iodef mailto:caa@oscarr.nl
+---
+apiVersion: externaldns.k8s.io/v1alpha1
+kind: DNSEndpoint
+metadata:
+  name: doktermarjolein-nl
+spec:
+  endpoints:
+    - dnsName: doktermarjolein.nl
+      recordTTL: 1
+      recordType: CNAME
+      targets:
+        - kubernetes.oscarr.nl
+    - dnsName: doktermarjolein.nl
+      recordTTL: 1
+      recordType: CAA
+      targets:
+        - 0 issue letsencrypt.org
+        - 0 issuewild letsencrypt.org
+        - 0 iodef mailto:caa@oscarr.nl
