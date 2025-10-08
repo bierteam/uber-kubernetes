@@ -10,6 +10,22 @@ external-dns: # set values for wrapper/umbrella chart
     - service
     - ingress
     - traefik-proxy
+  triggerLoopOnEvent: true
+  registry: txt
+  txtOwnerId: unds
+  txtPrefix: owned-by-
+  interval: 5m
+  managedRecordTypes:
+    - A
+    - AAAA
+    - CAA
+    - CNAME
+    - MX
+    - NS
+    - PTR
+    - SRV
+    - TLSA
+    - TXT
   policy: sync
   env:
     - name: CF_API_TOKEN
