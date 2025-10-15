@@ -4,7 +4,7 @@ type: application
 version: 1.0.0
 dependencies:
   - name: cert-manager
-    version: v1.19.0
+    version: v1.19.1
     repository: https://charts.jetstack.io
   - name: cert-manager-webhook-pdns
     version: v3.2.3
