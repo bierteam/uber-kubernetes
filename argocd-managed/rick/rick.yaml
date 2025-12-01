@@ -267,7 +267,7 @@ spec:
     spec:
       containers:
         - name: rick
-          image: joseluisq/static-web-server:2.39.0
+          image: joseluisq/static-web-server:2.40.0
           ports:
             - containerPort: 80
           volumeMounts:
