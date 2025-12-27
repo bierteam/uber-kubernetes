@@ -14,14 +14,15 @@ spec:
       labels:
         app: static-files
     spec:
+      automountServiceAccountToken: false
       containers:
-        - name: nginx
-          image: joseluisq/static-web-server:2.40.1
+        - name: sws
+          image: ghcr.io/static-web-server/static-web-server:2.40.1
           ports:
             - containerPort: 80
           volumeMounts:
             - name: static-files
-              mountPath: /public/.well-known/
+              mountPath: /public/static-files
           resources:
             requests:
               cpu: "10m"
@@ -29,28 +30,28 @@ spec:
             limits:
               cpu: "10m"
               memory: "16Mi"
+          args:
+            - --root=/public
+            - --log-level=info
+            - --health
           livenessProbe:
             httpGet:
-              path: /
+              path: /health
               port: 80
           readinessProbe:
             httpGet:
-              path: /
+              path: /health
               port: 80
           securityContext:
             allowPrivilegeEscalation: false
-            # TODO
-            # runAsNonRoot: true
-            # capabilities:
-            #   drop: ["ALL"]
+            readOnlyRootFilesystem: true
+            runAsUser: 65532
+            runAsNonRoot: true
+            capabilities:
+              drop: ["ALL"]
             seccompProfile:
               type: RuntimeDefault
       volumes:
         - name: static-files
           configMap:
             name: static-files
-            items:
-              - key: security.txt
-                path: security.txt
-              - key: keybase.txt
-                path: keybase.txt

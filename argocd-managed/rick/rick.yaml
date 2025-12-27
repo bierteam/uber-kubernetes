@@ -190,6 +190,8 @@ data:
         link.href = "https://www.linkedin.com/in/nino-van-der-laan-baa3421ab/"
       } else if (currentURL.includes("0scar.nl")) {
         link.href = "https://www.linkedin.com/in/oscar-wieman/"
+      } else if (currentURL.includes("oscarrr.nl")) {
+        link.href = "https://www.linkedin.com/in/oscar-wieman/"
       } else if (currentURL.includes("doktermarjolein.nl")) {
         link.href = "https://www.linkedin.com/in/marjolein-v-61969514a/"
       } else {
@@ -265,9 +267,10 @@ spec:
       labels:
         app: rick
     spec:
+      automountServiceAccountToken: false
       containers:
-        - name: rick
-          image: joseluisq/static-web-server:2.40.1
+        - name: sws
+          image: ghcr.io/static-web-server/static-web-server:2.40.1
           ports:
             - containerPort: 80
           volumeMounts:
@@ -280,35 +283,31 @@ spec:
             limits:
               cpu: "10m"
               memory: "16Mi"
+          args:
+            - --root=/public
+            - --log-level=info
+            - --health
           livenessProbe:
             httpGet:
-              path: /
+              path: /health
               port: 80
           readinessProbe:
             httpGet:
-              path: /
+              path: /health
               port: 80
           securityContext:
             allowPrivilegeEscalation: false
-            # TODO
-            # runAsNonRoot: true
-            # capabilities:
-            #   drop: ["ALL"]
+            readOnlyRootFilesystem: true
+            runAsUser: 65532
+            runAsNonRoot: true
+            capabilities:
+              drop: ["ALL"]
             seccompProfile:
               type: RuntimeDefault
       volumes:
         - name: rick
           configMap:
             name: rick
-            items:
-              - key: index.html
-                path: index.html
-              - key: style.css
-                path: style.css
-              - key: script.js
-                path: script.js
-              - key: linkedin.png
-                path: linkedin.png
 ---
 apiVersion: v1
 kind: Service
@@ -330,7 +329,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host(`ninoo.nl`) || Host(`doktermarjolein.nl`) || Host(`0scar.nl`)
+    - match: Host(`ninoo.nl`) || Host(`doktermarjolein.nl`) || Host(`0scar.nl`) || Host(`oscarrr.nl`)
       kind: Rule
       middlewares:
         - name: security-headers

@@ -18,6 +18,11 @@ domains:
     issuer: letsencrypt-tlsserver-servfail
   - name: ninoo.nl
   - name: oscarr.nl
+  - name: oscarrr.nl
+
+ips:
+  - address: 77.171.172.211
+  - address: 2a02:a470:edcd:0:6f78:5b85:b616:1b18
 
 issuers:
   # https://letsencrypt.org/docs/profiles/#classic

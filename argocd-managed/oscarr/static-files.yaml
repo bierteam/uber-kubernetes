@@ -13,7 +13,7 @@ data:
 
     Contact: mailto:security@oscarr.nl
     Contact: https://github.com/bierteam/uber-kubernetes/security/advisories/new
-    Expires: 2026-04-27T22:00:00.000Z
+    Expires: 2026-12-27T22:00:00.000Z
     Encryption: https://keybase.io/oscrx/key.asc
     Preferred-Languages: nl, en
     Canonical: https://oscarr.nl/.well-known/security.txt
@@ -23,19 +23,19 @@ data:
     # Easily check the signature at: https://keybase.io/verify
     -----BEGIN PGP SIGNATURE-----
 
-    iQIzBAEBCAAdFiEEpwez+rJ156oyNxEKZLg5wX4x8VEFAmRL8RoACgkQZLg5wX4x
-    8VEMzhAAz2HgWV8us5RHMeDKg+AP9YvS4/KdhSVXfmwVsfQ9sv1U7NNPjT9jrj9M
-    EaAQdOUmZJJjx+Xr4FRP9RM7lsV0OXZLStmb0uhlrPYnPTEEq9pu9b3G+7WF9kit
-    mcvJjQ9iBJUdhPP7gSbOhQHy0y17x0MkbeR4T+XRMKsOijobDQHVpnJrNStTIPLl
-    VdKL5O7FM6FCoonrXGnrtGVzXm5+imxW8XbQH9aB4tDSiDCtog7h8WdcWT/ZRikl
-    GVV1Rhqwgl0gVLfl1SkWT4v+H+8+UvO9IztgGn/U1ZKKNsGxtBf/eZrSpwoKLltu
-    FwJA02T4wpJNU19ghF0wL08PnioIFI7nP0IVK/ORi3fyZ9UsCRIIRmDKdcmrNBPs
-    ns/2yQSNX2j4tzUldkLI4q0DrZLovrGV7RfJEw6pvty/noyDMNe5CWk0c7aRWU/s
-    lakYv0hUqkUVZV9c5+gOjdq+QwHQFgq6TItsMCpaZU1GYmv9+EgQspVE/bRotg2R
-    qS+FM8a4UwtiaL49duHa8Io2pqieZeYexlPNew9yD+JKB4yX6hoD803UIIEbaIgu
-    EjbkhEoDhsbK8bSQrEKRnPdUz7u8NIie+rkRBYOp4jd3PaKj/1oi5nLjM2idpBsh
-    Yz+wYeKJvAY2OYEDKZB/xg40mqMm9WnrITmFfvcq8Jx1x3VSsk0=
-    =NJwf
+    iQIzBAEBCAAdFiEE0hY15QtR979uxVFZSEFwNrf1kvAFAmlQXnQACgkQSEFwNrf1
+    kvDlIg//UUhs+30BeXyc/LS6ZqrUd7xUe2I6hLUDvzDITprsZqkx6yESQzLkTkjR
+    x+L7OIgF0T5WOzcJ6v5+RpB5W+2XbXbbUGJaKl3GT6nq9HqcE4xCYTnkrDjMAlKH
+    cKvH0h8R2CLcXQyrCwcgclcTl3DjAuEYec2teFwhjOKET2b9GvAIgQQZi+PHlo93
+    6MBzELkrp2aT8J4mr4zI8GZtjNPRPfIoQw8/jp2Hirrb1QgFf+2k2AWU3/ThkVen
+    zwe7i9Or4gkCL+mYclR1KSeKxfxjBDAhKOIuPiCKt3G+Mb3PlFuWdSmpLceChtjl
+    gO3j2JwLJ9jElAX4TIhkw7e60SdzFTV3M/l9H4C7Mf6qowkreKCAbu5aanh1XKy+
+    LdBr0nQ/oT3Ooq7mBvFOnqbnpIZQfJYMIed0QTdQUgIwKZqLlCs5uDamMXqxliQB
+    HJWan2icDK7npHIjSxbkEnNSDfrN9u78jf0MWwbISN5wORIk0NtkmwZb7s0XnZcX
+    ZpP4CRcET87kEfI7Vp1RaENq871Mi9fOPrR51AWhmpofSvvpI+4sj/k7orpIU8Ut
+    nWtIEQVuPvcExo5fqRSPo+jybVMCA5Md/tbBY+ZWqwEjjx5oXg/LjeLWvaJRATds
+    hWkmo8DT7spNdfAYXBY3lcBO1aHUpbOrpIBImJWFvT1a2quJcwM=
+    =J8Vq
     -----END PGP SIGNATURE-----
   keybase.txt: |
     ==================================================================
@@ -283,3 +283,14 @@ data:
     View my publicly-auditable identity here: https://keybase.io/oscrx
 
     ==================================================================
+  hackerman.html: |
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <title>Hackerman</title>
+    </head>
+    <body>
+      <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExZjN2enkybmsxZDlwendocWdqOGR1b290Z2p6MXV1YWpyNGpvcDlrNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/MM0Jrc8BHKx3y/giphy.gif" alt="Hackerman">
+    </body>
+    </html>

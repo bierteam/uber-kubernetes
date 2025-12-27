@@ -24,6 +24,7 @@ spec:
       priority: 1000 # high prio to overwrite any ingressroute
       middlewares:
         - name: security-txt-redirect
+        - name: security-txt-replacepath
         - name: security-headers
       services:
         - name: static-files
@@ -39,6 +40,14 @@ spec:
     replacement: https://oscarr.nl/.well-known/security.txt
 ---
 apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: security-txt-replacepath
+spec:
+  replacePath:
+    path: "/static-files/security.txt"
+---
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: keybase-txt
@@ -51,6 +60,7 @@ spec:
       kind: Rule
       middlewares:
         - name: keybase-txt-redirect
+        - name: keybase-txt-replacepath
         - name: security-headers
       services:
         - name: static-files
@@ -64,6 +74,38 @@ spec:
   redirectRegex:
     regex: https://(.*).nl/keybase.txt
     replacement: https://${1}.nl/.well-known/keybase.txt
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: keybase-txt-replacepath
+spec:
+  replacePath:
+    path: "/static-files/keybase.txt"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: hackerman
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`77.171.172.211`)
+      kind: Rule
+      middlewares:
+        - name: hackerman
+      services:
+        - name: static-files
+          port: 80
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: hackerman
+spec:
+  replacePath:
+    path: /static-files/hackerman.html
 ---
 apiVersion: traefik.io/v1alpha1
 kind: Middleware

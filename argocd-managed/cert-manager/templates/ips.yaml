@@ -1,0 +1,36 @@
+{{- range $ip := .Values.ips }}
+{{- $noDotsIP :=  regexReplaceAll "\\W+" $ip.address "-" | nospace }}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ $noDotsIP }}
+spec:
+  secretName: {{ $noDotsIP }}-tls
+  issuerRef:
+    name: {{ $ip.issuer | default "letsencrypt-shortlived-http01" }}
+    kind: Issuer
+  privateKey:
+    rotationPolicy: Always
+    algorithm: ECDSA
+  ipAddresses:
+    - "{{ $ip.address }}"
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: traefik-tls-{{ $noDotsIP }}
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`fake`)
+      kind: Rule
+      services:
+        - name: noop@internal
+          kind: TraefikService
+  tls:
+    secretName: {{ $noDotsIP }}-tls
+    domains:
+      - main: "{{ $ip.address }}"
+{{- end }}

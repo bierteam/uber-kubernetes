@@ -33,6 +33,7 @@ argocdApps:
   # - name: metrics-server
   - name: misc
   - name: rick
+    podSecurity: restricted
   # - name: rook-cluster
   #   folder: argocd-managed/rook/cluster
   #   namespace: rook-ceph
@@ -48,6 +49,7 @@ argocdApps:
     # podSecurity: privileged
   - name: unifi
   - name: oscarr
+    podSecurity: restricted
   - name: proxy-oscarr
     folder: argocd-managed/oauth2-proxy
     valuesFile: values-oscarr.yaml
