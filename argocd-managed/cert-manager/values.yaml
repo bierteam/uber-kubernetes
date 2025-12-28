@@ -1,11 +1,13 @@
 domains:
   - name: 0scar.nl
-    # issuer: letsencrypt-shortlived
+    issuer: letsencrypt-shortlived-servfail
   - name: bruinsma.it
   - name: devopscar.nl
+    issuer: letsencrypt-shortlived
   - name: ditiskapot.nl
   - name: ditwerktniet.nl
   - name: doktermarjolein.nl
+    issuer: letsencrypt-shortlived
   - name: hetmagkapot.nl
   - name: hetmoetkapot.nl
   - name: ishetkapot.nl
@@ -17,8 +19,10 @@ domains:
   - name: n14f.nl
     issuer: letsencrypt-tlsserver-servfail
   - name: ninoo.nl
+    issuer: letsencrypt-shortlived
   - name: oscarr.nl
   - name: oscarrr.nl
+    issuer: letsencrypt-shortlived-servfail
 
 ips:
   - address: 77.171.172.211
