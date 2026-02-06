@@ -5,41 +5,49 @@ traefik: # set values for wrapper/umbrella chart
 
   ports:
     web:
-      expose:
-        default: true
-      redirections:
-        entryPoint:
-          to: websecure
-          scheme: https
+      http:
+        expose:
+          default: true
+        redirections:
+          entryPoint:
+            to: websecure
+            scheme: https
     websecure:
-      expose:
-        default: true
-      # asDefault: true # supported in Traefik v3
-      http3:
-        enabled: true
-        advertisedPort: 443
-      middlewares:
-        - traefik-hsts@kubernetescrd
+      http:
+        expose:
+          default: true
+        # asDefault: true # supported in Traefik v3
+        http3:
+          enabled: true
+          advertisedPort: 443
+        middlewares:
+          - traefik-hsts@kubernetescrd
     unifi-inform:
-      expose:
-        default: true
-      port: 8081
-      exposedPort: 8080
+      http:
+        expose:
+          default: true
+        port: 8081
+        exposedPort: 8080
     factorio:
-      expose:
-        default: true
-      port: 31497
-      protocol: UDP
+      http:
+        expose:
+          default: true
+        port: 31497
+        protocol: UDP
 
   ingressRoute:
     dashboard:
       enabled: false
 
-  # Workaround to use traefik as DaemonSet instead of Deployment
-  # updateStrategy:
-  #   rollingUpdate:
-  #     maxUnavailable: 1
-  #     maxSurge: 0
+  providers:
+    kubernetesGateway:
+      enabled: true
+      experimentalChannel: true
+      # statusAddress:
+      #   service:
+      #     enabled: true
+      #     name: ""
+      #     namespace: ""
 
   logs:
     general:
