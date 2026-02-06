@@ -29,11 +29,10 @@ traefik: # set values for wrapper/umbrella chart
         port: 8081
         exposedPort: 8080
     factorio:
-      http:
-        expose:
-          default: true
-        port: 31497
-        protocol: UDP
+      expose:
+        default: true
+      port: 31497
+      protocol: UDP
 
   ingressRoute:
     dashboard:
