@@ -1,0 +1,5 @@
+talos-ipv6-only-cluster-talos-ipv6-only-01.yaml
+talosconfig
+talos-ipv6-only-cluster-controlplane.yaml
+talos-ipv6-only-cluster-ede.yaml
+talos-ipv6-only-cluster-houten.yaml

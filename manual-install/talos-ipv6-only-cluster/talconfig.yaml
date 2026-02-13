@@ -1,0 +1,194 @@
+---
+# https://budimanjojo.github.io/talhelper/latest/reference/configuration/#config
+clusterName: talos-ipv6-only-cluster
+endpoint: https://[2a02:a470:edcd:0:beef::]:6443
+allowSchedulingOnControlPlanes: true
+kubernetesVersion: v1.35.1
+talosVersion: v1.12.4
+clusterPodNets:
+  - fd05:4786:835f::/48
+clusterSvcNets:
+  - fd26:4340:84fe::/112
+# cniConfig: # TODO cilium install at bootstrap
+#   name: none
+nodes:
+  - hostname: ede
+    ignoreHostname: true
+    controlPlane: true
+    ipAddress: 2a02:a470:edcd:0:be24:11ff:fe6c:6e3d, 2a02:a470:edcd:0:be24:11ff:fedb:8c0f
+    installDisk: /dev/sda
+    networkInterfaces:
+      - interface: ens18
+        vip:
+          ip: "2a02:a470:edcd:0:beef::"
+  - hostname: houten
+    ignoreHostname: true
+    controlPlane: true
+    ipAddress: 2a05:f080:0:3800:be24:11ff:fe64:a994
+    installDisk: /dev/sda
+    networkInterfaces:
+      - interface: ens18
+        vip:
+          ip: "2a05:f080:0:3800:beef::"
+  # - hostname: haarzuilens
+  #   ignoreHostname: true
+  #   controlPlane: true
+  #   ipAddress: 
+  #   installDisk: /dev/sda
+  #   networkInterfaces:
+  #     - interface: ens18
+  #       vip:
+  #         ip: "???:beef::"
+controlPlane:
+  nameservers:
+    # - 2606:4700:4700::64
+    # - 2606:4700:4700::6400
+    - 2a00:1098:2b::1 # https://nat64.net/public-providers
+  schematic:
+    customization:
+      systemExtensions:
+        officialExtensions:
+          - siderolabs/qemu-guest-agent
+          # - siderolabs/cloudflared
+          # - siderolabs/tailscale
+          # - siderolabs/wasmedge
+  machineSpec:
+    mode: metal
+    arch: amd64
+    secureboot: true
+patches:
+  - |- # Force ipv6 only
+    apiVersion: v1alpha1
+    kind: DHCPv6Config
+    name: ens18
+  - |- # Cilium settings
+    cluster:
+      # proxy:
+      #   disabled: true
+  - |- # restrict namespaces even more https://docs.siderolabs.com/kubernetes-guides/security/pod-security
+    cluster:
+      apiServer:
+        admissionControl:
+          - name: PodSecurity
+            configuration:
+              defaults:
+                enforce: restricted
+  - |- # OIDC authentication
+    cluster:
+      apiServer:
+        extraArgs:
+          oidc-client-id: kubernetes
+          oidc-groups-claim: groups
+          oidc-issuer-url: https://auth.oscarr.nl
+          oidc-username-claim: preferred_username
+  # - |- # Kubespan
+  #   machine:
+  #     network:
+  #       kubespan:
+  #         enabled: true
+  - |- # https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates
+    cluster:
+      apiServer:
+        extraArgs:
+          feature-gates: "\
+          ClusterTrustBundle=true,\
+          ClusterTrustBundleProjection=true,\
+          ComponentFlagz=true,\
+          ComponentStatusz=true,\
+          ConstrainedImpersonation=true,\
+          ContainerCheckpoint=true,\
+          CRDObservedGenerationTracking=true,\
+          GangScheduling=true,\
+          GenericWorkload=true,\
+          InPlacePodLevelResourcesVerticalScaling=true,\
+          MutablePVNodeAffinity=true,\
+          MutableSchedulingDirectivesForSuspendedJobs=true,\
+          NodeDeclaredFeatures=true,\
+          RestartAllContainersOnContainerExits=true,\
+          StorageVersionMigrator=true,\
+          TaintTolerationComparisonOperators=true,\
+          UserNamespacesHostNetworkSupport=true,\
+          UserNamespacesSupport=true,\
+          "
+  - |- # https://docs.siderolabs.com/kubernetes-guides/security/usernamespace
+    machine:
+      sysctls:
+        user.max_user_namespaces: "11255"
+      kubelet:
+        extraConfig:
+          featureGates:
+            UserNamespacesSupport: true
+  - |- # https://docs.siderolabs.com/kubernetes-guides/monitoring-and-observability/deploy-metrics-server
+    machine:
+      kubelet:
+        extraArgs:
+          rotate-server-certificates: true
+    cluster:
+      extraManifests:
+        - https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/main/deploy/standalone-install.yaml
+        - https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+  - |- # miscellaneous
+    machine:
+      kubelet:
+        nodeIP:
+          validSubnets:
+            - 2000::/3
+      features:
+        hostDNS:
+          enabled: false # https://github.com/siderolabs/talos/issues/9372
+          forwardKubeDNSToHost: false
+  - |- # Watchdog configuration to auto-reboot on stuck vm
+    apiVersion: v1alpha1
+    kind: WatchdogTimerConfig
+    device: /dev/watchdog0 # Path to the watchdog device.
+    timeout: 5m0s # Timeout for the watchdog.
+  - |- # https://docs.siderolabs.com/talos/v1.12/configure-your-talos-cluster/storage-and-disk-management/disk-encryption
+    apiVersion: v1alpha1
+    kind: VolumeConfig
+    name: STATE
+    encryption:
+      provider: luks2
+      keys:
+      - tpm: {}
+        slot: 0
+  - |- # https://docs.siderolabs.com/talos/v1.12/configure-your-talos-cluster/storage-and-disk-management/disk-encryption
+    apiVersion: v1alpha1
+    kind: VolumeConfig
+    name: EPHEMERAL
+    provisioning:
+      diskSelector:
+        match: 'system_disk'
+      maxSize: 50GiB
+    encryption:
+      provider: luks2
+      keys:
+        - tpm: {}
+          slot: 0
+  - |- # https://docs.siderolabs.com/talos/v1.12/configure-your-talos-cluster/storage-and-disk-management/swap
+    apiVersion: v1alpha1
+    kind: SwapVolumeConfig
+    name: swap
+    provisioning:
+      diskSelector:
+        match: 'system_disk'
+      minSize: 4GiB
+      maxSize: 12GiB
+    encryption:
+      provider: luks2
+      keys:
+        - slot: 0
+          tpm: {}
+  - |- # https://docs.siderolabs.com/talos/v1.12/configure-your-talos-cluster/storage-and-disk-management/swap#zswap
+    apiVersion: v1alpha1
+    kind: ZswapConfig
+    maxPoolPercent: 25
+    shrinkerEnabled: true
+  - |- # https://docs.siderolabs.com/talos/v1.12/configure-your-talos-cluster/storage-and-disk-management/swap#swap-tuning
+    machine:
+      kubelet:
+        extraConfig:
+          memorySwap:
+            swapBehavior: LimitedSwap
+      sysctls:
+        vm.swappiness: 130
+        vm.page-cluster: 0
