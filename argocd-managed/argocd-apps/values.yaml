@@ -24,7 +24,6 @@ argocdApps:
   - name: external-dns
   # - name: external-secrets
   - name: factorio
-  - name: fixitloop
   - name: friend-tracker
   - name: kubeseal-webgui
   # - name: longhorn

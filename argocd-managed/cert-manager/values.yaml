@@ -3,27 +3,15 @@ domains:
     issuer: letsencrypt-shortlived-servfail
   - name: bruinsma.it
   - name: devopscar.nl
-    issuer: letsencrypt-shortlived
-  - name: ditiskapot.nl
-  - name: ditwerktniet.nl
   - name: doktermarjolein.nl
-    issuer: letsencrypt-shortlived
-  - name: hetmagkapot.nl
-  - name: hetmoetkapot.nl
-  - name: ishetkapot.nl
   - name: lab.oscarr.nl
-  - name: maghetkapot.nl
-  - name: maghetwerken.nl
-  - name: moethetwerken.nl
   - name: ninoo.nl
-    issuer: letsencrypt-shortlived
   - name: oscarr.nl
   - name: oscarrr.nl
     issuer: letsencrypt-shortlived-servfail
 
 ips:
-  - address: 77.171.172.211
-  # - address: 2a02:a470:edcd:0:6f78:5b85:b616:1b18
+  - address: 185.132.110.37
 
 issuers:
   # https://letsencrypt.org/docs/profiles/#classic

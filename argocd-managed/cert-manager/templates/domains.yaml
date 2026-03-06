@@ -8,7 +8,7 @@ metadata:
 spec:
   secretName: {{ $noDotsDomain }}-tls
   issuerRef:
-    name: {{ $domain.issuer | default "letsencrypt-tlsserver" }}
+    name: {{ $domain.issuer | default "letsencrypt-shortlived" }}
     kind: Issuer
   privateKey:
     rotationPolicy: Always
