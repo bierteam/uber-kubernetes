@@ -25,7 +25,7 @@ argocdApps:
   # - name: external-secrets
   - name: factorio
   - name: fixitloop
-  # - name: friend-tracker
+  - name: friend-tracker
   - name: kubeseal-webgui
   # - name: longhorn
   #   namespace: longhorn-system
