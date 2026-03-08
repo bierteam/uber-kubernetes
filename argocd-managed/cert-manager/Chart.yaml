@@ -7,5 +7,5 @@ dependencies:
     version: v1.19.4
     repository: https://charts.jetstack.io
   - name: cert-manager-webhook-pdns
-    version: 3.2.4
+    version: 3.2.5
     repository: https://zachomedia.github.io/cert-manager-webhook-pdns
