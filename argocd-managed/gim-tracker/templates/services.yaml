@@ -1,0 +1,24 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gim-tracker-frontend
+spec:
+  selector:
+    app: gim-tracker-frontend
+  type: ClusterIP
+  ports:
+    - port: 4000
+      targetPort: 4000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: gim-tracker-backend
+spec:
+  selector:
+    app: gim-tracker-backend
+  type: ClusterIP
+  ports:
+    - port: 8080
+      targetPort: 8080
