@@ -1,0 +1,19 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: gim-tracker
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`gim-tracker.ninoo.nl`) && PathPrefix(`/`)
+      kind: Rule
+      services:
+        - name: gim-tracker-frontend
+          port: 4000
+    - match: Host(`gim-tracker.ninoo.nl`) && PathPrefix(`/api`)
+      kind: Rule
+      services:
+        - name: gim-tracker-backend
+          port: 8080
