@@ -36,3 +36,5 @@ factorio-server-charts: # set values for wrapper/umbrella chart
     require_user_verification: true
   serverPassword:
     passwordSecret: secret
+  port_fixer:
+    enabled: true
