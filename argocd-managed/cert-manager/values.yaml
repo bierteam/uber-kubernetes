@@ -9,6 +9,7 @@ domains:
   - name: oscarr.nl
   - name: oscarrr.nl
     issuer: letsencrypt-shortlived-servfail
+  - name: vdbrom.com
 
 ips:
   - address: 185.132.110.37
