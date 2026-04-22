@@ -1,7 +1,6 @@
 # https://github.com/dexidp/helm-charts/blob/master/charts/dex/values.yaml
 dex: # set values for wrapper/umbrella chart
   replicaCount: 2
-  revisionHistoryLimit: 0
 
   envFrom:
     - secretRef:
@@ -88,8 +87,8 @@ dex: # set values for wrapper/umbrella chart
         redirectURIs:
           - https://login.bruinsma.it/oauth2/callback
 
-      - id: rancher
-        name: Rancher
+      - id: omni
+        name: Omni
         secretEnv: RANCHER_CLIENT_SECRET
         redirectURIs:
-          - https://rancher.lab.oscarr.nl/verify-auth
+          - https://omni.lab.oscarr.nl/oidc/consume

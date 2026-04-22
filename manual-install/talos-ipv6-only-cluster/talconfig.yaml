@@ -1,10 +1,10 @@
 ---
 # https://budimanjojo.github.io/talhelper/latest/reference/configuration/#config
 clusterName: talos-ipv6-only-cluster
-endpoint: https://[2a02:a470:edcd:0:beef::]:6443
+endpoint: https://[2a05:f080:0:3800:beef::]:6443
 allowSchedulingOnControlPlanes: true
-kubernetesVersion: v1.35.1
-talosVersion: v1.12.4
+kubernetesVersion: v1.35.4
+talosVersion: v1.12.6
 clusterPodNets:
   - fd05:4786:835f::/48
 clusterSvcNets:
@@ -12,19 +12,19 @@ clusterSvcNets:
 # cniConfig: # TODO cilium install at bootstrap
 #   name: none
 nodes:
-  - hostname: ede
-    ignoreHostname: true
-    controlPlane: true
-    ipAddress: 2a02:a470:edcd:0:be24:11ff:fe6c:6e3d, 2a02:a470:edcd:0:be24:11ff:fedb:8c0f
-    installDisk: /dev/sda
-    networkInterfaces:
-      - interface: ens18
-        vip:
-          ip: "2a02:a470:edcd:0:beef::"
+  # - hostname: ede
+  #   ignoreHostname: true
+  #   controlPlane: true
+  #   ipAddress: "???:be24:11ff:fedb:8c0f"
+  #   installDisk: /dev/sda
+  #   networkInterfaces:
+  #     - interface: ens18
+  #       vip:
+  #         ip: "???:beef::"
   - hostname: houten
     ignoreHostname: true
     controlPlane: true
-    ipAddress: 2a05:f080:0:3800:be24:11ff:fe64:a994
+    ipAddress: 2a05:f080:0:3800:be24:11ff:fe64:a994, 2a05:f080:0:3800:be24:11ff:fe6c:6e3d, 2a05:f080:0:3800:be24:11ff:feed:4a88
     installDisk: /dev/sda
     networkInterfaces:
       - interface: ens18

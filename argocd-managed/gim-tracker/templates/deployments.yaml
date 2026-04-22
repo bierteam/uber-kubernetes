@@ -8,7 +8,6 @@ spec:
     matchLabels:
       app: gim-tracker-frontend
   replicas: 1
-  revisionHistoryLimit: 0
   template:
     metadata:
       labels:
@@ -43,7 +42,6 @@ spec:
     matchLabels:
       app: gim-tracker-backend
   replicas: 1
-  revisionHistoryLimit: 0
   template:
     metadata:
       labels:

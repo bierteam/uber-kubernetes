@@ -1,8 +1,5 @@
 # https://github.com/traefik/traefik-helm-chart/blob/master/traefik/values.yaml
 traefik: # set values for wrapper/umbrella chart
-  deployment:
-    revisionHistoryLimit: 0
-
   ports:
     web:
       http:

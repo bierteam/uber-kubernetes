@@ -261,7 +261,6 @@ spec:
     matchLabels:
       app: rick
   replicas: 2
-  revisionHistoryLimit: 0
   template:
     metadata:
       labels:
