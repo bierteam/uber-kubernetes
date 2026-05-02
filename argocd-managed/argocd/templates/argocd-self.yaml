@@ -6,6 +6,7 @@ metadata:
   namespace: argocd
   annotations:
     helm.sh/resource-policy: keep
+    argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
 spec:
   destination:
     namespace: argocd
