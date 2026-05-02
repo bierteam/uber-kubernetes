@@ -57,8 +57,8 @@ argocdApps:
     folder: argocd-managed/oauth2-proxy
     valuesFile: values-bruinsma.yaml
   # - name: valheim
-  - name: velero
-    podSecurity: privileged
+  # - name: velero
+  #   podSecurity: privileged
   - name: wildlife-api
     folder: charts
     repository: wildlife-api
