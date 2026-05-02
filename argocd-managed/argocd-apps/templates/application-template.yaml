@@ -6,6 +6,8 @@ kind: Application
 metadata:
   name: {{ $application.name }}
   namespace: argocd
+  annotations:
+    argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
   {{- if ne "false" ($application.finalizer | toString) }}
   {{- include "finalizers" . | indent 2 }}
   {{- end }}
