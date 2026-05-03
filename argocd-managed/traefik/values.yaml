@@ -40,6 +40,10 @@ traefik: # set values for wrapper/umbrella chart
       #     name: ""
       #     namespace: ""
 
+  experimental:
+    kubernetesGateway:
+      enabled: true
+
   logs:
     general:
       level: DEBUG
