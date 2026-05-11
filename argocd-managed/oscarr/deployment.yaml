@@ -32,6 +32,7 @@ spec:
           args:
             - --root=/public
             - --log-level=info
+            - --disable-symlinks=false
             - --health
           livenessProbe:
             httpGet:
