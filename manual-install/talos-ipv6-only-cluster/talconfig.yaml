@@ -3,8 +3,8 @@
 clusterName: talos-ipv6-only-cluster
 endpoint: https://[2a05:f080:0:3800:beef::]:6443
 allowSchedulingOnControlPlanes: true
-kubernetesVersion: v1.36.0
-talosVersion: v1.13.0
+kubernetesVersion: v1.36.1
+talosVersion: v1.13.2
 clusterPodNets:
   - fd05:4786:835f::/48
 clusterSvcNets:
@@ -15,7 +15,7 @@ nodes:
   # - hostname: ede
   #   ignoreHostname: true
   #   controlPlane: true
-  #   ipAddress: "???:be24:11ff:fedb:8c0f"
+  #   ipAddress:
   #   installDisk: /dev/sda
   #   networkInterfaces:
   #     - interface: ens18
@@ -33,12 +33,12 @@ nodes:
   # - hostname: haarzuilens
   #   ignoreHostname: true
   #   controlPlane: true
-  #   ipAddress: 
+  #   ipAddress: 2001:1c02:1f09:1900:
   #   installDisk: /dev/sda
   #   networkInterfaces:
   #     - interface: ens18
   #       vip:
-  #         ip: "???:beef::"
+  #         ip: "2001:1c02:1f09:1900:beef::"
 controlPlane:
   nameservers:
     # - 2606:4700:4700::64
