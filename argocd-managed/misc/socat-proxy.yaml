@@ -20,7 +20,7 @@ spec:
         - operator: Exists
       containers:
         - name: "tpc-80"
-          image: docker.io/alpine/socat:1.8.0.3
+          image: docker.io/alpine/socat:1.8.1.1
           args:
             - "TCP6-LISTEN:80,reuseaddr,fork,nodelay,keepalive"
             - "TCP4:127.0.0.1:80"
@@ -40,7 +40,7 @@ spec:
               cpu: 20m
               memory: 20Mi
         - name: "tpc-443"
-          image: docker.io/alpine/socat:1.8.0.3
+          image: docker.io/alpine/socat:1.8.1.1
           args:
             - "TCP6-LISTEN:443,reuseaddr,fork,nodelay,keepalive"
             - "TCP4:127.0.0.1:443"
@@ -60,7 +60,7 @@ spec:
               cpu: 20m
               memory: 20Mi
         - name: "tpc-8080"
-          image: docker.io/alpine/socat:1.8.0.3
+          image: docker.io/alpine/socat:1.8.1.1
           args:
             - "TCP6-LISTEN:8080,reuseaddr,fork,nodelay,keepalive"
             - "TCP4:127.0.0.1:8080"
@@ -80,7 +80,7 @@ spec:
               cpu: 20m
               memory: 20Mi
         - name: "udp-80"
-          image: docker.io/alpine/socat:1.8.0.3
+          image: docker.io/alpine/socat:1.8.1.1
           args:
             - "UDP6-LISTEN:80,reuseaddr,fork"
             - "UDP4:127.0.0.1:80"
@@ -100,7 +100,7 @@ spec:
               cpu: 20m
               memory: 20Mi
         - name: "udp-443"
-          image: docker.io/alpine/socat:1.8.0.3
+          image: docker.io/alpine/socat:1.8.1.1
           args:
             - "UDP6-LISTEN:443,reuseaddr,fork"
             - "UDP4:127.0.0.1:443"
@@ -120,7 +120,7 @@ spec:
               cpu: 20m
               memory: 20Mi
         - name: "udp-8080"
-          image: docker.io/alpine/socat:1.8.0.3
+          image: docker.io/alpine/socat:1.8.1.1
           args:
             - "UDP6-LISTEN:8080,reuseaddr,fork"
             - "UDP4:127.0.0.1:8080"
@@ -140,7 +140,7 @@ spec:
               cpu: 20m
               memory: 20Mi
         - name: "udp-31497"
-          image: docker.io/alpine/socat:1.8.0.3
+          image: docker.io/alpine/socat:1.8.1.1
           args:
             - "UDP6-LISTEN:31497,reuseaddr,fork"
             - "UDP4:127.0.0.1:31497"
