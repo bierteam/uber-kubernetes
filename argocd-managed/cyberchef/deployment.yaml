@@ -17,7 +17,7 @@ spec:
         runAsNonRoot: true
       containers:
         - name: cyberchef
-          image: ghcr.io/gchq/cyberchef:11.1.0@sha256:0432df9ba52319fa5320c1fe72c6d4660bb0e24208580aa715b24cd3eb9d11bb
+          image: ghcr.io/gchq/cyberchef:11.2.0@sha256:f829c2f358153b6b0ce5c226d97851e8728719d1e02e682bf7210d40663e93f9
           imagePullPolicy: IfNotPresent
           securityContext:
             allowPrivilegeEscalation: false
