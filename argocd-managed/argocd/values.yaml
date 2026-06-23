@@ -3,7 +3,7 @@ argo-cd: # set values for wrapper/umbrella chart
   global:
     image:
       repository: quay.io/argoproj/argocd
-      tag: v3.4.4
+      tag: v3.5.0-rc1
   controller:
     dynamicClusterDistribution: true
   configs:
@@ -33,6 +33,7 @@ argo-cd: # set values for wrapper/umbrella chart
     rbac:
       policy.csv: |
         p, role:anonymous, applications, get, *, allow
+        p, role:anonymous, applicationssets, get, *, allow
 
         g, bierteam, role:admin
         g, oscrx, role:admin

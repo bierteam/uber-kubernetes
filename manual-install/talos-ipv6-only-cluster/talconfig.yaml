@@ -3,8 +3,8 @@
 clusterName: talos-ipv6-only-cluster
 endpoint: https://[2a05:f080:0:3800:beef::]:6443
 allowSchedulingOnControlPlanes: true
-kubernetesVersion: v1.36.1
-talosVersion: v1.13.2
+kubernetesVersion: v1.36.2
+talosVersion: v1.13.5
 clusterPodNets:
   - fd05:4786:835f::/48
 clusterSvcNets:
@@ -24,7 +24,7 @@ nodes:
   - hostname: houten
     ignoreHostname: true
     controlPlane: true
-    ipAddress: 2a05:f080:0:3800:be24:11ff:fe64:a994, 2a05:f080:0:3800:be24:11ff:fe6c:6e3d, 2a05:f080:0:3800:be24:11ff:feed:4a88
+    ipAddress: 2a05:f080:0:3800:be24:11ff:fe64:a994, 2a05:f080:0:3800:be24:11ff:fe6c:6e3d #, 2a05:f080:0:3800:be24:11ff:feed:4a88
     installDisk: /dev/sda
     networkInterfaces:
       - interface: ens18

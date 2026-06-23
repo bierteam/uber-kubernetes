@@ -38,6 +38,7 @@ spec:
   clusterResourceWhitelist:
     - group: ""
       kind: "Namespace"
+      names: drinkn-pr-*
   namespaceResourceWhitelist:
     - group: "*"
       kind: "*"
@@ -45,4 +46,3 @@ spec:
     warn: true
   sourceRepos:
     - https://github.com/bierteam/drinkn.git
-    - https://github.com/bierteam/wildlife-frontend.git
