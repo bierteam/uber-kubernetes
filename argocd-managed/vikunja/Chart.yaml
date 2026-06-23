@@ -1,0 +1,8 @@
+apiVersion: v2
+name: vikunja-wrapper
+type: application
+version: 1.0.0
+dependencies:
+  - name: vikunja
+    version: v2.0.2
+    repository: oci://ghcr.io/go-vikunja/helm-chart

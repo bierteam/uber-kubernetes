@@ -59,6 +59,7 @@ argocdApps:
   # - name: valheim
   # - name: velero
   #   podSecurity: privileged
+  - name: vikunja
   - name: wildlife-api
     folder: charts
     repository: wildlife-api

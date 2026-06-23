@@ -1,0 +1,60 @@
+vikunja:
+  vikunja:
+    image:
+      repository: docker.io/vikunja/vikunja
+      tag: "2.3.0@sha256:f6b80393c1998cd5cd0dc38d24762c59ab4c10000a6f1032ef5b554e262cab93"
+      pullPolicy: IfNotPresent
+    persistence:
+      data:
+        enabled: true
+        accessMode: ReadWriteOnce
+        size: 2Gi
+        mountPath: /app/vikunja/files
+      database:
+        enabled: false
+    ingress:
+      main:
+        enabled: true
+        hosts:
+          - host: vikunja.lab.oscarr.nl
+            paths:
+              - path: /
+    configMaps:
+      # The configuration for Vikunja's api
+      # https://vikunja.io/docs/config-options/
+      config:
+        enabled: true
+        data:
+          config.yml: |
+            # You can add Vikunja configuration items from https://vikunja.io/docs/config-options/ to this file
+            service:
+              # Required after Vikunja 1.0.0
+              publicurl: # e.g. "https://vikunja.lab.oscarr.nl"
+    env:
+      # To utilize a secret in the environment variables, you can do something like the following: https://github.com/bjw-s/helm-charts/blob/a081de53024d8328d1ae9ff7e4f6bc500b0f3a29/charts/library/common/values.yaml#L141-L145
+      VIKUNJA_DATABASE_TYPE: "PostgreSQL"
+      VIKUNJA_DATABASE_HOST:
+        valueFrom:
+          secretKeyRef:
+            name: vikunja-app
+            key: host
+      VIKUNJA_DATABASE_PORT:
+        valueFrom:
+          secretKeyRef:
+            name: vikunja-app
+            key: port
+      VIKUNJA_DATABASE_NAME:
+        valueFrom:
+          secretKeyRef:
+            name: vikunja-app
+            key: dbname
+      VIKUNJA_DATABASE_USER:
+        valueFrom:
+          secretKeyRef:
+            name: vikunja-app
+            key: username
+      VIKUNJA_DATABASE_PASSWORD:
+        valueFrom:
+          secretKeyRef:
+            name: vikunja-app
+            key: password
