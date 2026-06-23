@@ -1,0 +1,77 @@
+vikunja:
+  vikunja:
+    image:
+      repository: docker.io/vikunja/vikunja
+      tag: "2.3.0@sha256:f6b80393c1998cd5cd0dc38d24762c59ab4c10000a6f1032ef5b554e262cab93"
+      pullPolicy: IfNotPresent
+    persistence:
+      data:
+        enabled: true
+        accessMode: ReadWriteOnce
+        size: 2Gi
+        mountPath: /app/vikunja/files
+      database:
+        enabled: false
+    ingress:
+      main:
+        enabled: true
+        annotations:
+          external-dns.alpha.kubernetes.io/target: "kubernetes.oscarr.nl"
+        hosts:
+          - host: vikunja.doktermarjolein.nl
+            paths:
+              - path: /
+    configMaps:
+      # The configuration for Vikunja's api
+      # https://vikunja.io/docs/config-options/
+      config:
+        enabled: true
+        data:
+          config.yml: |
+            # You can add Vikunja configuration items from https://vikunja.io/docs/config-options/ to this file
+            service:
+              publicurl: https://vikunja.doktermarjolein.nl
+              timezone: Europe/Amsterdam
+              week_start: 1
+            auth:
+              openid:
+                enabled: true
+                providers:
+                  dex:
+                    name: auth.oscarr.nl
+                    authurl: https://auth.oscarr.nl
+                    clientid: vikunja
+                    scope: openid profile email
+                    forceuserinfo: false
+    env:
+      VIKUNJA_DATABASE_TYPE: postgres
+      VIKUNJA_AUTH_OPENID_PROVIDERS_DEX_CLIENTSECRET:
+        valueFrom:
+          secretKeyRef:
+            name: vikunja
+            key: dex-client-secret
+      VIKUNJA_DATABASE_HOST:
+        valueFrom:
+          secretKeyRef:
+            name: vikunja-app
+            key: host
+      VIKUNJA_DATABASE_PORT:
+        valueFrom:
+          secretKeyRef:
+            name: vikunja-app
+            key: port
+      VIKUNJA_DATABASE_DATABASE:
+        valueFrom:
+          secretKeyRef:
+            name: vikunja-app
+            key: dbname
+      VIKUNJA_DATABASE_USER:
+        valueFrom:
+          secretKeyRef:
+            name: vikunja-app
+            key: username
+      VIKUNJA_DATABASE_PASSWORD:
+        valueFrom:
+          secretKeyRef:
+            name: vikunja-app
+            key: password

@@ -89,6 +89,12 @@ dex: # set values for wrapper/umbrella chart
 
       - id: omni
         name: Omni
-        secretEnv: RANCHER_CLIENT_SECRET
+        secretEnv: OMNI_CLIENT_SECRET
         redirectURIs:
           - https://omni.lab.oscarr.nl/oidc/consume
+
+      - id: vikunja
+        name: Vikunja
+        secretEnv: VIKUNJA_CLIENT_SECRET
+        redirectURIs:
+          - https://vikunja.doktermarjolein.nl/auth/openid/dex
