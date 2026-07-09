@@ -57,3 +57,4 @@ issuers:
 # https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml
 cert-manager: # set values for wrapper/umbrella chart
   installCRDs: true
+  featureGates: ACMEUseARI=true
