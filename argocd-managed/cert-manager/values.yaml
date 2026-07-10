@@ -58,3 +58,4 @@ issuers:
 cert-manager: # set values for wrapper/umbrella chart
   installCRDs: true
   featureGates: ACMEUseARI=true
+  enableCertificateOwnerRef: true
