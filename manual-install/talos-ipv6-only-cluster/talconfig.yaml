@@ -4,7 +4,7 @@ clusterName: talos-ipv6-only-cluster
 endpoint: https://[2a05:f080:0:3800:beef::]:6443
 allowSchedulingOnControlPlanes: true
 kubernetesVersion: v1.36.2
-talosVersion: v1.13.6
+talosVersion: v1.13.7
 clusterPodNets:
   - fd05:4786:835f::/48
 clusterSvcNets:
