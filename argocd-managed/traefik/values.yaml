@@ -44,11 +44,10 @@ traefik: # set values for wrapper/umbrella chart
     kubernetesGateway:
       enabled: true
 
-  logs:
-    general:
-      level: DEBUG
-    access:
-      enabled: true
+  log:
+    level: DEBUG
+  accessLog:
+    enabled: true
 
   priorityClassName: system-cluster-critical
 
