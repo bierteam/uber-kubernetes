@@ -33,15 +33,6 @@ argocdApps:
   # - name: metrics-server
   - name: misc
   - name: rick
-    podSecurity: restricted
-  # - name: rook-cluster
-  #   folder: argocd-managed/rook/cluster
-  #   namespace: rook-ceph
-  #   podSecurity: privileged
-  # - name: rook-operator
-  #   folder: argocd-managed/rook/operator
-  #   namespace: rook-ceph
-  #   podSecurity: privileged
   - name: sealed-secrets
     namespace: kube-system
     podSecurity: privileged
