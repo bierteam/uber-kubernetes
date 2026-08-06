@@ -8,45 +8,59 @@ argocdApps:
   #   autosync: bool (optional)
   #   finalizer: bool (optional)
   - name: cert-manager
+    podSecurity: baseline # TODO verify if this can be restricted
   # - name: cilium
   #   namespace: kube-system
   #   podSecurity: privileged
   - name: cnpg
     namespace: cnpg-system
+    podSecurity: baseline # TODO verify if this can be restricted
   - name: cyberchef
+    podSecurity: baseline # TODO verify if this can be restricted
   - name: dex
+    podSecurity: baseline # TODO verify if this can be restricted
   # - name: dns-updater
   #   podSecurity: restricted
   - name: drinkn
     folder: charts/drinkn
     repository: drinkn
+    podSecurity: baseline # TODO verify if this can be restricted
   - name: drinkn-hooks
+    podSecurity: baseline # TODO verify if this can be restricted
   - name: external-dns
+    podSecurity: baseline # TODO verify if this can be restricted
   # - name: external-secrets
   - name: factorio
+    podSecurity: baseline # TODO verify if this can be restricted
   - name: friend-tracker
+    podSecurity: baseline # TODO verify if this can be restricted
   - name: gim-tracker
+    podSecurity: baseline # TODO verify if this can be restricted
   - name: kubeseal-webgui
+    podSecurity: baseline # TODO verify if this can be restricted
   # - name: longhorn
   #   namespace: longhorn-system
   #   podSecurity: privileged
   # - name: metrics-server
   - name: misc
+    podSecurity: baseline # TODO verify if this can be restricted
   - name: rick
   - name: sealed-secrets
     namespace: kube-system
     podSecurity: privileged
   - name: traefik
-    # podSecurity: privileged
+    podSecurity: baseline # TODO verify if this can be restricted
   - name: unifi
+    podSecurity: baseline # TODO verify if this can be restricted
   - name: oscarr
-    podSecurity: restricted
   - name: proxy-oscarr
     folder: argocd-managed/oauth2-proxy
     valuesFile: values-oscarr.yaml
+    podSecurity: baseline # TODO verify if this can be restricted
   - name: proxy-bruinsma
     folder: argocd-managed/oauth2-proxy
     valuesFile: values-bruinsma.yaml
+    podSecurity: baseline # TODO verify if this can be restricted
   # - name: valheim
   # - name: velero
   #   podSecurity: privileged
@@ -54,7 +68,10 @@ argocdApps:
   - name: wildlife-api
     folder: charts
     repository: wildlife-api
+    podSecurity: baseline # TODO verify if this can be restricted
   - name: wildlife-frontend
     folder: charts
     repository: wildlife-frontend
+    podSecurity: baseline # TODO verify if this can be restricted
   - name: wildlife-database
+    podSecurity: baseline # TODO verify if this can be restricted
