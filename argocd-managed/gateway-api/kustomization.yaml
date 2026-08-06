@@ -1,0 +1,9 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  # Experimental channel: standard CRDs + TCPRoute/TLSRoute/UDPRoute.
+  # Traefik needs TCPRoute + TLSRoute because providers.kubernetesGateway
+  # sets experimentalChannel=true; without them its informers never sync
+  # and the Gateway/GatewayClass are never reconciled.
+  - https://github.com/kubernetes-sigs/gateway-api/config/crd/experimental?ref=v1.6.0

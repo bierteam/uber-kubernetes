@@ -34,6 +34,8 @@ argocdApps:
     podSecurity: baseline # TODO verify if this can be restricted
   - name: friend-tracker
     podSecurity: baseline # TODO verify if this can be restricted
+  - name: gateway-api
+    namespace: default
   - name: gim-tracker
     podSecurity: baseline # TODO verify if this can be restricted
   - name: kubeseal-webgui
