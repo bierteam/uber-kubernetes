@@ -1,8 +1,8 @@
 # https://github.com/kubernetes-sigs/external-dns/blob/master/charts/external-dns/values.yaml
 external-dns: # set values for wrapper/umbrella chart
   image:
-    repository: registry.k8s.io/external-dns/external-dns
-    tag: v0.21.0
+    repository: ghcr.io/oscrx/external-dns
+    tag: master-tlsa-2e00f35e
   provider:
     name: cloudflare
   sources:
