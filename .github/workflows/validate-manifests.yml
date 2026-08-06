@@ -1,0 +1,34 @@
+---
+name: validate manifests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Renders every ArgoCD-managed app and validates the output against the
+# Kubernetes and CRD JSON schemas. A schema-invalid manifest does not fail
+# loudly in ArgoCD -- it breaks ServerSideDiff, which makes the app report its
+# last good comparison forever and silently stop applying anything.
+
+jobs:
+  kubeconform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/setup-helm@v4
+
+      - name: Install kubeconform
+        env:
+          KUBECONFORM_VERSION: v0.8.0
+        run: |
+          curl -sSfL \
+            "https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz" \
+            | sudo tar -xz -C /usr/local/bin kubeconform
+          kubeconform -v
+
+      - name: Validate
+        # sealed-secrets' chart repo (bitnami-labs.github.io) returns 404 and
+        # cannot be rendered. Drop it from SKIP_APPS once the chart has a home.
+        run: ./hack/validate-manifests.sh

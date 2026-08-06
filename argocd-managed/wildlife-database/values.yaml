@@ -1,2 +1,6 @@
 cluster:
   type: postgis
+  cluster:
+    postgresql:
+      parameters:
+        max_connections: "100"

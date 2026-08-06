@@ -10,6 +10,9 @@ cluster:
   #         owner: app
   #         ensure: present
   cluster:
+    postgresql:
+      parameters:
+        max_connections: "100"
     roles:
       - name: app
         ensure: present
