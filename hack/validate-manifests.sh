@@ -19,12 +19,20 @@ KUBE_VERSION="${KUBE_VERSION:-1.33.0}"
 SKIP_APPS="${SKIP_APPS:-}"
 CATALOG='https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json'
 
+# kubeconform's built-in `default` location points at the -standalone-strict
+# bundles, which have every $ref inlined. CustomResourceDefinition is absent
+# from them: its spec pulls in JSONSchemaProps, which references itself, so it
+# cannot be flattened. Without this fallback to the plain (ref-using) schemas,
+# every CRD in the repo is silently skipped rather than validated.
+K8S_SCHEMAS='https://raw.githubusercontent.com/yannh/kubernetes-json-schema/master/{{.NormalizedKubernetesVersion}}/{{.ResourceKind}}{{.KindSuffix}}.json'
+
 kubeconform_args=(
   -strict                                # reject unknown fields on core types too
   -kubernetes-version "$KUBE_VERSION"
   -schema-location default
   -schema-location "$CATALOG"
-  -ignore-missing-schemas                # CRDs absent from the catalog are skipped, not failed
+  -schema-location "$K8S_SCHEMAS"        # so CustomResourceDefinition is checked
+  -ignore-missing-schemas                # kinds with no schema anywhere are skipped, not failed
   -summary
 )
 
