@@ -38,7 +38,7 @@ spec:
   clusterResourceWhitelist:
     - group: ""
       kind: "Namespace"
-      names: drinkn-pr-*
+      name: drinkn-pr-*
   namespaceResourceWhitelist:
     - group: "*"
       kind: "*"
