@@ -48,6 +48,8 @@ argocdApps:
   - name: sealed-secrets
     namespace: kube-system
     podSecurity: privileged
+  - name: shulker
+    server: talos-cluster
   - name: traefik
     podSecurity: baseline # TODO verify if this can be restricted
   - name: unifi
