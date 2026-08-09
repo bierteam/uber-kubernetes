@@ -1,0 +1,8 @@
+apiVersion: v2
+name: agones-wrapper
+type: application
+version: 1.0.0
+dependencies:
+  - name: agones
+    version: 1.59.0
+    repository: https://agones.dev/chart/stable

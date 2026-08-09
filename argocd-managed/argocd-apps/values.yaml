@@ -1,5 +1,7 @@
 ---
 argocdApps:
+  - name: agones
+    server: talos-cluster
   - name: cert-manager
     podSecurity: baseline # TODO verify if this can be restricted
   - name: cilium
