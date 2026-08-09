@@ -1,17 +1,11 @@
 ---
 argocdApps:
-  # - name: string (mandatory)
-  #   folder: string (optional)
-  #   namespace: string (optional)
-  #   podSecurity: privileged/baseline/restricted (optional)
-  #   repository: string (optional)
-  #   autosync: bool (optional)
-  #   finalizer: bool (optional)
   - name: cert-manager
     podSecurity: baseline # TODO verify if this can be restricted
-  # - name: cilium
-  #   namespace: kube-system
-  #   podSecurity: privileged
+  - name: cilium
+    namespace: kube-system
+    podSecurity: privileged
+    server: talos-cluster
   - name: cnpg
     namespace: cnpg-system
     podSecurity: baseline # TODO verify if this can be restricted
@@ -38,6 +32,8 @@ argocdApps:
     namespace: default
   - name: gim-tracker
     podSecurity: baseline # TODO verify if this can be restricted
+  - name: kubelet-csr-approver
+    server: talos-cluster
   - name: kubeseal-webgui
     podSecurity: baseline # TODO verify if this can be restricted
   # - name: longhorn
