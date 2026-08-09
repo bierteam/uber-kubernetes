@@ -12,7 +12,11 @@ spec:
       kind: "*"
   destinations:
     - namespace: "*"
-      server: https://kubernetes.default.svc
+      name: in-cluster
+    - namespace: "*"
+      name: talos-cluster
+    - namespace: "*"
+      name: unds
   orphanedResources:
     warn: false
   sourceRepos:
