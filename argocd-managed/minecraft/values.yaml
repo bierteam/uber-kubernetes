@@ -1,0 +1,10 @@
+minecraft:
+  minecraftServer:
+    eula: "TRUE"
+    type: "PAPER"
+    rcon:
+      enabled: true
+      withGeneratedPassword: true
+
+rcon-web-admin:
+

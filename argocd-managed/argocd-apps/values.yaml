@@ -40,6 +40,8 @@ argocdApps:
   #   namespace: longhorn-system
   #   podSecurity: privileged
   # - name: metrics-server
+  - name: minecraft
+    server: talos-cluster
   - name: misc
     podSecurity: baseline # TODO verify if this can be restricted
   - name: rick
