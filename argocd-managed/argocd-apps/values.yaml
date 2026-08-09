@@ -1,7 +1,8 @@
 ---
 argocdApps:
-  - name: agones
-    server: talos-cluster
+  # - name: agones
+  #   server: talos-cluster
+  #   podSecurity: baseline
   - name: cert-manager
     podSecurity: baseline # TODO verify if this can be restricted
   - name: cilium
@@ -50,8 +51,8 @@ argocdApps:
   - name: sealed-secrets
     namespace: kube-system
     podSecurity: privileged
-  - name: shulker
-    server: talos-cluster
+  # - name: shulker
+  #   server: talos-cluster
   - name: traefik
     podSecurity: baseline # TODO verify if this can be restricted
   - name: unifi
