@@ -165,3 +165,15 @@ spec:
       recordType: SRV
       targets:
         - 0 0 25580 vanilla.doktermarjolein.nl.
+
+    - dnsName: minecraft.doktermarjolein.nl
+      recordTTL: 1
+      recordType: CNAME
+      targets:
+        - mc.doktermarjolein.nl
+
+    - dnsName: _minecraft._tcp.minecraft.doktermarjolein.nl
+      recordTTL: 1
+      recordType: SRV
+      targets:
+        - 0 0 25580 minecraft.doktermarjolein.nl.
