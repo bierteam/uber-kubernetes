@@ -9,8 +9,12 @@ clusterPodNets:
   - fd05:4786:835f::/48
 clusterSvcNets:
   - fd26:4340:84fe::/112
-# cniConfig: # TODO cilium install at bootstrap
-#   name: none
+# The API is reachable over IPv4 through HAProxy on this address, so it has to be
+# in the apiserver's serving certificate or kubectl fails TLS validation.
+additionalApiServerCertSans:
+  - 192.168.122.1
+cniConfig:
+  name: none
 nodes:
   - hostname: talos1
     controlPlane: true
@@ -20,9 +24,6 @@ nodes:
       - interface: ens18
         vip:
           ip: "2a05:f080:0:3800:beef::"
-      - interface: ens18
-        vip:
-          ip: "192.168.123.230"
   # - hostname: talos2
   #   controlPlane: true
   #   ipAddress: 2a05:f080:0:3800:be24:11ff:feed:4a88
@@ -31,9 +32,6 @@ nodes:
   #     - interface: ens18
   #       vip:
   #         ip: "2a05:f080:0:3800:beef::"
-  #     - interface: ens18
-  #       vip:
-  #         ip: "192.168.123.230"
   - hostname: talos3
     controlPlane: true
     ipAddress: 2a05:f080:0:3800:be24:11ff:fe64:a994
@@ -42,9 +40,6 @@ nodes:
       - interface: ens18
         vip:
           ip: "2a05:f080:0:3800:beef::"
-      - interface: ens18
-        vip:
-          ip: "192.168.123.230"
   - hostname: talos4
     ipAddress: 2a05:f080:0:3800:56bf:64ff:fe93:5e26
     installDisk: /dev/sda
@@ -69,10 +64,6 @@ controlPlane:
   # metal installed from the plain metal-installer image, so TPM-sealed LUKS keys,
   # the qemu watchdog and the legacy IPv4 DHCP do not apply there.
   patches:
-    - |- # Legacy
-      apiVersion: v1alpha1
-      kind: DHCPv4Config
-      name: ens18
     - |- # OIDC authentication
       cluster:
         apiServer:
@@ -156,9 +147,6 @@ patches:
     name: ens18
   - |- # Cilium settings
     cluster:
-      network:
-        cni:
-          name: none
       proxy:
         disabled: true
   # - |- # Kubespan
