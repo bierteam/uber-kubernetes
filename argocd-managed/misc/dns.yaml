@@ -112,17 +112,12 @@ spec:
       targets:
         - 2a05:f080:0:3800:1b::1
 
-    # Lets players type just the hostname. Both paths above must listen on this
-    # port: the LoadBalancer does, and the HAProxy frontend has to match.
     - dnsName: _minecraft._tcp.mc.doktermarjolein.nl
       recordTTL: 1
       recordType: SRV
       targets:
         - 0 5 25580 mc.doktermarjolein.nl.
 
-    # Per-server entrypoints, matched by Velocity's forced-hosts. Each SRV points
-    # at its own name rather than at mc, because the client sends the hostname it
-    # connected to in the handshake and that is what forced-hosts matches on.
     - dnsName: survival.doktermarjolein.nl
       recordTTL: 1
       recordType: CNAME
@@ -158,6 +153,18 @@ spec:
       recordType: SRV
       targets:
         - 0 5 25580 skyblock.doktermarjolein.nl.
+
+    - dnsName: cute.doktermarjolein.nl
+      recordTTL: 1
+      recordType: AAAA
+      targets:
+        - 2a05:f080:0:3800:1b::2
+
+    - dnsName: _minecraft._tcp.cute.doktermarjolein.nl
+      recordTTL: 1
+      recordType: SRV
+      targets:
+        - 0 5 25565 cute.doktermarjolein.nl.
 
     - dnsName: vanilla.doktermarjolein.nl
       recordTTL: 1

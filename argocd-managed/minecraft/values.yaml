@@ -321,5 +321,65 @@ minecraft-skyblock:
         accessModes:
           - ReadWriteOnce
 
+# Standalone modded server, outside Velocity. Players reach it directly with the
+# modpack's own launcher profile; it cannot be reached with /server from the
+# other worlds because those run 26.2 and this runs 1.20.1.
+minecraft-modded:
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 500m
+  minecraftServer:
+    eula: "TRUE"
+    type: "AUTO_CURSEFORGE"
+    motd: "Marjolein's Magische Minecraft Mekka"
+    whitelist: "oscrx,MarjoVDB,mightybeardking,WoblySausage,Xm0ur3r"
+    onlineMode: true
+    autoCurseForge:
+      pageUrl: "https://www.curseforge.com/minecraft/modpacks/cuter-minecraft"
+      # Never the inline key: this repo is public. Create it once with
+      #   kubectl -n minecraft create secret generic minecraft-curseforge-api \
+      #     --from-literal=cf-api-key='<key>'
+      apiKey:
+        existingSecret: minecraft-curseforge-api
+        secretKey: cf-api-key
+    serviceType: LoadBalancer
+    servicePort: 25565
+    rcon:
+      enabled: true
+      existingSecret: minecraft-rcon-password
+      secretKey: rcon-password
+  serviceAnnotations:
+    lbipam.cilium.io/ips: "2a05:f080:0:3800:1b::2"
+  persistence:
+    storageClass: nfs-retain
+    dataDir:
+      enabled: true
+      Size: 20Gi
+      accessModes:
+        - ReadWriteOnce
+  extraEnv:
+    PREFER_IPV6: "true"
+    JAVA_TOOL_OPTIONS: "-Djava.net.preferIPv4Stack=false -Djava.net.preferIPv6Addresses=true"
+    INIT_MEMORY: 1G
+    MAX_MEMORY: 4G
+  mcbackup:
+    enabled: true
+    backupInterval: 6h
+    pauseIfNoPlayers: "true"
+    pruneBackupsDays: 14
+    excludes: "*.jar,cache,logs"
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 50m
+    persistence:
+      storageClass: nfs-retain
+      backupDir:
+        enabled: true
+        Size: 20Gi
+        accessModes:
+          - ReadWriteOnce
+
 rcon-web-admin:
 

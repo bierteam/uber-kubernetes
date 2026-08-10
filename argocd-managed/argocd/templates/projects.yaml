@@ -19,6 +19,18 @@ spec:
       name: unds
   orphanedResources:
     warn: false
+  # Scoped to the minecraft app via the applications selector, so no separate
+  # project is needed. Note this is an allow window: outside it, automated syncs
+  # for that app are blocked entirely -- including selfHeal, so drift sits until
+  # the next window. manualSync lets you push a change through in the meantime.
+  syncWindows:
+    - kind: allow
+      schedule: "0 3 * * *"
+      duration: 2h
+      timeZone: Europe/Amsterdam
+      applications:
+        - minecraft
+      manualSync: true
   sourceRepos:
     - https://github.com/bierteam/uber-kubernetes.git
     - https://github.com/bierteam/drinkn.git
