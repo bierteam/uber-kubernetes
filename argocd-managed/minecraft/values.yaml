@@ -94,8 +94,102 @@ minecraft:
       backupDir:
         enabled: true
         Size: 20Gi
+        # RWX so the creative server can mount the same backups read-only. With
+        # RWO the two pods can only ever run on the same node.
         accessModes:
-          - ReadWriteOnce
+          - ReadWriteMany
+
+# Creative sandbox: same world, wiped and re-restored from the survival backups
+# on every pod start. templates/creative-restore-cron.yaml triggers that daily.
+minecraft-creative:
+  minecraftServer:
+    eula: "TRUE"
+    type: "PAPER"
+    gameMode: creative
+    motd: "Creative sandbox -- reset daily from backup"
+    serviceType: ClusterIP
+    onlineMode: false
+    # Nothing here is worth backing up, so no rcon consumer and no mcbackup.
+    rcon:
+      enabled: false
+  persistence:
+    # Disposable by design, so the Delete class rather than nfs-retain.
+    storageClass: nfs-deletable
+    dataDir:
+      enabled: true
+      Size: 10Gi
+      accessModes:
+        - ReadWriteOnce
+  extraEnv:
+    PREFER_IPV6: "true"
+    PATCH_DEFINITIONS: /patches
+    CFG_VELOCITY_SECRET:
+      valueFrom:
+        secretKeyRef:
+          name: minecraft-velocity
+          key: forwarding-secret
+  # Wipes /data and unpacks the newest survival backup. The archive is rooted at
+  # ./ relative to /data, so it restores the whole server directory. Nothing to
+  # restore is not an error -- the server then just boots a fresh world.
+  initContainers:
+    - |
+      name: restore-from-backup
+      image: busybox:1.37
+      command:
+        - sh
+        - -c
+        - |
+          set -eu
+          latest=$(ls -1t /backups/*.tar.gz 2>/dev/null | head -1 || true)
+          if [ -z "${latest:-}" ]; then
+            echo "no survival backup found; leaving /data as-is"
+            exit 0
+          fi
+          echo "restoring from ${latest}"
+          find /data -mindepth 1 -maxdepth 1 -exec rm -rf {} +
+          tar -xzf "${latest}" -C /data
+          echo "restore complete"
+      # The namespace enforces the restricted Pod Security profile, and this spec
+      # is ours rather than the chart's, so it needs its own securityContext.
+      # uid 1000 matches the server's own user; the NFS share is mode 0777.
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop:
+            - ALL
+        seccompProfile:
+          type: RuntimeDefault
+      volumeMounts:
+        - name: survival-backups
+          mountPath: /backups
+          readOnly: true
+        - name: datadir
+          mountPath: /data
+  # Reuses the ConfigMap created by the survival release; same namespace.
+  extraVolumes:
+    - volumeMounts:
+        - name: paper-patches
+          mountPath: /patches
+          readOnly: true
+      volumes:
+        - name: paper-patches
+          configMap:
+            name: minecraft-paper-patches
+        - name: survival-backups
+          persistentVolumeClaim:
+            claimName: minecraft-backupdir
+            readOnly: true
+
+# Wrapper-chart values, consumed by templates/creative-restore-cron.yaml.
+creativeReset:
+  enabled: true
+  # 05:00 local, before anyone is likely online -- a reset kicks players off.
+  schedule: "0 5 * * *"
+  timeZone: "Europe/Amsterdam"
+  deployment: minecraft-minecraft-creative
 
 # Wrapper-chart values, consumed by templates/proxy-lb-svc.yaml.
 proxyLoadBalancer:
@@ -128,6 +222,7 @@ minecraft-proxy:
       [forced-hosts]
       [servers]
       main = "minecraft:25565"
+      creative = "minecraft-minecraft-creative:25565"
       try = ["main"]
 
   extraEnv:

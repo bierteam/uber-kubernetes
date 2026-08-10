@@ -9,6 +9,12 @@ dependencies:
   - name: minecraft-proxy
     version: 3.10.0
     repository: oci://ghcr.io/itzg/minecraft-server-charts
+  # Second copy of the same chart: a creative sandbox restored daily from the
+  # survival backups. Renders as minecraft-minecraft-creative.
+  - name: minecraft
+    version: 5.1.3
+    repository: oci://ghcr.io/itzg/minecraft-server-charts
+    alias: minecraft-creative
   # - name: rcon-web-admin
   #   version: 1.2.1
   #   repository: oci://ghcr.io/itzg/minecraft-server-charts
