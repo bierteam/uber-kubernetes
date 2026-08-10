@@ -1,13 +1,66 @@
+# Wrapper-chart values, consumed by templates/proxy-lb-svc.yaml.
+proxyLoadBalancer:
+  enabled: true
+  ip: "2a05:f080:0:3800:1b::1"
+  port: 25580
+  # Label the minecraft-proxy chart puts on its pods: app: <release>-minecraft-proxy.
+  selectorApp: minecraft-minecraft-proxy
+
+minecraft-proxy:
+  minecraftProxy:
+    type: VELOCITY
+    velocityVersion: "4.0.0"
+    onlineMode: true
+    serviceType: ClusterIP
+    configFilePath: /server/velocity.toml
+    config: |-
+      config-version = "2.8"
+      bind = "[::]:25577"
+      motd = "Welcome to Minecraft on Kubernetes!"
+      show-max-players = 20
+      player-info-forwarding-mode = "modern"
+      forwarding-secret-file = "/server/forwarding.secret"
+      # Routes a hostname straight to one server, so players skip /server. Matched
+      # against the address the client used in its handshake, which is why each of
+      # these has its own SRV record pointing at itself in misc/dns.yaml.
+      # mc and vanilla are deliberately absent: they fall through to try below.
+      [forced-hosts]
+      "survival.doktermarjolein.nl" = ["survival"]
+      "backup.doktermarjolein.nl" = ["backup"]
+      "skyblock.doktermarjolein.nl" = ["skyblock"]
+      [servers]
+      survival = "minecraft-minecraft-survival:25565"
+      backup = "minecraft-minecraft-backup:25565"
+      skyblock = "minecraft-minecraft-skyblock:25565"
+      try = ["survival"]
+
+  extraEnv:
+    JAVA_TOOL_OPTIONS: "-Djava.net.preferIPv6Addresses=true"
+  extraVolumes:
+    - volumeMounts:
+        - name: velocity-forwarding-secret
+          mountPath: /server/forwarding.secret
+          subPath: forwarding.secret
+          readOnly: true
+      volumes:
+        - name: velocity-forwarding-secret
+          secret:
+            secretName: minecraft-velocity
+            items:
+              - key: forwarding-secret
+                path: forwarding.secret
+
 minecraft-survival:
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 500m
   minecraftServer:
     eula: "TRUE"
     type: "PAPER"
-    # Reachable only in-cluster; Velocity is the public entrypoint and holds the
-    # LoadBalancer address. Do not expose this directly: with Velocity forwarding
-    # the backend trusts whatever identity the proxy asserts.
-    serviceType: ClusterIP
-    # Velocity authenticates against Mojang instead, which is what modern
-    # forwarding requires.
+    motd: "Gamedust Vanilla"
+    spawnProtection: 0
+    whitelist: "oscrx,MarjoVDB,mightybeardking,WoblySausage,Xm0ur3r,ZwartzyBear"
     onlineMode: false
     rcon:
       enabled: true
@@ -23,9 +76,10 @@ minecraft-survival:
         - ReadWriteOnce
   extraEnv:
     PREFER_IPV6: "true"
+    INIT_MEMORY: 1G
+    MAX_MEMORY: 4G
+    PAUSE_WHEN_EMPTY_SECONDS: "60"
     PATCH_DEFINITIONS: /patches
-    # Read from a Secret rather than set here: this repo is public, and the
-    # forwarding secret is what lets the proxy assert player identities.
     CFG_VELOCITY_SECRET:
       valueFrom:
         secretKeyRef:
@@ -99,6 +153,14 @@ minecraft-survival:
         accessModes:
           - ReadWriteMany
 
+# Wrapper-chart values, consumed by templates/backup-world-reset-cron.yaml.
+backupWorldReset:
+  enabled: true
+  # 05:00 local, before anyone is likely online -- a reset kicks players off.
+  schedule: "0 5 * * *"
+  timeZone: "Europe/Amsterdam"
+  deployment: minecraft-minecraft-backup
+
 # Backup sandbox: same world, wiped and re-restored from the survival backups
 # on every pod start. templates/backup-world-reset-cron.yaml triggers that daily.
 minecraft-backup:
@@ -109,11 +171,7 @@ minecraft-backup:
     motd: "Backup sandbox -- reset daily from backup"
     serviceType: ClusterIP
     onlineMode: false
-    # Nothing here is worth backing up, so no rcon consumer and no mcbackup.
-    rcon:
-      enabled: false
   persistence:
-    # Disposable by design, so the Delete class rather than nfs-retain.
     storageClass: nfs-deletable
     dataDir:
       enabled: true
@@ -122,6 +180,7 @@ minecraft-backup:
         - ReadWriteOnce
   extraEnv:
     PREFER_IPV6: "true"
+    PAUSE_WHEN_EMPTY_SECONDS: "60"
     PATCH_DEFINITIONS: /patches
     CFG_VELOCITY_SECRET:
       valueFrom:
@@ -202,28 +261,18 @@ minecraft-backup:
 # Skyblock. Own persistent world and its own backup series -- islands players
 # build are worth keeping, unlike the backup sandbox.
 minecraft-skyblock:
+  replicaCount: 0
   minecraftServer:
     eula: "TRUE"
     type: "PAPER"
     motd: "Skyblock"
     serviceType: ClusterIP
     onlineMode: false
-    # BSkyBlock, the usual pick, has no 26.2 build yet and a 26.2 client cannot
-    # join an older backend through Velocity. IridiumSkyblock is standalone, so
-    # no BentoBox needed, and it generates its own island world on first start.
     modrinth:
       projects:
         - iridiumskyblock
-        # Hard dependency of IridiumSkyblock that downloadDependencies does not
-        # pull, because Modrinth does not list it as one -- without it the plugin
-        # fails to load with UnknownDependencyException: [Vault].
-        # VaultUnlocked is the maintained fork and the only one with a 26.2
-        # build; its plugin.yml declares "name: Vault", so it satisfies the
-        # dependency by name.
         - vaultunlocked
       downloadDependencies: required
-    # Shares the survival rcon secret; mcbackup below needs rcon to flush the
-    # world before archiving.
     rcon:
       enabled: true
       existingSecret: minecraft-rcon-password
@@ -237,6 +286,7 @@ minecraft-skyblock:
         - ReadWriteOnce
   extraEnv:
     PREFER_IPV6: "true"
+    PAUSE_WHEN_EMPTY_SECONDS: "60"
     PATCH_DEFINITIONS: /patches
     CFG_VELOCITY_SECRET:
       valueFrom:
@@ -270,72 +320,6 @@ minecraft-skyblock:
         Size: 20Gi
         accessModes:
           - ReadWriteOnce
-
-# Wrapper-chart values, consumed by templates/backup-world-reset-cron.yaml.
-backupWorldReset:
-  enabled: true
-  # 05:00 local, before anyone is likely online -- a reset kicks players off.
-  schedule: "0 5 * * *"
-  timeZone: "Europe/Amsterdam"
-  deployment: minecraft-minecraft-backup
-
-# Wrapper-chart values, consumed by templates/proxy-lb-svc.yaml.
-proxyLoadBalancer:
-  enabled: true
-  ip: "2a05:f080:0:3800:1b::1"
-  port: 25580
-  # Label the minecraft-proxy chart puts on its pods: app: <release>-minecraft-proxy.
-  selectorApp: minecraft-minecraft-proxy
-
-minecraft-proxy:
-  minecraftProxy:
-    type: VELOCITY
-    # Pinned, not "latest": that resolved to 4.1.0-SNAPSHOT, a development build.
-    # 4.0.0 is the stable release of the same line. Do not drop to 3.x -- Paper
-    # here runs MC 26.2 and the 3.x protocol support predates it.
-    velocityVersion: "4.0.0"
-    onlineMode: true
-    # The chart hardcodes port 25565 on its own Service with no value to change
-    # it, so that one stays internal and templates/proxy-lb-svc.yaml provides the
-    # public LoadBalancer on the port we actually want.
-    serviceType: ClusterIP
-    configFilePath: /server/velocity.toml
-    config: |-
-      config-version = "2.8"
-      bind = "[::]:25577"
-      motd = "Welcome to Minecraft on Kubernetes!"
-      show-max-players = 20
-      player-info-forwarding-mode = "modern"
-      forwarding-secret-file = "/server/forwarding.secret"
-      # Routes a hostname straight to one server, so players skip /server. Matched
-      # against the address the client used in its handshake, which is why each of
-      # these has its own SRV record pointing at itself in misc/dns.yaml.
-      # mc and vanilla are deliberately absent: they fall through to try below.
-      [forced-hosts]
-      "survival.doktermarjolein.nl" = ["survival"]
-      "backup.doktermarjolein.nl" = ["backup"]
-      "skyblock.doktermarjolein.nl" = ["skyblock"]
-      [servers]
-      survival = "minecraft-minecraft-survival:25565"
-      backup = "minecraft-minecraft-backup:25565"
-      skyblock = "minecraft-minecraft-skyblock:25565"
-      try = ["survival"]
-
-  extraEnv:
-    JAVA_TOOL_OPTIONS: "-Djava.net.preferIPv6Addresses=true"
-  extraVolumes:
-    - volumeMounts:
-        - name: velocity-forwarding-secret
-          mountPath: /server/forwarding.secret
-          subPath: forwarding.secret
-          readOnly: true
-      volumes:
-        - name: velocity-forwarding-secret
-          secret:
-            secretName: minecraft-velocity
-            items:
-              - key: forwarding-secret
-                path: forwarding.secret
 
 rcon-web-admin:
 
