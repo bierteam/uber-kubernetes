@@ -2,10 +2,17 @@ minecraft:
   minecraftServer:
     eula: "TRUE"
     type: "PAPER"
-    serviceType: LoadBalancer
+    # Reachable only in-cluster; Velocity is the public entrypoint and holds the
+    # LoadBalancer address. Do not expose this directly: with Velocity forwarding
+    # the backend trusts whatever identity the proxy asserts.
+    serviceType: ClusterIP
+    # Velocity authenticates against Mojang instead, which is what modern
+    # forwarding requires.
+    onlineMode: false
     rcon:
       enabled: true
-      withGeneratedPassword: true
+      existingSecret: minecraft-rcon-password
+      secretKey: rcon-password
 
   persistence:
     storageClass: nfs-retain
@@ -16,6 +23,61 @@ minecraft:
         - ReadWriteOnce
   extraEnv:
     PREFER_IPV6: "true"
+    PATCH_DEFINITIONS: /patches
+    # Read from a Secret rather than set here: this repo is public, and the
+    # forwarding secret is what lets the proxy assert player identities.
+    CFG_VELOCITY_SECRET:
+      valueFrom:
+        secretKeyRef:
+          name: minecraft-velocity
+          key: forwarding-secret
+  # Paper only reads the Velocity settings from paper-global.yml, so they are
+  # patched in at startup. The secret is interpolated from CFG_VELOCITY_SECRET
+  # above, so it never lands in git.
+  extraDeploy:
+    - |
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: minecraft-paper-patches
+      data:
+        paper-global.json: |-
+          {
+            "file": "/data/config/paper-global.yml",
+            "ops": [
+              {
+                "$set": {
+                  "path": "$.proxies.velocity.enabled",
+                  "value": "true",
+                  "value-type": "bool"
+                }
+              },
+              {
+                "$set": {
+                  "path": "$.proxies.velocity['online-mode']",
+                  "value": "true",
+                  "value-type": "bool"
+                }
+              },
+              {
+                "$set": {
+                  "path": "$.proxies.velocity.secret",
+                  "value": "${CFG_VELOCITY_SECRET}"
+                }
+              }
+            ]
+          }
+  # Literal name on purpose: extraVolumes is rendered with plain toYaml, not
+  # tplRender, so template functions do not work here.
+  extraVolumes:
+    - volumeMounts:
+        - name: paper-patches
+          mountPath: /patches
+          readOnly: true
+      volumes:
+        - name: paper-patches
+          configMap:
+            name: minecraft-paper-patches
 
   mcbackup:
     enabled: true
@@ -34,6 +96,55 @@ minecraft:
         Size: 20Gi
         accessModes:
           - ReadWriteOnce
+
+# Wrapper-chart values, consumed by templates/proxy-lb-svc.yaml.
+proxyLoadBalancer:
+  enabled: true
+  ip: "2a05:f080:0:3800:1b::1"
+  port: 25580
+  # Label the minecraft-proxy chart puts on its pods: app: <release>-minecraft-proxy.
+  selectorApp: minecraft-minecraft-proxy
+
+minecraft-proxy:
+  minecraftProxy:
+    type: VELOCITY
+    # Pinned, not "latest": that resolved to 4.1.0-SNAPSHOT, a development build.
+    # 4.0.0 is the stable release of the same line. Do not drop to 3.x -- Paper
+    # here runs MC 26.2 and the 3.x protocol support predates it.
+    velocityVersion: "4.0.0"
+    onlineMode: true
+    # The chart hardcodes port 25565 on its own Service with no value to change
+    # it, so that one stays internal and templates/proxy-lb-svc.yaml provides the
+    # public LoadBalancer on the port we actually want.
+    serviceType: ClusterIP
+    configFilePath: /server/velocity.toml
+    config: |-
+      config-version = "2.8"
+      bind = "[::]:25577"
+      motd = "Welcome to Minecraft on Kubernetes!"
+      show-max-players = 20
+      player-info-forwarding-mode = "modern"
+      forwarding-secret-file = "/server/forwarding.secret"
+      [forced-hosts]
+      [servers]
+      main = "minecraft:25565"
+      try = ["main"]
+
+  extraEnv:
+    JAVA_TOOL_OPTIONS: "-Djava.net.preferIPv6Addresses=true"
+  extraVolumes:
+    - volumeMounts:
+        - name: velocity-forwarding-secret
+          mountPath: /server/forwarding.secret
+          subPath: forwarding.secret
+          readOnly: true
+      volumes:
+        - name: velocity-forwarding-secret
+          secret:
+            secretName: minecraft-velocity
+            items:
+              - key: forwarding-secret
+                path: forwarding.secret
 
 rcon-web-admin:
 

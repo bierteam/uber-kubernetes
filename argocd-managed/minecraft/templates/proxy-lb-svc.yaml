@@ -1,0 +1,21 @@
+{{- if .Values.proxyLoadBalancer.enabled }}
+# The minecraft-proxy chart hardcodes port 25565 on its own Service and exposes
+# no value to change it, so the public entrypoint is defined here instead.
+apiVersion: v1
+kind: Service
+metadata:
+  name: minecraft-proxy-lb
+  annotations:
+    lbipam.cilium.io/ips: {{ .Values.proxyLoadBalancer.ip | quote }}
+spec:
+  type: LoadBalancer
+  selector:
+    app: {{ .Values.proxyLoadBalancer.selectorApp }}
+  ports:
+    - name: proxy
+      port: {{ .Values.proxyLoadBalancer.port }}
+      # Velocity's container port cannot move: the chart hardcodes it and points
+      # both the readiness and liveness probes at it.
+      targetPort: 25577
+      protocol: TCP
+{{- end }}
