@@ -9,33 +9,33 @@ data:
     Hash: SHA256
 
     # This is the security.txt file for everything in our kubernetes cluster
-    # It is defined in this repo https://github.com/bierteam/uber-kubernetes
+    # It is defined here https://github.com/bierteam/uber-kubernetes/blob/main/argocd-managed/oscarr/static-files.yaml
 
-    Contact: mailto:security@oscarr.nl
+    Expires: 2027-09-01T00:00:00.000Z
     Contact: https://github.com/bierteam/uber-kubernetes/security/advisories/new
-    Expires: 2026-12-27T22:00:00.000Z
-    Encryption: https://keybase.io/oscrx/key.asc
+    Contact: mailto:security@oscarr.nl
+    Encryption: https://keys.openpgp.org/vks/v1/by-fingerprint/A707B3FAB275E7AA3237110A64B839C17E31F151
+    Encryption: openpgp4fpr:A707B3FAB275E7AA3237110A64B839C17E31F151
     Preferred-Languages: nl, en
     Canonical: https://oscarr.nl/.well-known/security.txt
     Acknowledgments: https://github.com/bierteam/uber-kubernetes/blob/main/SECURITY.md
     Policy: https://github.com/bierteam/uber-kubernetes/blob/main/SECURITY.md
 
-    # Easily check the signature at: https://keybase.io/verify
     -----BEGIN PGP SIGNATURE-----
 
-    iQIzBAEBCAAdFiEE0hY15QtR979uxVFZSEFwNrf1kvAFAmlQXnQACgkQSEFwNrf1
-    kvDlIg//UUhs+30BeXyc/LS6ZqrUd7xUe2I6hLUDvzDITprsZqkx6yESQzLkTkjR
-    x+L7OIgF0T5WOzcJ6v5+RpB5W+2XbXbbUGJaKl3GT6nq9HqcE4xCYTnkrDjMAlKH
-    cKvH0h8R2CLcXQyrCwcgclcTl3DjAuEYec2teFwhjOKET2b9GvAIgQQZi+PHlo93
-    6MBzELkrp2aT8J4mr4zI8GZtjNPRPfIoQw8/jp2Hirrb1QgFf+2k2AWU3/ThkVen
-    zwe7i9Or4gkCL+mYclR1KSeKxfxjBDAhKOIuPiCKt3G+Mb3PlFuWdSmpLceChtjl
-    gO3j2JwLJ9jElAX4TIhkw7e60SdzFTV3M/l9H4C7Mf6qowkreKCAbu5aanh1XKy+
-    LdBr0nQ/oT3Ooq7mBvFOnqbnpIZQfJYMIed0QTdQUgIwKZqLlCs5uDamMXqxliQB
-    HJWan2icDK7npHIjSxbkEnNSDfrN9u78jf0MWwbISN5wORIk0NtkmwZb7s0XnZcX
-    ZpP4CRcET87kEfI7Vp1RaENq871Mi9fOPrR51AWhmpofSvvpI+4sj/k7orpIU8Ut
-    nWtIEQVuPvcExo5fqRSPo+jybVMCA5Md/tbBY+ZWqwEjjx5oXg/LjeLWvaJRATds
-    hWkmo8DT7spNdfAYXBY3lcBO1aHUpbOrpIBImJWFvT1a2quJcwM=
-    =J8Vq
+    iQIzBAEBCAAdFiEE0hY15QtR979uxVFZSEFwNrf1kvAFAmp6VO8ACgkQSEFwNrf1
+    kvD+OhAAtPzzu/a9Wr+/hWC6NgDuV0JFJpfOQAC0NzgMjhNNg8/Ekq+QMcIXOoS/
+    LwYco69kyG7HVG8gkbEyUYx7vRLVaRjBeQVDJhTHUsGJ1vmeMTEe41rIAwtMyN8U
+    DowJESn322sV+3lkq+96/CfcNgkVgR2H87dGVVPFPkRFaUMv7IReTLZTOTS09MPB
+    /kPWUiu0waRreGLIEZ6opX+4KiALsomPgRWFHGnaNuCdLs1n8NKAiKGBN8WUzivN
+    6P2kl1G1wijsIfhIhu0RJgfpL50HBBNsRB8xxtF4msLP9ISHcb9Xm1HYZCNbpGdE
+    FTkv+sW9t7aoa5KARptaYlzVHUmwKEwlpMiWu+11hbl734TI58WjOxNMFGyvXiX0
+    4D+P95SA7jOtnHchwuIvr+0eaThP8reCBhEsJFx7cO8MGGW+hk3dj1NGsrHM/uNF
+    LWExrWe1rOYDx0e2dEkLc0oI7TleVFnwS7YXA0F0TDwYRzhlgTeyprZ86Jf+k7ls
+    bP3d0x6KHeCNhBdryus6hl7JbiqU4GIrZAD8/QW+FcNY5zjrtuVC03YEEhiuUM8A
+    TVVzWtLUpZ8kyrOT5JHdbJBp17Do88rw1ujAYk2JFFp+34WUVMVXktKLqtp1qN4h
+    uk1g2Ndea+YBo0nwnTIjoPoy2rfonurZvnYR9gqfGTP6SjCcKuo=
+    =BjzM
     -----END PGP SIGNATURE-----
   keybase.txt: |
     ==================================================================
