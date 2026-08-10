@@ -2,9 +2,16 @@ minecraft:
   minecraftServer:
     eula: "TRUE"
     type: "PAPER"
+    serviceType: LoadBalancer
     rcon:
       enabled: true
       withGeneratedPassword: true
+  # Pinned so the address survives recreation and can be given a DNS record.
+  # Must fall inside the Cilium pool defined in argocd-managed/cilium/values.yaml.
+  serviceAnnotations:
+    lbipam.cilium.io/ips: "2a05:f080:0:3800:1b::1"
+  extraEnv:
+    PREFER_IPV6: "true"
 
 rcon-web-admin:
 

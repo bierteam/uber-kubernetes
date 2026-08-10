@@ -1,3 +1,13 @@
+# Wrapper-chart values, consumed by templates/loadbalancer.yaml.
+loadBalancer:
+  enabled: true
+  pool:
+    blocks:
+      - "2a05:f080:0:3800:1b::/112"
+  l2:
+    interfaces:
+      - "^en.+"
+
 # https://github.com/cilium/cilium/blob/main/install/kubernetes/cilium/values.yaml
 cilium: # set values for wrapper/umbrella chart
   ipv4:
@@ -7,6 +17,11 @@ cilium: # set values for wrapper/umbrella chart
   kubeProxyReplacement: true
   k8sServiceHost: localhost
   k8sServicePort: 7445
+  l2announcements:
+    enabled: true
+  k8sClientRateLimit:
+    qps: 50
+    burst: 100
   ipam:
     mode: kubernetes
   securityContext:

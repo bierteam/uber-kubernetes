@@ -1,0 +1,28 @@
+{{- if .Values.loadBalancer.enabled }}
+# Addresses handed out to type=LoadBalancer services. Without a pool, LB IPAM is
+# enabled but has nothing to allocate from, so every such service sits at
+# <pending> forever.
+apiVersion: cilium.io/v2
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: default-pool
+spec:
+  blocks:
+    {{- range .Values.loadBalancer.pool.blocks }}
+    - cidr: {{ . | quote }}
+    {{- end }}
+---
+# Makes the allocated addresses reachable: Cilium answers NDP for them on the
+# selected interfaces. Still v2alpha1 -- this CRD has not been promoted to v2,
+# unlike CiliumLoadBalancerIPPool above.
+apiVersion: cilium.io/v2alpha1
+kind: CiliumL2AnnouncementPolicy
+metadata:
+  name: default-l2
+spec:
+  loadBalancerIPs: true
+  interfaces:
+    {{- range .Values.loadBalancer.l2.interfaces }}
+    - {{ . | quote }}
+    {{- end }}
+{{- end }}
