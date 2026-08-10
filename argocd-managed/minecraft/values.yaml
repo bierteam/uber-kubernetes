@@ -1,4 +1,4 @@
-minecraft:
+minecraft-survival:
   minecraftServer:
     eula: "TRUE"
     type: "PAPER"
@@ -99,9 +99,9 @@ minecraft:
         accessModes:
           - ReadWriteMany
 
-# Creative sandbox: same world, wiped and re-restored from the survival backups
-# on every pod start. templates/creative-restore-cron.yaml triggers that daily.
-minecraft-creative:
+# Backup sandbox: same world, wiped and re-restored from the survival backups
+# on every pod start. templates/backup-world-reset-cron.yaml triggers that daily.
+minecraft-backup:
   minecraftServer:
     eula: "TRUE"
     type: "PAPER"
@@ -148,16 +148,26 @@ minecraft-creative:
           echo "restoring from ${latest}"
           find /data -mindepth 1 -maxdepth 1 -exec rm -rf {} +
           tar -xzf "${latest}" -C /data
-          # Each player's stored gamemode lives in their own NBT file and wins
-          # over the server default, so restored players would spawn in survival.
-          # Dropping the per-player state makes everyone join as new and pick up
-          # gamemode=creative. advancements/ and stats/ are left alone.
-          # Note this is MC 26.2 layout: world/players/data, not world/playerdata.
-          rm -rf /data/world/players/data
+
+          # Op everyone who has ever joined survival. usercache.json is the only
+          # record of that, and it comes along in the backup, so the op list
+          # maintains itself instead of being a hand-kept list in values.
+          # Guarded so an empty or missing usercache leaves ops.json untouched
+          # rather than writing invalid JSON.
+          if [ -f /data/usercache.json ]; then
+            entries=$(tr '}' '\n' < /data/usercache.json | while IFS= read -r line; do
+              u=$(printf '%s' "$line" | sed -n 's/.*"uuid":"\([^"]*\)".*/\1/p')
+              n=$(printf '%s' "$line" | sed -n 's/.*"name":"\([^"]*\)".*/\1/p')
+              if [ -n "$u" ] && [ -n "$n" ]; then
+                printf '{"uuid":"%s","name":"%s","level":4,"bypassesPlayerLimit":false},' "$u" "$n"
+              fi
+            done)
+            if [ -n "$entries" ]; then
+              printf '[%s]' "${entries%,}" > /data/ops.json
+              echo "opped everyone found in usercache"
+            fi
+          fi
           echo "restore complete"
-      # The namespace enforces the restricted Pod Security profile, and this spec
-      # is ours rather than the chart's, so it needs its own securityContext.
-      # uid 1000 matches the server's own user; the NFS share is mode 0777.
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -186,16 +196,16 @@ minecraft-creative:
             name: minecraft-paper-patches
         - name: survival-backups
           persistentVolumeClaim:
-            claimName: minecraft-backupdir
+            claimName: minecraft-minecraft-survival-backupdir
             readOnly: true
 
-# Wrapper-chart values, consumed by templates/creative-restore-cron.yaml.
-creativeReset:
+# Wrapper-chart values, consumed by templates/backup-world-reset-cron.yaml.
+backupWorldReset:
   enabled: true
   # 05:00 local, before anyone is likely online -- a reset kicks players off.
   schedule: "0 5 * * *"
   timeZone: "Europe/Amsterdam"
-  deployment: minecraft-minecraft-creative
+  deployment: minecraft-minecraft-backup
 
 # Wrapper-chart values, consumed by templates/proxy-lb-svc.yaml.
 proxyLoadBalancer:
@@ -225,11 +235,17 @@ minecraft-proxy:
       show-max-players = 20
       player-info-forwarding-mode = "modern"
       forwarding-secret-file = "/server/forwarding.secret"
+      # Routes a hostname straight to one server, so players skip /server. Matched
+      # against the address the client used in its handshake, which is why each of
+      # these has its own SRV record pointing at itself in misc/dns.yaml.
+      # mc and vanilla are deliberately absent: they fall through to try below.
       [forced-hosts]
+      "survival.doktermarjolein.nl" = ["survival"]
+      "backup.doktermarjolein.nl" = ["backup"]
       [servers]
-      main = "minecraft:25565"
-      creative = "minecraft-minecraft-creative:25565"
-      try = ["main"]
+      survival = "minecraft-minecraft-survival:25565"
+      backup = "minecraft-minecraft-backup:25565"
+      try = ["survival"]
 
   extraEnv:
     JAVA_TOOL_OPTIONS: "-Djava.net.preferIPv6Addresses=true"

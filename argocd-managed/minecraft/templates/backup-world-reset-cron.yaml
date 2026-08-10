@@ -1,41 +1,41 @@
-{{- if .Values.creativeReset.enabled }}
+{{- if .Values.backupWorldReset.enabled }}
 # The restore itself lives in the creative pod's initContainer, so a daily reset
 # is just a pod replacement. Recreate is the chart's strategy, so the old pod is
 # gone before the new one restores -- no two writers on the same volume.
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: minecraft-creative-reset
+  name: minecraft-backup-world-reset
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: minecraft-creative-reset
+  name: minecraft-backup-world-reset
 rules:
   - apiGroups: ["apps"]
     resources: ["deployments"]
-    resourceNames: [{{ .Values.creativeReset.deployment | quote }}]
+    resourceNames: [{{ .Values.backupWorldReset.deployment | quote }}]
     verbs: ["get", "patch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: minecraft-creative-reset
+  name: minecraft-backup-world-reset
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: minecraft-creative-reset
+  name: minecraft-backup-world-reset
 subjects:
   - kind: ServiceAccount
-    name: minecraft-creative-reset
+    name: minecraft-backup-world-reset
 ---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: minecraft-creative-reset
+  name: minecraft-backup-world-reset
 spec:
-  schedule: {{ .Values.creativeReset.schedule | quote }}
-  timeZone: {{ .Values.creativeReset.timeZone | quote }}
+  schedule: {{ .Values.backupWorldReset.schedule | quote }}
+  timeZone: {{ .Values.backupWorldReset.timeZone | quote }}
   concurrencyPolicy: Forbid
   successfulJobsHistoryLimit: 1
   failedJobsHistoryLimit: 3
@@ -44,7 +44,7 @@ spec:
       backoffLimit: 2
       template:
         spec:
-          serviceAccountName: minecraft-creative-reset
+          serviceAccountName: minecraft-backup-world-reset
           restartPolicy: Never
           securityContext:
             runAsNonRoot: true
@@ -58,7 +58,7 @@ spec:
                 - kubectl
                 - rollout
                 - restart
-                - deployment/{{ .Values.creativeReset.deployment }}
+                - deployment/{{ .Values.backupWorldReset.deployment }}
               securityContext:
                 allowPrivilegeEscalation: false
                 readOnlyRootFilesystem: true

@@ -87,6 +87,7 @@ spec:
       recordType: CNAME
       targets:
         - kubernetes.oscarr.nl
+
     - dnsName: doktermarjolein.nl
       recordTTL: 1
       recordType: CAA
@@ -94,3 +95,66 @@ spec:
         - 0 issue letsencrypt.org
         - 0 issuewild letsencrypt.org
         - 0 iodef mailto:caa@oscarr.nl
+
+    # Minecraft on the Talos cluster. AAAA is the Cilium LoadBalancer that
+    # Velocity holds, so IPv6 clients reach the proxy directly. A is the public
+    # v4 of the firewall, where HAProxy fronts the same proxy -- the cluster is
+    # IPv6-only and has no v4 address of its own.
+    - dnsName: mc.doktermarjolein.nl
+      recordTTL: 1
+      recordType: A
+      targets:
+        - 185.132.110.37
+
+    - dnsName: mc.doktermarjolein.nl
+      recordTTL: 1
+      recordType: AAAA
+      targets:
+        - 2a05:f080:0:3800:1b::1
+
+    # Lets players type just the hostname. Both paths above must listen on this
+    # port: the LoadBalancer does, and the HAProxy frontend has to match.
+    - dnsName: _minecraft._tcp.mc.doktermarjolein.nl
+      recordTTL: 1
+      recordType: SRV
+      targets:
+        - 0 5 25580 mc.doktermarjolein.nl.
+
+    # Per-server entrypoints, matched by Velocity's forced-hosts. Each SRV points
+    # at its own name rather than at mc, because the client sends the hostname it
+    # connected to in the handshake and that is what forced-hosts matches on.
+    - dnsName: survival.doktermarjolein.nl
+      recordTTL: 1
+      recordType: CNAME
+      targets:
+        - mc.doktermarjolein.nl
+
+    - dnsName: _minecraft._tcp.survival.doktermarjolein.nl
+      recordTTL: 1
+      recordType: SRV
+      targets:
+        - 0 5 25580 survival.doktermarjolein.nl.
+
+    - dnsName: backup.doktermarjolein.nl
+      recordTTL: 1
+      recordType: CNAME
+      targets:
+        - mc.doktermarjolein.nl
+
+    - dnsName: _minecraft._tcp.backup.doktermarjolein.nl
+      recordTTL: 1
+      recordType: SRV
+      targets:
+        - 0 5 25580 backup.doktermarjolein.nl.
+
+    - dnsName: vanilla.doktermarjolein.nl
+      recordTTL: 1
+      recordType: CNAME
+      targets:
+        - mc.doktermarjolein.nl
+
+    - dnsName: _minecraft._tcp.vanilla.doktermarjolein.nl
+      recordTTL: 1
+      recordType: SRV
+      targets:
+        - 0 0 25580 vanilla.doktermarjolein.nl.

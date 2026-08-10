@@ -1,0 +1,36 @@
+---
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: omni
+subsets:
+  - addresses:
+      - ip: 192.168.123.109
+    ports:
+      - port: 443
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: omni
+spec:
+  clusterIP: None
+  ports:
+    - port: 443
+      targetPort: 443
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: omni
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`omni.lab.oscarr.nl`)
+      kind: Rule
+      services:
+        - name: omni
+          port: 443
+          passHostHeader: true
+          serversTransport: insecure
