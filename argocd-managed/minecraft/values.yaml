@@ -134,7 +134,7 @@ minecraft-creative:
   initContainers:
     - |
       name: restore-from-backup
-      image: busybox:1.37
+      image: busybox:1.38
       command:
         - sh
         - -c
