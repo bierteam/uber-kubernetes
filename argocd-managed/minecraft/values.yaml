@@ -6,12 +6,55 @@ minecraft:
     rcon:
       enabled: true
       withGeneratedPassword: true
-  # Pinned so the address survives recreation and can be given a DNS record.
-  # Must fall inside the Cilium pool defined in argocd-managed/cilium/values.yaml.
-  serviceAnnotations:
-    lbipam.cilium.io/ips: "2a05:f080:0:3800:1b::1"
+
+  persistence:
+    storageClass: nfs-retain
+    dataDir:
+      enabled: true
+      Size: 10Gi
+      accessModes:
+        - ReadWriteOnce
   extraEnv:
     PREFER_IPV6: "true"
+    PATCH_DEFINITIONS: /patches
+    # The only switch for PROXY protocol. "true" requires every connection to
+    # arrive via HAProxy carrying a PROXY header and refuses direct ones, so
+    # flip this only once send-proxy-v2 is live on the HAProxy backend.
+    # CFG_ is the default allowed prefix for patch placeholders.
+    CFG_PROXY_PROTOCOL: "false"
+  # Paper has no env var for proxies.proxy-protocol, so it is patched into
+  # config/paper-global.yml at startup from CFG_PROXY_PROTOCOL above.
+  extraDeploy:
+    - |
+      apiVersion: v1
+      kind: ConfigMap
+      metadata:
+        name: minecraft-paper-patches
+      data:
+        paper-global.json: |-
+          {
+            "file": "/data/config/paper-global.yml",
+            "ops": [
+              {
+                "$set": {
+                  "path": "$.proxies['proxy-protocol']",
+                  "value": "${CFG_PROXY_PROTOCOL}",
+                  "value-type": "bool"
+                }
+              }
+            ]
+          }
+  # Name is literal on purpose: extraVolumes is rendered with plain toYaml, not
+  # tplRender, so template functions do not work here.
+  extraVolumes:
+    - volumeMounts:
+        - name: paper-patches
+          mountPath: /patches
+          readOnly: true
+      volumes:
+        - name: paper-patches
+          configMap:
+            name: minecraft-paper-patches
 
 rcon-web-admin:
 

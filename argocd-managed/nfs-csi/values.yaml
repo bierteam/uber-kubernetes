@@ -1,0 +1,26 @@
+# Wrapper-chart values, consumed by templates/storageclasses.yaml.
+nfs:
+  # Synology, dedicated k8s-csi share. Same /64 as the cluster nodes.
+  server: "2a05:f080:0:3800:211:32ff:fe3a:9de5"
+  share: /volume1/k8s-csi
+  # This Synology does not support NFSv4.1 (mount.nfs: Protocol not supported),
+  # so 4.0 is pinned deliberately.
+  mountOptions:
+    - nfsvers=4.0
+  # World-writable so unmapped NFS client UIDs can write. Note this alone is not
+  # enough on DSM: the share also needs an explicit Everyone: Read & Write ACL,
+  # because DSM's ACL layer overrides POSIX mode bits.
+  mountPermissions: "0777"
+
+storageClasses:
+  - name: nfs-retain
+    default: true
+    reclaimPolicy: Retain
+  - name: nfs-deletable
+    reclaimPolicy: Delete
+
+# https://github.com/kubernetes-csi/csi-driver-nfs
+csi-driver-nfs: # set values for wrapper/umbrella chart
+  # Classes are defined by this wrapper instead, so both variants stay together.
+  storageClass:
+    create: false

@@ -47,6 +47,10 @@ argocdApps:
     server: talos-cluster
   - name: misc
     podSecurity: baseline # TODO verify if this can be restricted
+  - name: nfs-csi
+    namespace: kube-system
+    podSecurity: privileged # node plugin mounts hostPath and runs privileged
+    server: talos-cluster
   - name: rick
   - name: sealed-secrets
     namespace: kube-system

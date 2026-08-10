@@ -1,0 +1,23 @@
+{{- range .Values.storageClasses }}
+---
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .name }}
+  {{- if .default }}
+  annotations:
+    storageclass.kubernetes.io/is-default-class: "true"
+  {{- end }}
+provisioner: nfs.csi.k8s.io
+parameters:
+  server: {{ $.Values.nfs.server | quote }}
+  share: {{ $.Values.nfs.share | quote }}
+  # Expanded by the CSI driver, not by Helm.
+  subDir: "${pvc.metadata.namespace}-${pvc.metadata.name}"
+  mountPermissions: {{ $.Values.nfs.mountPermissions | quote }}
+reclaimPolicy: {{ .reclaimPolicy }}
+volumeBindingMode: Immediate
+allowVolumeExpansion: true
+mountOptions:
+  {{- toYaml $.Values.nfs.mountOptions | nindent 2 }}
+{{- end }}
