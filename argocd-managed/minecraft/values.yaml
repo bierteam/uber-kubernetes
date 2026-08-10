@@ -148,6 +148,12 @@ minecraft-creative:
           echo "restoring from ${latest}"
           find /data -mindepth 1 -maxdepth 1 -exec rm -rf {} +
           tar -xzf "${latest}" -C /data
+          # Each player's stored gamemode lives in their own NBT file and wins
+          # over the server default, so restored players would spawn in survival.
+          # Dropping the per-player state makes everyone join as new and pick up
+          # gamemode=creative. advancements/ and stats/ are left alone.
+          # Note this is MC 26.2 layout: world/players/data, not world/playerdata.
+          rm -rf /data/world/players/data
           echo "restore complete"
       # The namespace enforces the restricted Pod Security profile, and this spec
       # is ours rather than the chart's, so it needs its own securityContext.
