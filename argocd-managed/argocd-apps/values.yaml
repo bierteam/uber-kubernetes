@@ -4,69 +4,87 @@ argocdApps:
   #   server: talos-cluster
   #   podSecurity: baseline
   - name: cert-manager
+    docs: https://cert-manager.io/
     podSecurity: baseline # TODO verify if this can be restricted
   - name: cilium
+    docs: https://cilium.io/
     namespace: kube-system
     podSecurity: privileged
     server: talos-cluster
   - name: cnpg
+    docs: https://cloudnative-pg.io/
     namespace: cnpg-system
     podSecurity: baseline # TODO verify if this can be restricted
   - name: cyberchef
+    docs: https://github.com/gchq/CyberChef
     podSecurity: baseline # TODO verify if this can be restricted
   - name: dex
+    docs: https://dexidp.io/
     podSecurity: baseline # TODO verify if this can be restricted
   # - name: dns-updater
   #   podSecurity: restricted
   - name: drinkn
+    docs: https://github.com/bierteam/drinkn
     folder: charts/drinkn
     repository: drinkn
     podSecurity: baseline # TODO verify if this can be restricted
   - name: drinkn-hooks
     podSecurity: baseline # TODO verify if this can be restricted
   - name: external-dns
+    docs: https://github.com/kubernetes-sigs/external-dns
     podSecurity: baseline # TODO verify if this can be restricted
   # - name: external-secrets
   - name: factorio
+    docs: https://github.com/SQLJames/factorio-server-charts
     podSecurity: baseline # TODO verify if this can be restricted
   - name: friend-tracker
     podSecurity: baseline # TODO verify if this can be restricted
   - name: gateway-api
+    docs: https://github.com/kubernetes-sigs/gateway-api
     namespace: default
   - name: gim-tracker
     podSecurity: baseline # TODO verify if this can be restricted
   - name: kubelet-csr-approver
+    docs: https://github.com/postfinance/kubelet-csr-approver
     server: talos-cluster
   - name: kubeseal-webgui
+    docs: https://github.com/jaydee94/kubeseal-webgui
     podSecurity: baseline # TODO verify if this can be restricted
   # - name: longhorn
   #   namespace: longhorn-system
   #   podSecurity: privileged
   # - name: metrics-server
   - name: minecraft
+    docs: https://github.com/itzg/minecraft-server-charts
     server: talos-cluster
   - name: misc
     podSecurity: baseline # TODO verify if this can be restricted
   - name: nfs-csi
+    docs: https://github.com/kubernetes-csi/csi-driver-nfs
     namespace: kube-system
     podSecurity: privileged # node plugin mounts hostPath and runs privileged
     server: talos-cluster
   - name: rick
   - name: sealed-secrets
+    docs: https://github.com/bitnami-labs/sealed-secrets
     namespace: kube-system
     podSecurity: privileged
   # - name: shulker
   #   server: talos-cluster
   - name: traefik
+    docs: https://github.com/traefik/traefik
     podSecurity: baseline # TODO verify if this can be restricted
   - name: unifi
+    docs: https://github.com/linuxserver/docker-unifi-network-application
     podSecurity: baseline # TODO verify if this can be restricted
   - name: oscarr
   - name: proxy-oscarr
+    docs: https://github.com/oauth2-proxy/oauth2-proxy
     folder: argocd-managed/oauth2-proxy
     valuesFile: values-oscarr.yaml
     podSecurity: baseline # TODO verify if this can be restricted
   - name: proxy-bruinsma
+    docs: https://github.com/oauth2-proxy/oauth2-proxy
     folder: argocd-managed/oauth2-proxy
     valuesFile: values-bruinsma.yaml
     podSecurity: baseline # TODO verify if this can be restricted
@@ -74,6 +92,7 @@ argocdApps:
   # - name: velero
   #   podSecurity: privileged
   - name: vikunja
+    docs: https://vikunja.io/
   - name: wildlife-api
     folder: charts
     repository: wildlife-api
