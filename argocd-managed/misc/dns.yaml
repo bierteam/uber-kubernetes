@@ -147,6 +147,18 @@ spec:
       targets:
         - 0 5 25580 backup.doktermarjolein.nl.
 
+    - dnsName: skyblock.doktermarjolein.nl
+      recordTTL: 1
+      recordType: CNAME
+      targets:
+        - mc.doktermarjolein.nl
+
+    - dnsName: _minecraft._tcp.skyblock.doktermarjolein.nl
+      recordTTL: 1
+      recordType: SRV
+      targets:
+        - 0 5 25580 skyblock.doktermarjolein.nl.
+
     - dnsName: vanilla.doktermarjolein.nl
       recordTTL: 1
       recordType: CNAME

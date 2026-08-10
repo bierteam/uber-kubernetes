@@ -106,7 +106,7 @@ minecraft-backup:
     eula: "TRUE"
     type: "PAPER"
     gameMode: creative
-    motd: "Creative sandbox -- reset daily from backup"
+    motd: "Backup sandbox -- reset daily from backup"
     serviceType: ClusterIP
     onlineMode: false
     # Nothing here is worth backing up, so no rcon consumer and no mcbackup.
@@ -199,6 +199,78 @@ minecraft-backup:
             claimName: minecraft-minecraft-survival-backupdir
             readOnly: true
 
+# Skyblock. Own persistent world and its own backup series -- islands players
+# build are worth keeping, unlike the backup sandbox.
+minecraft-skyblock:
+  minecraftServer:
+    eula: "TRUE"
+    type: "PAPER"
+    motd: "Skyblock"
+    serviceType: ClusterIP
+    onlineMode: false
+    # BSkyBlock, the usual pick, has no 26.2 build yet and a 26.2 client cannot
+    # join an older backend through Velocity. IridiumSkyblock is standalone, so
+    # no BentoBox needed, and it generates its own island world on first start.
+    modrinth:
+      projects:
+        - iridiumskyblock
+        # Hard dependency of IridiumSkyblock that downloadDependencies does not
+        # pull, because Modrinth does not list it as one -- without it the plugin
+        # fails to load with UnknownDependencyException: [Vault].
+        # VaultUnlocked is the maintained fork and the only one with a 26.2
+        # build; its plugin.yml declares "name: Vault", so it satisfies the
+        # dependency by name.
+        - vaultunlocked
+      downloadDependencies: required
+    # Shares the survival rcon secret; mcbackup below needs rcon to flush the
+    # world before archiving.
+    rcon:
+      enabled: true
+      existingSecret: minecraft-rcon-password
+      secretKey: rcon-password
+  persistence:
+    storageClass: nfs-retain
+    dataDir:
+      enabled: true
+      Size: 10Gi
+      accessModes:
+        - ReadWriteOnce
+  extraEnv:
+    PREFER_IPV6: "true"
+    PATCH_DEFINITIONS: /patches
+    CFG_VELOCITY_SECRET:
+      valueFrom:
+        secretKeyRef:
+          name: minecraft-velocity
+          key: forwarding-secret
+  # Reuses the ConfigMap created by the survival release; same namespace.
+  extraVolumes:
+    - volumeMounts:
+        - name: paper-patches
+          mountPath: /patches
+          readOnly: true
+      volumes:
+        - name: paper-patches
+          configMap:
+            name: minecraft-paper-patches
+  mcbackup:
+    enabled: true
+    backupInterval: 6h
+    pauseIfNoPlayers: "true"
+    pruneBackupsDays: 14
+    excludes: "*.jar,cache,logs"
+    resources:
+      requests:
+        memory: 128Mi
+        cpu: 50m
+    persistence:
+      storageClass: nfs-retain
+      backupDir:
+        enabled: true
+        Size: 20Gi
+        accessModes:
+          - ReadWriteOnce
+
 # Wrapper-chart values, consumed by templates/backup-world-reset-cron.yaml.
 backupWorldReset:
   enabled: true
@@ -242,9 +314,11 @@ minecraft-proxy:
       [forced-hosts]
       "survival.doktermarjolein.nl" = ["survival"]
       "backup.doktermarjolein.nl" = ["backup"]
+      "skyblock.doktermarjolein.nl" = ["skyblock"]
       [servers]
       survival = "minecraft-minecraft-survival:25565"
       backup = "minecraft-minecraft-backup:25565"
+      skyblock = "minecraft-minecraft-skyblock:25565"
       try = ["survival"]
 
   extraEnv:
