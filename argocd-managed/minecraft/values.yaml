@@ -3,10 +3,9 @@ proxyLoadBalancer:
   enabled: true
   ip: "2a05:f080:0:3800:1b::1"
   port: 25580
-  # Label the minecraft-proxy chart puts on its pods: app: <release>-minecraft-proxy.
-  selectorApp: minecraft-minecraft-proxy
+  selectorApp: minecraft-proxy
 
-minecraft-proxy:
+proxy:
   minecraftProxy:
     type: VELOCITY
     velocityVersion: "4.0.0"
@@ -29,9 +28,9 @@ minecraft-proxy:
       "backup.doktermarjolein.nl" = ["backup"]
       "skyblock.doktermarjolein.nl" = ["skyblock"]
       [servers]
-      survival = "minecraft-minecraft-survival:25565"
-      backup = "minecraft-minecraft-backup:25565"
-      skyblock = "minecraft-minecraft-skyblock:25565"
+      survival = "minecraft-survival:25565"
+      backup = "minecraft-backup:25565"
+      skyblock = "minecraft-skyblock:25565"
       try = ["survival"]
 
   extraEnv:
@@ -50,7 +49,7 @@ minecraft-proxy:
               - key: forwarding-secret
                 path: forwarding.secret
 
-minecraft-survival:
+survival:
   resources:
     requests:
       memory: 1Gi
@@ -159,11 +158,11 @@ backupWorldReset:
   # 05:00 local, before anyone is likely online -- a reset kicks players off.
   schedule: "0 5 * * *"
   timeZone: "Europe/Amsterdam"
-  deployment: minecraft-minecraft-backup
+  deployment: minecraft-backup
 
 # Backup sandbox: same world, wiped and re-restored from the survival backups
 # on every pod start. templates/backup-world-reset-cron.yaml triggers that daily.
-minecraft-backup:
+backup:
   minecraftServer:
     eula: "TRUE"
     type: "PAPER"
@@ -255,12 +254,12 @@ minecraft-backup:
             name: minecraft-paper-patches
         - name: survival-backups
           persistentVolumeClaim:
-            claimName: minecraft-minecraft-survival-backupdir
+            claimName: minecraft-survival-backupdir
             readOnly: true
 
 # Skyblock. Own persistent world and its own backup series -- islands players
 # build are worth keeping, unlike the backup sandbox.
-minecraft-skyblock:
+skyblock:
   replicaCount: 0
   minecraftServer:
     eula: "TRUE"
@@ -320,68 +319,3 @@ minecraft-skyblock:
         Size: 20Gi
         accessModes:
           - ReadWriteOnce
-
-# Standalone modded server, outside Velocity. Players reach it directly with the
-# modpack's own launcher profile; it cannot be reached with /server from the
-# other worlds because those run 26.2 and this runs 1.20.1.
-minecraft-modded:
-  image:
-    tag: java17
-  resources:
-    requests:
-      memory: 1Gi
-      cpu: 500m
-  minecraftServer:
-    eula: "TRUE"
-    type: "AUTO_CURSEFORGE"
-    motd: "Marjolein's Magische Minecraft Mekka"
-    whitelist: "oscrx,MarjoVDB,mightybeardking,WoblySausage,Xm0ur3r"
-    onlineMode: true
-    autoCurseForge:
-      pageUrl: "https://www.curseforge.com/minecraft/modpacks/cuter-minecraft"
-      # Never the inline key: this repo is public. Create it once with
-      #   kubectl -n minecraft create secret generic minecraft-curseforge-api \
-      #     --from-literal=cf-api-key='<key>'
-      apiKey:
-        existingSecret: minecraft-curseforge-api
-        secretKey: cf-api-key
-    serviceType: LoadBalancer
-    servicePort: 25565
-    rcon:
-      enabled: true
-      existingSecret: minecraft-rcon-password
-      secretKey: rcon-password
-  serviceAnnotations:
-    lbipam.cilium.io/ips: "2a05:f080:0:3800:1b::2"
-  persistence:
-    storageClass: nfs-retain
-    dataDir:
-      enabled: true
-      Size: 20Gi
-      accessModes:
-        - ReadWriteOnce
-  extraEnv:
-    PREFER_IPV6: "true"
-    JAVA_TOOL_OPTIONS: "-Djava.net.preferIPv4Stack=false -Djava.net.preferIPv6Addresses=true"
-    INIT_MEMORY: 1G
-    MAX_MEMORY: 4G
-  mcbackup:
-    enabled: true
-    backupInterval: 6h
-    pauseIfNoPlayers: "true"
-    pruneBackupsDays: 14
-    excludes: "*.jar,cache,logs"
-    resources:
-      requests:
-        memory: 128Mi
-        cpu: 50m
-    persistence:
-      storageClass: nfs-retain
-      backupDir:
-        enabled: true
-        Size: 20Gi
-        accessModes:
-          - ReadWriteOnce
-
-rcon-web-admin:
-

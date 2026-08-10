@@ -154,18 +154,6 @@ spec:
       targets:
         - 0 5 25580 skyblock.doktermarjolein.nl.
 
-    - dnsName: cute.doktermarjolein.nl
-      recordTTL: 1
-      recordType: AAAA
-      targets:
-        - 2a05:f080:0:3800:1b::2
-
-    - dnsName: _minecraft._tcp.cute.doktermarjolein.nl
-      recordTTL: 1
-      recordType: SRV
-      targets:
-        - 0 5 25565 cute.doktermarjolein.nl.
-
     - dnsName: vanilla.doktermarjolein.nl
       recordTTL: 1
       recordType: CNAME

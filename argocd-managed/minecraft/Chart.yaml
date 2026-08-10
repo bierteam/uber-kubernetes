@@ -3,33 +3,22 @@ name: minecraft-wrapper
 type: application
 version: 1.0.0
 dependencies:
-  # Aliased purely for naming symmetry with minecraft-backup below. Renders as
-  # minecraft-minecraft-survival.
-  - name: minecraft
-    version: 5.1.3
-    repository: oci://ghcr.io/itzg/minecraft-server-charts
-    alias: minecraft-survival
   - name: minecraft-proxy
     version: 3.10.0
     repository: oci://ghcr.io/itzg/minecraft-server-charts
-  # Second copy of the same chart: a backup sandbox restored daily from the
-  # survival backups. Renders as minecraft-minecraft-backup.
-  - name: minecraft
-    version: 5.1.3
-    repository: oci://ghcr.io/itzg/minecraft-server-charts
-    alias: minecraft-backup
-  # Third copy: skyblock. Renders as minecraft-minecraft-skyblock.
-  - name: minecraft
-    version: 5.1.3
-    repository: oci://ghcr.io/itzg/minecraft-server-charts
-    alias: minecraft-skyblock
-  # Fourth copy: the CurseForge modpack. Stands alone with its own LoadBalancer
-  # and is deliberately NOT registered in Velocity -- it runs Minecraft 1.20.1
-  # and the other servers run 26.2, so no single client can reach both.
-  - name: minecraft
-    version: 5.1.3
-    repository: oci://ghcr.io/itzg/minecraft-server-charts
-    alias: minecraft-modded
+    alias: proxy
   # - name: rcon-web-admin
   #   version: 1.2.1
   #   repository: oci://ghcr.io/itzg/minecraft-server-charts
+  - name: minecraft
+    version: 5.1.3
+    repository: oci://ghcr.io/itzg/minecraft-server-charts
+    alias: survival
+  - name: minecraft
+    version: 5.1.3
+    repository: oci://ghcr.io/itzg/minecraft-server-charts
+    alias: backup
+  - name: minecraft
+    version: 5.1.3
+    repository: oci://ghcr.io/itzg/minecraft-server-charts
+    alias: skyblock
