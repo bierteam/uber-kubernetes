@@ -5,7 +5,7 @@ metadata:
   name: omni
 subsets:
   - addresses:
-      - ip: 192.168.123.109
+      - ip: 192.168.122.7
     ports:
       - port: 443
 ---
