@@ -30,6 +30,7 @@ spec:
       timeZone: Europe/Amsterdam
       applications:
         - minecraft
+        - cilium
       manualSync: true
   sourceRepos:
     - https://github.com/bierteam/uber-kubernetes.git
