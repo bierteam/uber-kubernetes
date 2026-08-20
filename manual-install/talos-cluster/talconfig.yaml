@@ -3,7 +3,7 @@
 clusterName: talos-cluster
 endpoint: https://[2a05:f080:0:3800:beef::]:6443
 allowSchedulingOnControlPlanes: true
-kubernetesVersion: v1.36.3
+kubernetesVersion: v1.36.4
 talosVersion: v1.13.9
 clusterPodNets:
   - fd05:4786:835f::/48
