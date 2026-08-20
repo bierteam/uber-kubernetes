@@ -52,14 +52,17 @@ proxy:
 survival:
   resources:
     requests:
-      memory: 1Gi
-      cpu: 500m
+      memory: 2Gi
+      cpu: 2
+    limits:
+      memory: 4Gi
+      cpu: 2
   minecraftServer:
     eula: "TRUE"
     type: "PAPER"
-    motd: "Gamedust Vanilla"
+    motd: "Gamedust Survival"
     spawnProtection: 0
-    whitelist: "oscrx,MarjoVDB,mightybeardking,WoblySausage,Xm0ur3r,ZwartzyBear"
+    whitelist: "oscrx,MarjoVDB,mightybeardking,WoblySausage,Xm0ur3r,ZwartzyBear,Georginx"
     onlineMode: false
     rcon:
       enabled: true
@@ -242,7 +245,6 @@ backup:
           readOnly: true
         - name: datadir
           mountPath: /data
-  # Reuses the ConfigMap created by the survival release; same namespace.
   extraVolumes:
     - volumeMounts:
         - name: paper-patches
