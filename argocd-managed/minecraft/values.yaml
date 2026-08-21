@@ -52,7 +52,7 @@ proxy:
 survival:
   resources:
     requests:
-      memory: 2Gi
+      memory: 4Gi
       cpu: 2
     limits:
       memory: 4Gi
@@ -143,8 +143,11 @@ survival:
     excludes: "*.jar,cache,logs"
     resources:
       requests:
-        memory: 128Mi
-        cpu: 50m
+        memory: 256Mi
+        cpu: 100m
+      limits:
+        memory: 256Mi
+        cpu: 100m
     persistence:
       storageClass: nfs-retain
       backupDir:
