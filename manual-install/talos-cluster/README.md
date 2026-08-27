@@ -2,58 +2,80 @@
 
 This cluster is used as a playground, no argocd etc (yet)
 
-It uses [Talhelper](https://budimanjojo.github.io/talhelper/latest/)
-for command generation
+It used to be managed with [Talhelper](https://budimanjojo.github.io/talhelper/latest/),
+which is no longer maintained. It now uses
+[topf](https://postfinance.github.io/topf/main/), which generates *and* applies
+the machine configs itself instead of writing them to `clusterconfig/` first.
 
-Install `talhelper` and `talosctl` via [Brew](https://brew.sh/) and you can start
-making changes or doing life cycle management on it.
+Install `topf`, `sops` and `talosctl` via [Brew](https://brew.sh/) and you can
+start making changes or doing life cycle management on it. `sops` is a hard
+requirement: unlike talhelper, topf shells out to the `sops` binary to decrypt
+`secrets.yaml`.
+
+```sh
+brew install postfinance/tap/topf sops siderolabs/tap/talosctl
+```
+
+## Layout
+
+| File | Contents |
+| --- | --- |
+| `topf.yaml` | Cluster name, endpoint, versions and the node list |
+| `schematic.yaml` | Image factory schematic for the control planes, referenced as `@schematic.yaml` |
+| `secrets.yaml` | SOPS-encrypted Talos secrets bundle (was `talsecret.sops.yaml`) |
+| `patches/all/` | Patches applied to every node |
+| `patches/control-plane/` | Patches applied to the control planes only |
+| `patches/node/<host>/` | Per-node patches (none right now) |
+
+Patches merge in that order, and within a directory in lexicographical order —
+hence the numeric prefixes. `.yaml.tpl` files are Go templates with access to
+`.Node.Host`, `.Node.Role`, `.Data` and friends.
+
+Everything that talhelper set implicitly now lives in a patch:
+`clusterPodNets`/`clusterSvcNets`/`cniConfig` in `all/02-cluster-network.yaml`
+and the hostname in `all/01-hostname.yaml.tpl`. topf only feeds `clusterName`,
+`clusterEndpoint` and `kubernetesVersion` into `talos generate`, so dropping
+either of those patches silently reverts the cluster to the IPv4 defaults or to
+auto-generated `talos-xxx-xxx` hostnames.
+
+## Making a config change
+
+```sh
+topf render          # write the machine configs to ./output for inspection
+topf apply --dry-run # show the diff against what the nodes are running
+topf apply           # apply it
+```
+
+`topf nodes` lists the nodes with their running Talos version and schematic.
+`topf kubeconfig` and `topf talosconfig` print credentials to stdout.
 
 ## Talos upgrade
 
-1. Bump the Talos version in talconfig.yaml (don't forget to commit)
-2. Generate the Talos configs (not sure if needed but why not)
-3. Genarate the Talos upgrade commands. It takes all the options needed and
-   generates a custom factory.talos.dev link for an image with all the options
-   and plugins we need.
-4. Run the commands 1 by one and the cluster is updates in no time.
-
-It can be automated even more, but with just a handfull vm's this will do.
+1. Bump `talosVersion` in topf.yaml (don't forget to commit)
+2. Run the upgrade. topf builds the factory.talos.dev installer image per node
+   from `talosVersion`, `schematicId` and `secureboot`, and walks the control
+   planes one at a time.
 
 ```sh
-❯ talhelper genconfig
-There are issues with your Talhelper config file:
-field: "talosVersion"
-  * WARNING: "v1.12.4" might not be compatible with this Talhelper version you're using
-generated config for ede in ./clusterconfig/talos-ipv6-only-cluster-ede.yaml
-generated config for houten in ./clusterconfig/talos-ipv6-only-cluster-houten.yaml
-generated client config in ./clusterconfig/talosconfig
-generated .gitignore file in ./clusterconfig/.gitignore
-❯ talhelper gencommand upgrade
-talosctl upgrade --talosconfig=./clusterconfig/talosconfig --nodes=2a02:a470:edcd:0:be24:11ff:fe6c:6e3d --image=factory.talos.dev/metal-installer-secureboot/ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515:v1.12.4;
-talosctl upgrade --talosconfig=./clusterconfig/talosconfig --nodes=2a02:a470:edcd:0:be24:11ff:fedb:8c0f --image=factory.talos.dev/metal-installer-secureboot/ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515:v1.12.4;
-talosctl upgrade --talosconfig=./clusterconfig/talosconfig --nodes=2a05:f080:0:3800:be24:11ff:fe64:a994 --image=factory.talos.dev/metal-installer-secureboot/ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515:v1.12.4;
-❯ talosctl upgrade --talosconfig=./clusterconfig/talosconfig --nodes=2a02:a470:edcd:0:be24:11ff:fe6c:6e3d --image=factory.talos.dev/metal-installer-secureboot/ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515:v1.12.4;
-watching nodes: [2a02:a470:edcd:0:be24:11ff:fe6c:6e3d]
-    * 2a02:a470:edcd:0:be24:11ff:fe6c:6e3d: post check passed
-❯ talosctl upgrade --talosconfig=./clusterconfig/talosconfig --nodes=2a02:a470:edcd:0:be24:11ff:fedb:8c0f --image=factory.talos.dev/metal-installer-secureboot/ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515:v1.12.4;
-watching nodes: [2a02:a470:edcd:0:be24:11ff:fedb:8c0f]
-    * 2a02:a470:edcd:0:be24:11ff:fedb:8c0f: post check passed
-❯ talosctl upgrade --talosconfig=./clusterconfig/talosconfig --nodes=2a05:f080:0:3800:be24:11ff:fe64:a994 --image=factory.talos.dev/metal-installer-secureboot/ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515:v1.12.4;
-watching nodes: [2a05:f080:0:3800:be24:11ff:fe64:a994]
-    * 2a05:f080:0:3800:be24:11ff:fe64:a994: post check passed
+topf upgrade --dry-run
+topf upgrade --drain
 ```
+
+Use `topf schematicids` to check which image factory ID `schematic.yaml`
+resolves to before upgrading.
 
 ## Kubernetes upgrade
 
-Just like above we use talhelper to generate the command
+topf has no `upgrade-k8s` of its own — `topf apply` would rewrite the static pod
+manifests without any version skew or component readiness checks, which is only
+safe for patch bumps. So drive the upgrade with `talosctl` and then record the
+result in topf.yaml, otherwise the next `topf apply` reverts it.
 
-1. Bump the Kubernetes version in talconfig.yaml (don't forget to commit)
-2. Generate the Talos configs (not sure if needed but why not)
-3. Run the command.
+1. Run the upgrade against one control plane; talosctl discovers the rest.
+2. Bump `kubernetesVersion` in topf.yaml to match (don't forget to commit)
 
 ```sh
-❯ talhelper gencommand upgrade-k8s
-talosctl upgrade-k8s --talosconfig=./clusterconfig/talosconfig --to=v1.35.1 --nodes=2a02:a470:edcd:0:be24:11ff:fe6c:6e3d;
+talosctl --talosconfig <(topf talosconfig) upgrade-k8s --to v1.36.4 --nodes 2a05:f080:0:3800:be24:11ff:fe6c:6e3d
 ```
 
 <details>
@@ -219,5 +241,5 @@ talosctl upgrade-k8s --talosconfig=./clusterconfig/talosconfig --to=v1.35.1 --no
 
 ## Other stuff
 
-[Talos docs](https://docs.siderolabs.com/talos/v1.12/overview/what-is-talos)
-[Talhelper docs](https://budimanjojo.github.io/talhelper/latest/)
+[Talos docs](https://docs.siderolabs.com/talos/v1.13/overview/what-is-talos)
+[topf docs](https://postfinance.github.io/topf/main/)

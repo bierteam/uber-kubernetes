@@ -1,0 +1,31 @@
+---
+# https://docs.siderolabs.com/talos/v1.13/configure-your-talos-cluster/storage-and-disk-management/swap
+apiVersion: v1alpha1
+kind: SwapVolumeConfig
+name: swap
+provisioning:
+  diskSelector:
+    match: 'system_disk'
+  minSize: 4GiB
+  maxSize: 12GiB
+encryption:
+  provider: luks2
+  keys:
+    - slot: 0
+      tpm: {}
+---
+# https://docs.siderolabs.com/talos/v1.13/configure-your-talos-cluster/storage-and-disk-management/swap#zswap
+apiVersion: v1alpha1
+kind: ZswapConfig
+maxPoolPercent: 25
+shrinkerEnabled: true
+---
+# https://docs.siderolabs.com/talos/v1.13/configure-your-talos-cluster/storage-and-disk-management/swap#swap-tuning
+machine:
+  kubelet:
+    extraConfig:
+      memorySwap:
+        swapBehavior: LimitedSwap
+  sysctls:
+    vm.swappiness: 130
+    vm.page-cluster: 0

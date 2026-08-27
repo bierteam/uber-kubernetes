@@ -1,0 +1,7 @@
+---
+# The API is reachable over IPv4 through HAProxy on this address, so it has to be
+# in the apiserver's serving certificate or kubectl fails TLS validation.
+cluster:
+  apiServer:
+    certSANs:
+      - 192.168.122.1

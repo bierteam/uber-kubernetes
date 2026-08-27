@@ -1,0 +1,34 @@
+---
+# https://postfinance.github.io/topf/main/configuration/
+clusterName: talos-cluster
+clusterEndpoint: https://[2a05:f080:0:3800:beef::]:6443
+kubernetesVersion: v1.36.4
+talosVersion: v1.13.9
+
+# Patches live in patches/{all,control-plane,worker,node/<host>} and are merged
+# strategically in that order. Secrets are read from ./secrets.yaml.
+patchesDir: patches
+
+nodes:
+  # The control planes are SecureBoot VMs with a TPM, so they get the secureboot
+  # installer and the qemu-guest-agent schematic. talos4 is bare metal running the
+  # plain metal-installer image, which is why secureboot/schematicId are set per
+  # node instead of cluster-wide.
+  - host: talos1
+    ip: 2a05:f080:0:3800:be24:11ff:fe6c:6e3d
+    role: control-plane
+    secureboot: true
+    schematicId: "@schematic.yaml"
+  # - host: talos2
+  #   ip: 2a05:f080:0:3800:be24:11ff:feed:4a88
+  #   role: control-plane
+  #   secureboot: true
+  #   schematicId: "@schematic.yaml"
+  - host: talos3
+    ip: 2a05:f080:0:3800:be24:11ff:fe64:a994
+    role: control-plane
+    secureboot: true
+    schematicId: "@schematic.yaml"
+  - host: talos4
+    ip: 2a05:f080:0:3800:56bf:64ff:fe93:5e26
+    role: worker

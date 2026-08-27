@@ -1,0 +1,25 @@
+---
+# https://kubernetes.io/docs/reference/command-line-tools-reference/feature-gates
+cluster:
+  apiServer:
+    extraArgs:
+      feature-gates: "\
+        ClusterTrustBundle=true,\
+        ClusterTrustBundleProjection=true,\
+        ComponentFlagz=true,\
+        ComponentStatusz=true,\
+        ConstrainedImpersonation=true,\
+        ContainerCheckpoint=true,\
+        CRDObservedGenerationTracking=true,\
+        GangScheduling=true,\
+        GenericWorkload=true,\
+        InPlacePodLevelResourcesVerticalScaling=true,\
+        MutablePVNodeAffinity=true,\
+        MutableSchedulingDirectivesForSuspendedJobs=true,\
+        NodeDeclaredFeatures=true,\
+        RestartAllContainersOnContainerExits=true,\
+        StorageVersionMigrator=true,\
+        TaintTolerationComparisonOperators=true,\
+        UserNamespacesHostNetworkSupport=true,\
+        UserNamespacesSupport=true,\
+        "

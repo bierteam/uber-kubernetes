@@ -1,0 +1,12 @@
+---
+# Referenced as schematicId "@schematic.yaml" from topf.yaml. topf computes the
+# image factory ID locally; it must resolve to
+# ce4c980550dd2ab1b17bbf2b08801c7eb59418eafe8f279833297925d67c7515
+# (verify with `topf schematicids`).
+customization:
+  systemExtensions:
+    officialExtensions:
+      - siderolabs/qemu-guest-agent
+      # - siderolabs/cloudflared
+      # - siderolabs/tailscale
+      # - siderolabs/wasmedge

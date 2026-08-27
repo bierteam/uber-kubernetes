@@ -1,0 +1,5 @@
+---
+cluster:
+  etcd:
+    advertisedSubnets:
+      - 2000::/3

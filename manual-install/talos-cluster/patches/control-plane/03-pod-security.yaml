@@ -1,0 +1,10 @@
+---
+# restrict namespaces even more
+# https://docs.siderolabs.com/kubernetes-guides/security/pod-security
+cluster:
+  apiServer:
+    admissionControl:
+      - name: PodSecurity
+        configuration:
+          defaults:
+            enforce: restricted

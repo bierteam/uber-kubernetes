@@ -1,0 +1,10 @@
+---
+machine:
+  kubelet:
+    nodeIP:
+      validSubnets:
+        - 2000::/3
+  features:
+    hostDNS:
+      enabled: false # https://github.com/siderolabs/talos/issues/9372
+      forwardKubeDNSToHost: false

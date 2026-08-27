@@ -1,0 +1,9 @@
+---
+apiVersion: v1alpha1
+kind: ResolverConfig
+nameservers:
+  # - address: 2606:4700:4700::64
+  # - address: 2606:4700:4700::6400
+  - address: 2a00:1098:2b::1 # https://nat64.net/public-providers
+searchDomains:
+  disableDefault: false

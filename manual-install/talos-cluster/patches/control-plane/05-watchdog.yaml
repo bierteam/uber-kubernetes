@@ -1,0 +1,6 @@
+---
+# Watchdog configuration to auto-reboot on stuck vm
+apiVersion: v1alpha1
+kind: WatchdogTimerConfig
+device: /dev/watchdog0 # Path to the watchdog device.
+timeout: 5m0s # Timeout for the watchdog.
