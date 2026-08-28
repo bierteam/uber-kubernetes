@@ -1,245 +1,370 @@
 # [Talos](https://www.talos.dev/) IPv6 only cluster
 
-This cluster is used as a playground, no argocd etc (yet)
+Managed with [topf](https://postfinance.github.io/topf/main/). It replaced
+[talhelper](https://budimanjojo.github.io/talhelper/latest/), which is no longer
+maintained.
 
-It used to be managed with [Talhelper](https://budimanjojo.github.io/talhelper/latest/),
-which is no longer maintained. It now uses
-[topf](https://postfinance.github.io/topf/main/), which generates *and* applies
-the machine configs itself instead of writing them to `clusterconfig/` first.
-
-Install `topf`, `sops` and `talosctl` via [Brew](https://brew.sh/) and you can
-start making changes or doing life cycle management on it. `sops` is a hard
-requirement: unlike talhelper, topf shells out to the `sops` binary to decrypt
-`secrets.yaml`.
+## Prerequisites
 
 ```sh
 brew install postfinance/tap/topf sops siderolabs/tap/talosctl
 ```
 
+`sops` is **required**, not optional: talhelper embedded it as a library, topf
+shells out to the binary to decrypt `secrets.yaml`. Without it topf reads the
+encrypted file as-is and fails.
+
 ## Layout
 
-| File | Contents |
+| Path | Contents |
 | --- | --- |
-| `topf.yaml` | Cluster name, endpoint, versions and the node list |
+| `topf.yaml` | Cluster name, endpoint, versions, node list |
 | `schematic.yaml` | Image factory schematic for the control planes, referenced as `@schematic.yaml` |
 | `secrets.yaml` | SOPS-encrypted Talos secrets bundle (was `talsecret.sops.yaml`) |
-| `patches/all/` | Patches applied to every node |
-| `patches/control-plane/` | Patches applied to the control planes only |
-| `patches/node/<host>/` | Per-node patches (none right now) |
+| `patches/all/` | Applied to every node |
+| `patches/control-plane/` | Control planes only |
+| `patches/node/<host>/` | Per-node (none currently) |
 
-Patches merge in that order, and within a directory in lexicographical order —
-hence the numeric prefixes. `.yaml.tpl` files are Go templates with access to
-`.Node.Host`, `.Node.Role`, `.Data` and friends.
+Patches merge in that order, lexicographically within a directory — hence the
+numeric prefixes. `.yaml.tpl` files are Go templates with `.Node.Host`,
+`.Node.Role`, `.Data` and sprig functions available.
 
-Everything that talhelper set implicitly now lives in a patch:
-`clusterPodNets`/`clusterSvcNets`/`cniConfig` in `all/02-cluster-network.yaml`
-and the hostname in `all/01-hostname.yaml.tpl`. topf only feeds `clusterName`,
-`clusterEndpoint` and `kubernetesVersion` into `talos generate`, so dropping
-either of those patches silently reverts the cluster to the IPv4 defaults or to
-auto-generated `talos-xxx-xxx` hostnames.
+`secureboot` and `schematicId` are set **per node**, not cluster-wide. This is
+required, not redundant: topf resolves secureboot as `node || cluster`, so a
+cluster-level `true` cannot be overridden — talos4 (bare metal, no TPM) would be
+forced onto the SecureBoot installer.
 
-## Making a config change
+## Everyday: changing config
 
 ```sh
-topf render          # write the machine configs to ./output for inspection
-topf apply --dry-run # show the diff against what the nodes are running
-topf apply           # apply it
+topf render                # write machine configs to ./output for inspection
+topf apply --dry-run       # diff against what the nodes are running
+topf apply                 # apply
 ```
 
-`topf nodes` lists the nodes with their running Talos version and schematic.
-`topf kubeconfig` and `topf talosconfig` print credentials to stdout.
+`topf nodes` lists nodes with running version and schematic. `topf kubeconfig`
+and `topf talosconfig` print credentials to stdout. `topf schematic-ids` shows
+what `schematic.yaml` resolves to.
+
+Scope any command to one node with `--nodes-filter <regex>` (matches the host
+name).
+
+> **`apply` and `upgrade` prompt for confirmation.** If you pipe `/dev/null` into
+> them they loop on the prompt, then exit **0 without doing anything**. An exit
+> code of 0 is not proof the change landed — always confirm with `topf nodes` or
+> a follow-up `--dry-run`.
+> `topf render` writes complete machine configs, including CA private keys in
+> plaintext, to `output/`. Gitignored, but delete them when done.
 
 ## Talos upgrade
 
-1. Bump `talosVersion` in topf.yaml (don't forget to commit)
-2. Run the upgrade. topf builds the factory.talos.dev installer image per node
-   from `talosVersion`, `schematicId` and `secureboot`, and walks the control
-   planes one at a time.
+1. Bump `talosVersion` in topf.yaml (commit it)
+2. Upgrade — topf builds the factory installer image per node from
+   `talosVersion`, `schematicId` and `secureboot`, and does control planes one at
+   a time
 
 ```sh
 topf upgrade --dry-run
 topf upgrade --drain
 ```
 
-Use `topf schematicids` to check which image factory ID `schematic.yaml`
-resolves to before upgrading.
-
 ## Kubernetes upgrade
 
-topf has no `upgrade-k8s` of its own — `topf apply` would rewrite the static pod
-manifests without any version skew or component readiness checks, which is only
-safe for patch bumps. So drive the upgrade with `talosctl` and then record the
-result in topf.yaml, otherwise the next `topf apply` reverts it.
-
-1. Run the upgrade against one control plane; talosctl discovers the rest.
-2. Bump `kubernetesVersion` in topf.yaml to match (don't forget to commit)
+topf has no `upgrade-k8s`, and no `gencommand` equivalent — that is a deliberate
+gap. `topf apply` would rewrite the static pod manifests with no version-skew or
+readiness checks, which is only safe for patch bumps. Drive it with `talosctl`,
+which discovers the other nodes from one control plane, then record the result so
+the next `topf apply` does not revert it.
 
 ```sh
-talosctl --talosconfig <(topf talosconfig) upgrade-k8s --to v1.36.4 --nodes 2a05:f080:0:3800:be24:11ff:fe6c:6e3d
+talosctl --talosconfig <(topf talosconfig) \
+  -n 2a05:f080:0:3800:be24:11ff:fe6c:6e3d upgrade-k8s --to v1.37.0 --dry-run
 ```
+
+Then bump `kubernetesVersion` in topf.yaml to match and commit.
 
 <details>
   <summary>Command output</summary>
   
   ```sh
-  ❯ talosctl upgrade-k8s --talosconfig=./clusterconfig/talosconfig --to=v1.35.1 --nodes=2a02:a470:edcd:0:be24:11ff:fe6c:6e3d;
-  automatically detected the lowest Kubernetes version 1.35.1
-  discovered controlplane nodes ["2a02:a470:edcd::d81d" "2a05:f080:0:3800:be24:11ff:fe64:a994" "2a02:a470:edcd::c0b6"]
-  discovered worker nodes []
-  > "2a02:a470:edcd::d81d": Talos version 1.12.4 is compatible with Kubernetes version 1.35.1
-  > "2a02:a470:edcd::c0b6": Talos version 1.12.4 is compatible with Kubernetes version 1.35.1
-  > "2a05:f080:0:3800:be24:11ff:fe64:a994": Talos version 1.12.4 is compatible with Kubernetes version 1.35.1
-  > "2a02:a470:edcd::d81d": pre-pulling registry.k8s.io/kube-apiserver:v1.35.1
-  > "2a05:f080:0:3800:be24:11ff:fe64:a994": pre-pulling registry.k8s.io/kube-apiserver:v1.35.1
-  > "2a02:a470:edcd::c0b6": pre-pulling registry.k8s.io/kube-apiserver:v1.35.1
-  > "2a02:a470:edcd::d81d": pre-pulling registry.k8s.io/kube-controller-manager:v1.35.1
-  > "2a05:f080:0:3800:be24:11ff:fe64:a994": pre-pulling registry.k8s.io/kube-controller-manager:v1.35.1
-  > "2a02:a470:edcd::c0b6": pre-pulling registry.k8s.io/kube-controller-manager:v1.35.1
-  > "2a02:a470:edcd::d81d": pre-pulling registry.k8s.io/kube-scheduler:v1.35.1
-  > "2a05:f080:0:3800:be24:11ff:fe64:a994": pre-pulling registry.k8s.io/kube-scheduler:v1.35.1
-  > "2a02:a470:edcd::c0b6": pre-pulling registry.k8s.io/kube-scheduler:v1.35.1
-  > "2a02:a470:edcd::d81d": pre-pulling ghcr.io/siderolabs/kubelet:v1.35.1
-  > "2a05:f080:0:3800:be24:11ff:fe64:a994": pre-pulling ghcr.io/siderolabs/kubelet:v1.35.1
-  > "2a02:a470:edcd::c0b6": pre-pulling ghcr.io/siderolabs/kubelet:v1.35.1
-  updating "kube-apiserver" to version "1.35.1"
-  > "2a02:a470:edcd::d81d": starting update
-  > "2a02:a470:edcd::d81d": machine configuration patched
-  > "2a02:a470:edcd::d81d": waiting for kube-apiserver pod update
-  < "2a02:a470:edcd::d81d": successfully updated
-  > "2a05:f080:0:3800:be24:11ff:fe64:a994": starting update
-  > "2a05:f080:0:3800:be24:11ff:fe64:a994": machine configuration patched
-  > "2a05:f080:0:3800:be24:11ff:fe64:a994": waiting for kube-apiserver pod update
-  < "2a05:f080:0:3800:be24:11ff:fe64:a994": successfully updated
-  > "2a02:a470:edcd::c0b6": starting update
-  > "2a02:a470:edcd::c0b6": machine configuration patched
-  > "2a02:a470:edcd::c0b6": waiting for kube-apiserver pod update
-  < "2a02:a470:edcd::c0b6": successfully updated
-  updating "kube-controller-manager" to version "1.35.1"
-  > "2a02:a470:edcd::d81d": starting update
-  > "2a02:a470:edcd::d81d": machine configuration patched
-  > "2a02:a470:edcd::d81d": waiting for kube-controller-manager pod update
-  < "2a02:a470:edcd::d81d": successfully updated
-  > "2a05:f080:0:3800:be24:11ff:fe64:a994": starting update
-  > "2a05:f080:0:3800:be24:11ff:fe64:a994": machine configuration patched
-  > "2a05:f080:0:3800:be24:11ff:fe64:a994": waiting for kube-controller-manager pod update
-  < "2a05:f080:0:3800:be24:11ff:fe64:a994": successfully updated
-  > "2a02:a470:edcd::c0b6": starting update
-  > "2a02:a470:edcd::c0b6": machine configuration patched
-  > "2a02:a470:edcd::c0b6": waiting for kube-controller-manager pod update
-  < "2a02:a470:edcd::c0b6": successfully updated
-  updating "kube-scheduler" to version "1.35.1"
-  > "2a02:a470:edcd::d81d": starting update
-  > "2a02:a470:edcd::d81d": machine configuration patched
-  > "2a02:a470:edcd::d81d": waiting for kube-scheduler pod update
-  < "2a02:a470:edcd::d81d": successfully updated
-  > "2a05:f080:0:3800:be24:11ff:fe64:a994": starting update
-  > "2a05:f080:0:3800:be24:11ff:fe64:a994": machine configuration patched
-  > "2a05:f080:0:3800:be24:11ff:fe64:a994": waiting for kube-scheduler pod update
-  < "2a05:f080:0:3800:be24:11ff:fe64:a994": successfully updated
-  > "2a02:a470:edcd::c0b6": starting update
-  > "2a02:a470:edcd::c0b6": machine configuration patched
-  > "2a02:a470:edcd::c0b6": waiting for kube-scheduler pod update
-  < "2a02:a470:edcd::c0b6": successfully updated
-  updating kube-proxy to version "1.35.1"
-  > "2a02:a470:edcd::d81d": starting update
-  > "2a05:f080:0:3800:be24:11ff:fe64:a994": starting update
-  > "2a02:a470:edcd::c0b6": starting update
-  updating kubelet to version "1.35.1"
-  > "2a02:a470:edcd::d81d": starting update
-  > "2a02:a470:edcd::d81d": machine configuration patched
-  > "2a02:a470:edcd::d81d": waiting for node update
-  < "2a02:a470:edcd::d81d": successfully updated
-  > "2a05:f080:0:3800:be24:11ff:fe64:a994": starting update
-  > "2a05:f080:0:3800:be24:11ff:fe64:a994": machine configuration patched
-  > "2a05:f080:0:3800:be24:11ff:fe64:a994": waiting for node update
-  < "2a05:f080:0:3800:be24:11ff:fe64:a994": successfully updated
-  > "2a02:a470:edcd::c0b6": starting update
-  > "2a02:a470:edcd::c0b6": machine configuration patched
-  > "2a02:a470:edcd::c0b6": waiting for node update
-  < "2a02:a470:edcd::c0b6": successfully updated
+  ❯ talosctl --talosconfig <(topf talosconfig) -n 2a05:f080:0:3800:be24:11ff:fe6c:6e3d upgrade-k8s --to v1.37.0
+  automatically detected the lowest Kubernetes version 1.36.4
+  discovered controlplane nodes ["2a05:f080:0:3800::1001" "2a05:f080:0:3800::1008" "2a05:f080:0:3800::1000"]
+  discovered worker nodes ["2a05:f080:0:3800:56bf:64ff:fe93:5e26"]
+  > "2a05:f080:0:3800::1001": Talos version 1.14.0-rc.2 is compatible with Kubernetes version 1.37.0
+  > "2a05:f080:0:3800::1008": Talos version 1.14.0-rc.2 is compatible with Kubernetes version 1.37.0
+  > "2a05:f080:0:3800::1000": Talos version 1.14.0-rc.2 is compatible with Kubernetes version 1.37.0
+  > "2a05:f080:0:3800:56bf:64ff:fe93:5e26": Talos version 1.14.0-rc.2 is compatible with Kubernetes version 1.37.0
+  checking for removed Kubernetes component flags
+  checking for removed Kubernetes API resource versions
+  > "2a05:f080:0:3800::1001": pre-pulling registry.k8s.io/kube-apiserver:v1.37.0
+  > "2a05:f080:0:3800::1008": pre-pulling registry.k8s.io/kube-apiserver:v1.37.0
+  > "2a05:f080:0:3800::1000": pre-pulling registry.k8s.io/kube-apiserver:v1.37.0
+  > "2a05:f080:0:3800::1001": pre-pulling registry.k8s.io/kube-controller-manager:v1.37.0
+  > "2a05:f080:0:3800::1008": pre-pulling registry.k8s.io/kube-controller-manager:v1.37.0
+  > "2a05:f080:0:3800::1000": pre-pulling registry.k8s.io/kube-controller-manager:v1.37.0
+  > "2a05:f080:0:3800::1001": pre-pulling registry.k8s.io/kube-scheduler:v1.37.0
+  > "2a05:f080:0:3800::1008": pre-pulling registry.k8s.io/kube-scheduler:v1.37.0
+  > "2a05:f080:0:3800::1000": pre-pulling registry.k8s.io/kube-scheduler:v1.37.0
+  > "2a05:f080:0:3800::1001": pre-pulling ghcr.io/siderolabs/kubelet:v1.37.0
+  > "2a05:f080:0:3800::1008": pre-pulling ghcr.io/siderolabs/kubelet:v1.37.0
+  > "2a05:f080:0:3800::1000": pre-pulling ghcr.io/siderolabs/kubelet:v1.37.0
+  > "2a05:f080:0:3800:56bf:64ff:fe93:5e26": pre-pulling ghcr.io/siderolabs/kubelet:v1.37.0
+  updating "kube-apiserver" to version "1.37.0"
+  > "2a05:f080:0:3800::1001": starting update
+  > update kube-apiserver: 1.36.4 -> 1.37.0
+  > "2a05:f080:0:3800::1001": machine configuration patched
+  > "2a05:f080:0:3800::1001": waiting for kube-apiserver pod update
+  > "2a05:f080:0:3800::1001": kube-apiserver: waiting, config version mismatch: got "2", expected "3"
+  > "2a05:f080:0:3800::1001": kube-apiserver: waiting, config version mismatch: got "2", expected "3"
+  > "2a05:f080:0:3800::1001": kube-apiserver: waiting, config version mismatch: got "2", expected "3"
+  > "2a05:f080:0:3800::1001": kube-apiserver: waiting, config version mismatch: got "2", expected "3"
+  > "2a05:f080:0:3800::1001": kube-apiserver: waiting, config version mismatch: got "2", expected "3"
+  > "2a05:f080:0:3800::1001": kube-apiserver: waiting, config version mismatch: got "2", expected "3"
+  < "2a05:f080:0:3800::1001": successfully updated
+  > "2a05:f080:0:3800::1008": starting update
+  > update kube-apiserver: 1.36.4 -> 1.37.0
+  > "2a05:f080:0:3800::1008": machine configuration patched
+  > "2a05:f080:0:3800::1008": waiting for kube-apiserver pod update
+  > "2a05:f080:0:3800::1008": kube-apiserver: waiting, config version mismatch: got "2", expected "3"
+  > "2a05:f080:0:3800::1008": kube-apiserver: waiting, config version mismatch: got "2", expected "3"
+  > "2a05:f080:0:3800::1008": kube-apiserver: waiting, config version mismatch: got "2", expected "3"
+  > "2a05:f080:0:3800::1008": kube-apiserver: waiting, config version mismatch: got "2", expected "3"
+  > "2a05:f080:0:3800::1008": kube-apiserver: waiting, config version mismatch: got "2", expected "3"
+  > "2a05:f080:0:3800::1008": kube-apiserver: waiting, config version mismatch: got "2", expected "3"
+  > "2a05:f080:0:3800::1008": kube-apiserver: pod is not ready, waiting
+  < "2a05:f080:0:3800::1008": successfully updated
+  > "2a05:f080:0:3800::1000": starting update
+  > update kube-apiserver: 1.36.4 -> 1.37.0
+  > "2a05:f080:0:3800::1000": machine configuration patched
+  > "2a05:f080:0:3800::1000": waiting for kube-apiserver pod update
+  > "2a05:f080:0:3800::1000": kube-apiserver: waiting, config version mismatch: got "2", expected "3"
+  > "2a05:f080:0:3800::1000": kube-apiserver: waiting, config version mismatch: got "2", expected "3"
+  > "2a05:f080:0:3800::1000": kube-apiserver: waiting, config version mismatch: got "2", expected "3"
+  > "2a05:f080:0:3800::1000": kube-apiserver: waiting, config version mismatch: got "2", expected "3"
+  > "2a05:f080:0:3800::1000": kube-apiserver: waiting, config version mismatch: got "2", expected "3"
+  > "2a05:f080:0:3800::1000": kube-apiserver: waiting, config version mismatch: got "2", expected "3"
+  > "2a05:f080:0:3800::1000": kube-apiserver: waiting, config version mismatch: got "2", expected "3"
+  > "2a05:f080:0:3800::1000": kube-apiserver: pod is not ready, waiting
+  < "2a05:f080:0:3800::1000": successfully updated
+  updating "kube-controller-manager" to version "1.37.0"
+  > "2a05:f080:0:3800::1001": starting update
+  > update kube-controller-manager: 1.36.4 -> 1.37.0
+  > "2a05:f080:0:3800::1001": machine configuration patched
+  > "2a05:f080:0:3800::1001": waiting for kube-controller-manager pod update
+  > "2a05:f080:0:3800::1001": kube-controller-manager: waiting, config version mismatch: got "1", expected "2"
+  > "2a05:f080:0:3800::1001": kube-controller-manager: waiting, config version mismatch: got "1", expected "2"
+  > "2a05:f080:0:3800::1001": kube-controller-manager: waiting, config version mismatch: got "1", expected "2"
+  > "2a05:f080:0:3800::1001": kube-controller-manager: waiting, config version mismatch: got "1", expected "2"
+  > "2a05:f080:0:3800::1001": kube-controller-manager: pod is not ready, waiting
+  > "2a05:f080:0:3800::1001": kube-controller-manager: pod is not ready, waiting
+  > "2a05:f080:0:3800::1001": kube-controller-manager: pod is not ready, waiting
+  < "2a05:f080:0:3800::1001": successfully updated
+  > "2a05:f080:0:3800::1008": starting update
+  > update kube-controller-manager: 1.36.4 -> 1.37.0
+  > "2a05:f080:0:3800::1008": machine configuration patched
+  > "2a05:f080:0:3800::1008": waiting for kube-controller-manager pod update
+  > "2a05:f080:0:3800::1008": kube-controller-manager: waiting, config version mismatch: got "1", expected "2"
+  > "2a05:f080:0:3800::1008": kube-controller-manager: waiting, config version mismatch: got "1", expected "2"
+  > "2a05:f080:0:3800::1008": kube-controller-manager: waiting, config version mismatch: got "1", expected "2"
+  > "2a05:f080:0:3800::1008": kube-controller-manager: waiting, config version mismatch: got "1", expected "2"
+  > "2a05:f080:0:3800::1008": kube-controller-manager: pod is not ready, waiting
+  > "2a05:f080:0:3800::1008": kube-controller-manager: pod is not ready, waiting
+  > "2a05:f080:0:3800::1008": kube-controller-manager: pod is not ready, waiting
+  < "2a05:f080:0:3800::1008": successfully updated
+  > "2a05:f080:0:3800::1000": starting update
+  > update kube-controller-manager: 1.36.4 -> 1.37.0
+  > "2a05:f080:0:3800::1000": machine configuration patched
+  > "2a05:f080:0:3800::1000": waiting for kube-controller-manager pod update
+  > "2a05:f080:0:3800::1000": kube-controller-manager: waiting, config version mismatch: got "1", expected "2"
+  > "2a05:f080:0:3800::1000": kube-controller-manager: waiting, config version mismatch: got "1", expected "2"
+  > "2a05:f080:0:3800::1000": kube-controller-manager: waiting, config version mismatch: got "1", expected "2"
+  > "2a05:f080:0:3800::1000": kube-controller-manager: waiting, config version mismatch: got "1", expected "2"
+  > "2a05:f080:0:3800::1000": kube-controller-manager: waiting, config version mismatch: got "1", expected "2"
+  > "2a05:f080:0:3800::1000": kube-controller-manager: pod is not ready, waiting
+  > "2a05:f080:0:3800::1000": kube-controller-manager: pod is not ready, waiting
+  > "2a05:f080:0:3800::1000": kube-controller-manager: pod is not ready, waiting
+  < "2a05:f080:0:3800::1000": successfully updated
+  updating "kube-scheduler" to version "1.37.0"
+  > "2a05:f080:0:3800::1001": starting update
+  > update kube-scheduler: 1.36.4 -> 1.37.0
+  > "2a05:f080:0:3800::1001": machine configuration patched
+  > "2a05:f080:0:3800::1001": waiting for kube-scheduler pod update
+  > "2a05:f080:0:3800::1001": kube-scheduler: waiting, config version mismatch: got "1", expected "2"
+  > "2a05:f080:0:3800::1001": kube-scheduler: waiting, config version mismatch: got "1", expected "2"
+  > "2a05:f080:0:3800::1001": kube-scheduler: waiting, config version mismatch: got "1", expected "2"
+  > "2a05:f080:0:3800::1001": kube-scheduler: pod is not ready, waiting
+  > "2a05:f080:0:3800::1001": kube-scheduler: pod is not ready, waiting
+  > "2a05:f080:0:3800::1001": kube-scheduler: pod is not ready, waiting
+  > "2a05:f080:0:3800::1001": kube-scheduler: pod is not ready, waiting
+  < "2a05:f080:0:3800::1001": successfully updated
+  > "2a05:f080:0:3800::1008": starting update
+  > update kube-scheduler: 1.36.4 -> 1.37.0
+  > "2a05:f080:0:3800::1008": machine configuration patched
+  > "2a05:f080:0:3800::1008": waiting for kube-scheduler pod update
+  < "2a05:f080:0:3800::1008": successfully updated
+  > "2a05:f080:0:3800::1000": starting update
+  > update kube-scheduler: 1.36.4 -> 1.37.0
+  > "2a05:f080:0:3800::1000": machine configuration patched
+  > "2a05:f080:0:3800::1000": waiting for kube-scheduler pod update
+  > "2a05:f080:0:3800::1000": kube-scheduler: waiting, config version mismatch: got "1", expected "2"
+  > "2a05:f080:0:3800::1000": kube-scheduler: waiting, config version mismatch: got "1", expected "2"
+  > "2a05:f080:0:3800::1000": kube-scheduler: waiting, config version mismatch: got "1", expected "2"
+  > "2a05:f080:0:3800::1000": kube-scheduler: pod is not ready, waiting
+  > "2a05:f080:0:3800::1000": kube-scheduler: pod is not ready, waiting
+  > "2a05:f080:0:3800::1000": kube-scheduler: pod is not ready, waiting
+  < "2a05:f080:0:3800::1000": successfully updated
+  updating kube-proxy to version "1.37.0"
+  > "2a05:f080:0:3800::1001": starting update
+  > "2a05:f080:0:3800::1008": starting update
+  > "2a05:f080:0:3800::1000": starting update
+  updating kubelet to version "1.37.0"
+  > "2a05:f080:0:3800::1001": starting update
+  > update kubelet: 1.36.4 -> 1.37.0
+  > "2a05:f080:0:3800::1001": machine configuration patched
+  > "2a05:f080:0:3800::1001": waiting for kubelet restart
+  > "2a05:f080:0:3800::1001": waiting for node update
+  < "2a05:f080:0:3800::1001": successfully updated
+  > "2a05:f080:0:3800::1008": starting update
+  > update kubelet: 1.36.4 -> 1.37.0
+  > "2a05:f080:0:3800::1008": machine configuration patched
+  > "2a05:f080:0:3800::1008": waiting for kubelet restart
+  > "2a05:f080:0:3800::1008": waiting for node update
+  < "2a05:f080:0:3800::1008": successfully updated
+  > "2a05:f080:0:3800::1000": starting update
+  > update kubelet: 1.36.4 -> 1.37.0
+  > "2a05:f080:0:3800::1000": machine configuration patched
+  > "2a05:f080:0:3800::1000": waiting for kubelet restart
+  > "2a05:f080:0:3800::1000": waiting for node update
+  < "2a05:f080:0:3800::1000": successfully updated
+  > "2a05:f080:0:3800:56bf:64ff:fe93:5e26": starting update
+  > update kubelet: 1.36.4 -> 1.37.0
+  > "2a05:f080:0:3800:56bf:64ff:fe93:5e26": machine configuration patched
+  > "2a05:f080:0:3800:56bf:64ff:fe93:5e26": waiting for kubelet restart
+  > "2a05:f080:0:3800:56bf:64ff:fe93:5e26": waiting for node update
+  < "2a05:f080:0:3800:56bf:64ff:fe93:5e26": successfully updated
   updating manifests
-  > processing manifest v1.Secret/kube-system/bootstrap-token-2p0lf1
-  < no changes
-  > processing manifest rbac.authorization.k8s.io/v1.ClusterRoleBinding/system-bootstrap-approve-node-client-csr
-  < no changes
-  > processing manifest rbac.authorization.k8s.io/v1.ClusterRoleBinding/system-bootstrap-node-bootstrapper
-  < no changes
-  > processing manifest rbac.authorization.k8s.io/v1.ClusterRoleBinding/system-bootstrap-node-renewal
-  < no changes
-  > processing manifest rbac.authorization.k8s.io/v1.ClusterRole/flannel
-  < no changes
-  > processing manifest rbac.authorization.k8s.io/v1.ClusterRoleBinding/flannel
-  < no changes
-  > processing manifest v1.ServiceAccount/kube-system/flannel
-  < no changes
-  > processing manifest v1.ConfigMap/kube-system/kube-flannel-cfg
-  < no changes
-  > processing manifest apps/v1.DaemonSet/kube-system/kube-flannel
-  < no changes
-  > processing manifest apps/v1.DaemonSet/kube-system/kube-proxy
-  < no changes
-  > processing manifest v1.ServiceAccount/kube-system/kube-proxy
-  < no changes
-  > processing manifest rbac.authorization.k8s.io/v1.ClusterRoleBinding/kube-proxy
-  < no changes
-  > processing manifest v1.ServiceAccount/kube-system/coredns
-  < no changes
-  > processing manifest rbac.authorization.k8s.io/v1.ClusterRole/system:coredns
-  < no changes
-  > processing manifest rbac.authorization.k8s.io/v1.ClusterRoleBinding/system:coredns
-  < no changes
-  > processing manifest v1.ConfigMap/kube-system/coredns
-  < no changes
-  > processing manifest apps/v1.Deployment/kube-system/coredns
-  < no changes
-  > processing manifest v1.Service/kube-system/kube-dns
-  < no changes
-  > processing manifest v1.ConfigMap/kube-system/kubeconfig-in-cluster
-  < no changes
-  > processing manifest rbac.authorization.k8s.io/v1.ClusterRoleBinding/system:talos-nodes
-  < no changes
-  > processing manifest rbac.authorization.k8s.io/v1.ClusterRole/system:talos-nodes
-  < no changes
-  > processing manifest v1.ServiceAccount/kube-system/metrics-server
-  < no changes
-  > processing manifest rbac.authorization.k8s.io/v1.ClusterRole/system:aggregated-metrics-reader
-  < no changes
-  > processing manifest rbac.authorization.k8s.io/v1.ClusterRole/system:metrics-server
-  < no changes
-  > processing manifest rbac.authorization.k8s.io/v1.RoleBinding/kube-system/metrics-server-auth-reader
-  < no changes
-  > processing manifest rbac.authorization.k8s.io/v1.ClusterRoleBinding/metrics-server:system:auth-delegator
-  < no changes
-  > processing manifest rbac.authorization.k8s.io/v1.ClusterRoleBinding/system:metrics-server
-  < no changes
-  > processing manifest v1.Service/kube-system/metrics-server
-  < no changes
-  > processing manifest apps/v1.Deployment/kube-system/metrics-server
-  < no changes
-  > processing manifest apiregistration.k8s.io/v1.APIService/v1beta1.metrics.k8s.io
-  < no changes
-  > processing manifest v1.Namespace/kubelet-serving-cert-approver
-  < no changes
-  > processing manifest v1.ServiceAccount/kubelet-serving-cert-approver/kubelet-serving-cert-approver
-  < no changes
-  > processing manifest rbac.authorization.k8s.io/v1.ClusterRole/certificates:kubelet-serving-cert-approver
-  < no changes
-  > processing manifest rbac.authorization.k8s.io/v1.ClusterRole/events:kubelet-serving-cert-approver
-  < no changes
-  > processing manifest rbac.authorization.k8s.io/v1.RoleBinding/default/events:kubelet-serving-cert-approver
-  < no changes
-  > processing manifest rbac.authorization.k8s.io/v1.ClusterRoleBinding/kubelet-serving-cert-approver
-  < no changes
-  > processing manifest v1.Service/kubelet-serving-cert-approver/kubelet-serving-cert-approver
-  < no changes
-  > processing manifest apps/v1.Deployment/kubelet-serving-cert-approver/kubelet-serving-cert-approver
-  < no changes
-  waiting for all manifests to be applied
+  > skipped Namespace/kubelet-serving-cert-approver: no changes
+  > skipped ClusterRole/certificates:kubelet-serving-cert-approver: no changes
+  > skipped ClusterRole/events:kubelet-serving-cert-approver: no changes
+  > skipped ClusterRole/system:aggregated-metrics-reader: no changes
+  > skipped ClusterRole/system:coredns: no changes
+  > skipped ClusterRole/system:metrics-server: no changes
+  > skipped ClusterRole/system:talos-nodes: no changes
+  > skipped ConfigMap/kube-system/coredns: no changes
+  > skipped ConfigMap/kube-system/kubeconfig-in-cluster: no changes
+  > skipped Secret/kube-system/bootstrap-token-2p0lf1: no changes
+  > skipped ClusterRoleBinding/kubelet-serving-cert-approver: no changes
+  > skipped ClusterRoleBinding/metrics-server:system:auth-delegator: no changes
+  > skipped ClusterRoleBinding/system-bootstrap-approve-node-client-csr: no changes
+  > skipped ClusterRoleBinding/system-bootstrap-node-bootstrapper: no changes
+  > skipped ClusterRoleBinding/system-bootstrap-node-renewal: no changes
+  > skipped ClusterRoleBinding/system:coredns: no changes
+  > skipped ClusterRoleBinding/system:metrics-server: no changes
+  > skipped ClusterRoleBinding/system:talos-nodes: no changes
+  > skipped ServiceAccount/kube-system/coredns: no changes
+  > skipped ServiceAccount/kube-system/metrics-server: no changes
+  > skipped ServiceAccount/kubelet-serving-cert-approver/kubelet-serving-cert-approver: no changes
+  > skipped RoleBinding/default/events:kubelet-serving-cert-approver: no changes
+  > skipped RoleBinding/kube-system/metrics-server-auth-reader: no changes
+  > skipped Service/kube-system/kube-dns: no changes
+  > skipped Service/kube-system/metrics-server: no changes
+  > skipped Service/kubelet-serving-cert-approver/kubelet-serving-cert-approver: no changes
+  < configured Deployment/kube-system/coredns
+  --- a/apps/v1.Deployment/kube-system/coredns
+  +++ b/apps/v1.Deployment/kube-system/coredns
+  @@ -5,7 +5,7 @@
+      config.k8s.io/owning-inventory: talos-bootstrap-manifests-inventory
+      deployment.kubernetes.io/revision: "4"
+    creationTimestamp: "2026-01-02T01:42:17Z"
+  -  generation: 4
+  +  generation: 5
+    labels:
+      k8s-app: kube-dns
+      kubernetes.io/name: CoreDNS
+  @@ -31,6 +31,19 @@
+          k8s-app: kube-dns
+      spec:
+        affinity:
+  +        nodeAffinity:
+  +          requiredDuringSchedulingIgnoredDuringExecution:
+  +            nodeSelectorTerms:
+  +            - matchExpressions:
+  +              - key: kubernetes.io/os
+  +                operator: In
+  +                values:
+  +                - linux
+  +              - key: kubernetes.io/arch
+  +                operator: In
+  +                values:
+  +                - amd64
+  +                - arm64
+          podAntiAffinity:
+            preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+  @@ -49,7 +62,7 @@
+          env:
+          - name: GOMEMLIMIT
+            value: 161MiB
+  -        image: registry.k8s.io/coredns/coredns:v1.14.6
+  +        image: registry.k8s.io/coredns/coredns:v1.14.7
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 5
+
+  > skipped Deployment/kube-system/metrics-server: no changes
+  > skipped Deployment/kubelet-serving-cert-approver/kubelet-serving-cert-approver: no changes
+  > skipped APIService/v1beta1.metrics.k8s.io: no changes
+  waiting for kubernetes objects to be fully reconciled
+  done
   ```
   
 </details>
 
+## Adding or rebuilding a node
+
+1. Clone the Talos VM template in Proxmox and increase the disk size to 100 GB
+   afterwards or have bare metal hardware boot with PXE
+2. Find the ip in the proxmox summary (provided by the qemu agent) or guess it by using the MAC address
+3. Add the node to `topf.yaml`
+4. `topf apply --nodes-filter <host>`
+5. Verify it joined:
+
+   ```sh
+   topf nodes
+   talosctl --talosconfig <(topf talosconfig) \
+     -n 2a05:f080:0:3800:be24:11ff:fe6c:6e3d etcd members
+   ```
+
+## Known deprecations
+
+Talos 1.14 moved much of `v1alpha1` into dedicated documents. These patches still
+use the deprecated fields:
+
+| Patch | Deprecated | Replacement |
+| --- | --- | --- |
+| `all/09-misc.yaml` | `machine.features.hostDNS` | `ResolverConfig` |
+| `all/07-user-namespaces.yaml` | `machine.sysctls` | `SysctlConfig` |
+| `control-plane/07-swap.yaml` | `machine.sysctls` | `SysctlConfig` |
+
+These cannot be migrated yet: topf pins Talos machinery `v1.13.8`, and rejects
+documents it does not know with `"…" "v1alpha1": not registered`. Revisit when
+topf ships with 1.14 machinery.
+
+## Secrets
+
+The CAs in `secrets.yaml` (Talos, Kubernetes, aggregator, etcd) are valid until
+**2035-12-30**. The bootstrap token, cluster secret and service account key do
+not expire. `topf kubeconfig` mints a 12h admin cert on demand; kubelet serving
+certs rotate automatically.
+
+topf has no rotation support and no guide. The mechanism is `talosctl rotate-ca`
+(`--dry-run` defaults to true). **Note:** topf regenerates every machine config
+from `secrets.yaml`, so rotating out of band without updating that file means the
+next `topf apply` pushes the old CAs back and breaks the cluster.
+
 ## Other stuff
 
-[Talos docs](https://docs.siderolabs.com/talos/v1.13/overview/what-is-talos)
-[topf docs](https://postfinance.github.io/topf/main/)
+- [Talos docs](https://docs.siderolabs.com/talos/v1.14/overview/what-is-talos)
+- [topf docs](https://postfinance.github.io/topf/main/)
+- [Image Factory](https://factory.talos.dev/)

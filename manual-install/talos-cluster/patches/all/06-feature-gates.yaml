@@ -11,7 +11,6 @@ cluster:
         ConstrainedImpersonation=true,\
         ContainerCheckpoint=true,\
         CRDObservedGenerationTracking=true,\
-        GangScheduling=true,\
         GenericWorkload=true,\
         InPlacePodLevelResourcesVerticalScaling=true,\
         MutablePVNodeAffinity=true,\
