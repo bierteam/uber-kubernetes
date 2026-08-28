@@ -4,6 +4,15 @@ vikunja:
       repository: docker.io/vikunja/vikunja
       tag: "2.5.0@sha256:22df4c1bc8843c28d383bc5f52b59e7b601bf5f6560b36b29c0a500833c77fa3"
       pullPolicy: IfNotPresent
+    podSecurityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
     persistence:
       data:
         enabled: true
