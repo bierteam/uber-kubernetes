@@ -3,7 +3,7 @@
 clusterName: talos-cluster
 clusterEndpoint: https://[2a05:f080:0:3800:beef::]:6443
 kubernetesVersion: v1.36.4
-talosVersion: v1.13.9
+talosVersion: v1.14.0-rc.2
 
 # Patches live in patches/{all,control-plane,worker,node/<host>} and are merged
 # strategically in that order. Secrets are read from ./secrets.yaml.
@@ -19,11 +19,11 @@ nodes:
     role: control-plane
     secureboot: true
     schematicId: "@schematic.yaml"
-  # - host: talos2
-  #   ip: 2a05:f080:0:3800:be24:11ff:feed:4a88
-  #   role: control-plane
-  #   secureboot: true
-  #   schematicId: "@schematic.yaml"
+  - host: talos2
+    ip: 2a05:f080:0:3800:be24:11ff:fe19:44f
+    role: control-plane
+    secureboot: true
+    schematicId: "@schematic.yaml"
   - host: talos3
     ip: 2a05:f080:0:3800:be24:11ff:fe64:a994
     role: control-plane
