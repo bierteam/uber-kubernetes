@@ -2,7 +2,7 @@
 external-dns: # set values for wrapper/umbrella chart
   image:
     repository: ghcr.io/oscrx/external-dns
-    tag: master-tlsa-809b2435
+    tag: master-tlsa-f950b8cb
   provider:
     name: cloudflare
   sources:
