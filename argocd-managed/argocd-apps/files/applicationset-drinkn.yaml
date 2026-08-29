@@ -33,7 +33,7 @@ spec:
       source:
         repoURL: 'https://github.com/bierteam/drinkn.git'
         targetRevision: '{{ .branch }}'
-        path: charts/drinkn
+        path: charts/pils
         helm:
           parameters:
             - name: image.tag
