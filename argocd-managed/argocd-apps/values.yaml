@@ -25,7 +25,7 @@ argocdApps:
   #   podSecurity: restricted
   - name: drinkn
     docs: https://github.com/bierteam/drinkn
-    folder: charts/drinkn
+    folder: charts/pils
     repository: drinkn
     podSecurity: baseline # TODO verify if this can be restricted
   - name: drinkn-hooks
