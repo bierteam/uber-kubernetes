@@ -49,9 +49,6 @@ spec:
       namespace: drinkn-pr-*
     - name: in-cluster
       namespace: drinkn-hooks
-  clusterResourceBlacklist:
-    - group: "*"
-      kind: "*"
   clusterResourceWhitelist:
     - group: ""
       kind: "Namespace"
