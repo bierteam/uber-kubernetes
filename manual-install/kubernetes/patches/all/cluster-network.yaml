@@ -1,0 +1,7 @@
+---
+apiVersion: v1alpha1
+kind: KubeNetworkConfig
+podSubnets:
+  - fd05:4786:835f::/48
+serviceSubnets:
+  - fd26:4340:84fe::/112

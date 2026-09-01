@@ -1,0 +1,10 @@
+---
+# restrict namespaces even more
+# https://docs.siderolabs.com/kubernetes-guides/security/pod-security
+# https://docs.siderolabs.com/talos/v1.14/reference/configuration/kubernetes/kubeadmissioncontrolconfig
+apiVersion: v1alpha1
+kind: KubeAdmissionControlConfig
+name: PodSecurity
+configuration:
+  defaults:
+    enforce: restricted

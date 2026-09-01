@@ -1,0 +1,7 @@
+---
+# https://docs.siderolabs.com/talos/v1.14/deploy-and-manage-workloads/workloads-on-controlplane
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+taints:
+  node-role.kubernetes.io/control-plane:
+    $patch: delete

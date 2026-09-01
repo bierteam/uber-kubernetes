@@ -4,10 +4,10 @@ clusterName: talos-cluster
 clusterEndpoint: https://[2a05:f080:0:3800:beef::]:6443
 kubernetesVersion: v1.37.0
 talosVersion: v1.14.0-rc.2
-
-# Patches live in patches/{all,control-plane,worker,node/<host>} and are merged
-# strategically in that order. Secrets are read from ./secrets.yaml.
 patchesDir: patches
+
+data:
+  link: ens18
 
 nodes:
   # The control planes are SecureBoot VMs with a TPM, so they get the secureboot
@@ -32,3 +32,5 @@ nodes:
   - host: talos4
     ip: 2a05:f080:0:3800:56bf:64ff:fe93:5e26
     role: worker
+    data:
+      link: enp1s0

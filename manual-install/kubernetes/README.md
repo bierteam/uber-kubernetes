@@ -336,20 +336,18 @@ Then bump `kubernetesVersion` in topf.yaml to match and commit.
      -n 2a05:f080:0:3800:be24:11ff:fe6c:6e3d etcd members
    ```
 
-## Known deprecations
+## Config documents
 
-Talos 1.14 moved much of `v1alpha1` into dedicated documents. These patches still
-use the deprecated fields:
+Talos 1.14 split `v1alpha1` into typed documents, and topf 0.6 generates them, so
+almost every patch is now a document instead of a `machine.*` / `cluster.*` field.
 
-| Patch | Deprecated | Replacement |
-| --- | --- | --- |
-| `all/09-misc.yaml` | `machine.features.hostDNS` | `ResolverConfig` |
-| `all/07-user-namespaces.yaml` | `machine.sysctls` | `SysctlConfig` |
-| `control-plane/07-swap.yaml` | `machine.sysctls` | `SysctlConfig` |
+Only `cluster.etcd.advertisedSubnets` (`control-plane/etcd.yaml`) is still
+`v1alpha1`; it has no document equivalent yet.
 
-These cannot be migrated yet: topf pins Talos machinery `v1.13.8`, and rejects
-documents it does not know with `"…" "v1alpha1": not registered`. Revisit when
-topf ships with 1.14 machinery.
+```sh
+topf render -o output
+talosctl validate -c output/talos1.yaml -m metal
+```
 
 ## Secrets
 

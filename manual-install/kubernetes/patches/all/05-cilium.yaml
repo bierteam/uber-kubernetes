@@ -1,5 +1,0 @@
----
-# Cilium settings
-cluster:
-  proxy:
-    disabled: true

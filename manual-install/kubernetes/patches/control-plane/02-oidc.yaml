@@ -1,9 +1,0 @@
----
-# OIDC authentication
-cluster:
-  apiServer:
-    extraArgs:
-      oidc-client-id: kubernetes
-      oidc-groups-claim: groups
-      oidc-issuer-url: https://auth.oscarr.nl
-      oidc-username-claim: preferred_username
