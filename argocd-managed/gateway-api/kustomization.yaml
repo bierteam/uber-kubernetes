@@ -6,4 +6,4 @@ resources:
   # Traefik needs TCPRoute + TLSRoute because providers.kubernetesGateway
   # sets experimentalChannel=true; without them its informers never sync
   # and the Gateway/GatewayClass are never reconciled.
-  - https://github.com/kubernetes-sigs/gateway-api/config/crd/experimental?ref=v1.6.1
+  - https://github.com/kubernetes-sigs/gateway-api/config/crd/experimental?ref=v1.6.2
