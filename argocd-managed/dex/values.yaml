@@ -66,6 +66,12 @@ dex: # set values for wrapper/umbrella chart
         redirectURIs:
           - https://pils.oscarr.nl/api/v1/users/login/oidc/callback
 
+      - id: hass
+        name: Home Assistant
+        public: true
+        redirectURIs:
+          - https://hass.lab.oscarr.nl/auth/oidc/callback
+
       - id: headscale
         name: Headscale
         secretEnv: HEADSCALE_CLIENT_SECRET
