@@ -1,0 +1,18 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: matrix
+spec:
+  secretName: {{ .Values.gateway.tlsSecret }}
+  issuerRef:
+    name: {{ .Values.gateway.issuer.name }}
+    kind: {{ .Values.gateway.issuer.kind }}
+  dnsNames:
+    {{- $ms := index .Values "matrix-stack" }}
+    - {{ $ms.serverName }}
+    - {{ $ms.synapse.ingress.host }}
+    - {{ $ms.matrixAuthenticationService.ingress.host }}
+    - {{ $ms.elementWeb.ingress.host }}
+    - {{ $ms.elementAdmin.ingress.host }}
+    - {{ $ms.matrixRTC.ingress.host }}

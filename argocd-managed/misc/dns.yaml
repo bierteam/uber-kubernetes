@@ -80,6 +80,30 @@ spec:
       recordType: CAA
       targets:
         - 0 issue letsencrypt.org;validationmethods=tls-alpn-01
+
+    # Matrix (ESS) on the Talos cluster. AAAA is the Cilium Gateway's LB
+    # address. A is the firewall's public v4, whose 443 lands on in-cluster
+    # Traefik, which passes the TLS through to talos (see matrix.yaml).
+    - dnsName: matrix.oscarr.nl
+      recordTTL: 1
+      recordType: A
+      targets:
+        - 185.132.110.37
+    - dnsName: "*.matrix.oscarr.nl"
+      recordTTL: 1
+      recordType: A
+      targets:
+        - 185.132.110.37
+    - dnsName: matrix.oscarr.nl
+      recordTTL: 1
+      recordType: AAAA
+      targets:
+        - 2a05:f080:0:3800:1b::3
+    - dnsName: "*.matrix.oscarr.nl"
+      recordTTL: 1
+      recordType: AAAA
+      targets:
+        - 2a05:f080:0:3800:1b::3
 ---
 apiVersion: externaldns.k8s.io/v1alpha1
 kind: DNSEndpoint

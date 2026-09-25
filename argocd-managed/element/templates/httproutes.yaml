@@ -1,0 +1,150 @@
+{{- /*
+Mirrors the Ingresses rendered by the matrix-stack chart. Check these against
+`helm template` after bumping the chart, as its routing can change.
+*/ -}}
+{{- $ms := index .Values "matrix-stack" }}
+{{- $rel := .Release.Name }}
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: https-redirect
+spec:
+  parentRefs:
+    - name: matrix
+      sectionName: http
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
+---
+# .well-known delegation on the server name.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: well-known
+spec:
+  parentRefs:
+    - name: matrix
+      sectionName: https
+  hostnames:
+    - {{ $ms.serverName | quote }}
+  rules:
+    - backendRefs:
+        - name: {{ $rel }}-well-known
+          port: 8010
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: synapse
+spec:
+  parentRefs:
+    - name: matrix
+      sectionName: https
+  hostnames:
+    - {{ $ms.synapse.ingress.host | quote }}
+  rules:
+    # Login/refresh/logout are handled by MAS.
+    - matches:
+        {{- range $version := list "api/v1" "r0" "v3" "unstable" }}
+        {{- range $endpoint := list "login" "refresh" "logout" }}
+        - path:
+            type: PathPrefix
+            value: /_matrix/client/{{ $version }}/{{ $endpoint }}
+        {{- end }}
+        {{- end }}
+      backendRefs:
+        - name: {{ $rel }}-matrix-authentication-service
+          port: 8080
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /_matrix
+        - path:
+            type: PathPrefix
+            value: /_synapse
+      # /sync long-polls for longer than Envoy's default 15s route timeout.
+      timeouts:
+        request: 0s
+      backendRefs:
+        - name: {{ $rel }}-synapse
+          port: 8008
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: matrix-authentication-service
+spec:
+  parentRefs:
+    - name: matrix
+      sectionName: https
+  hostnames:
+    - {{ $ms.matrixAuthenticationService.ingress.host | quote }}
+  rules:
+    - backendRefs:
+        - name: {{ $rel }}-matrix-authentication-service
+          port: 8080
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: element-web
+spec:
+  parentRefs:
+    - name: matrix
+      sectionName: https
+  hostnames:
+    - {{ $ms.elementWeb.ingress.host | quote }}
+  rules:
+    - backendRefs:
+        - name: {{ $rel }}-element-web
+          port: 80
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: element-admin
+spec:
+  parentRefs:
+    - name: matrix
+      sectionName: https
+  hostnames:
+    - {{ $ms.elementAdmin.ingress.host | quote }}
+  rules:
+    - backendRefs:
+        - name: {{ $rel }}-element-admin
+          port: 8080
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: matrix-rtc
+spec:
+  parentRefs:
+    - name: matrix
+      sectionName: https
+  hostnames:
+    - {{ $ms.matrixRTC.ingress.host | quote }}
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /sfu/get
+        - path:
+            type: PathPrefix
+            value: /get_token
+        - path:
+            type: PathPrefix
+            value: /delegate_delayed_leave
+      backendRefs:
+        - name: {{ $rel }}-matrix-rtc-authorisation-service
+          port: 8080
+    # LiveKit signalling is a long-lived websocket.
+    - timeouts:
+        request: 0s
+      backendRefs:
+        - name: {{ $rel }}-matrix-rtc-sfu
+          port: 7880

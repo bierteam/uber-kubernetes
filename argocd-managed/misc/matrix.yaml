@@ -1,0 +1,49 @@
+---
+# Matrix (ESS) runs on the IPv6-only Talos cluster. IPv6 clients reach its
+# Gateway directly; IPv4 clients land here on the firewall's 443 and get their
+# TLS passed through, unterminated, to the talos Gateway over IPv6.
+kind: Service
+apiVersion: v1
+metadata:
+  name: matrix-talos
+spec:
+  clusterIP: None
+  ipFamilyPolicy: SingleStack
+  ipFamilies:
+    - IPv6
+  ports:
+    - name: https
+      port: 443
+      targetPort: 443
+---
+apiVersion: discovery.k8s.io/v1
+kind: EndpointSlice
+metadata:
+  name: matrix-talos
+  labels:
+    kubernetes.io/service-name: matrix-talos
+addressType: IPv6
+endpoints:
+  - addresses:
+      - "2a05:f080:0:3800:1b::3"
+ports:
+  - name: https
+    port: 443
+    protocol: TCP
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRouteTCP
+metadata:
+  name: matrix-talos
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: >-
+        HostSNI(`matrix.oscarr.nl`) ||
+        HostSNIRegexp(`^[a-z0-9-]+\.matrix\.oscarr\.nl$`)
+      services:
+        - name: matrix-talos
+          port: 443
+  tls:
+    passthrough: true

@@ -26,6 +26,13 @@ traefik: # set values for wrapper/umbrella chart
       port: 31497
       protocol: UDP
 
+  service:
+    spec:
+      type: LoadBalancer
+      # The k3s node is dual-stack, so ServiceLB publishes Traefik on the host's
+      # IPv6 address too. This replaced the socat 6->4 relay DaemonSet in misc.
+      ipFamilyPolicy: PreferDualStack
+
   ingressRoute:
     dashboard:
       enabled: false

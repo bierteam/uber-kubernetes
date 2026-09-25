@@ -1,0 +1,62 @@
+# Wrapper-chart values, consumed by templates/.
+# The ESS chart only renders Ingress objects, and the Talos cluster has no
+# ingress controller -- traffic enters through a Cilium Gateway instead, with
+# the HTTPRoutes in templates/httproutes.yaml mirroring the chart's Ingresses.
+gateway:
+  # Cilium LB-IPAM address for the Gateway's LoadBalancer service.
+  address: "2a05:f080:0:3800:1b::3"
+  tlsSecret: matrix-tls
+  issuer:
+    name: letsencrypt # TODO: match the ClusterIssuer name on talos
+    kind: ClusterIssuer
+
+# https://github.com/element-hq/ess-helm/blob/main/charts/matrix-stack/values.yaml
+matrix-stack:
+  # Permanent: this is the domain in every user ID (@user:matrix.oscarr.nl).
+  serverName: matrix.oscarr.nl
+
+  storage:
+    storageClassName: nfs-retain
+
+  ingress:
+    # TLS terminates at the Gateway.
+    tlsEnabled: false
+    annotations:
+      # Nothing reconciles these Ingresses, so they never get a
+      # loadBalancer status and would keep the app Progressing forever.
+      argocd.argoproj.io/ignore-healthcheck: "true"
+
+  synapse:
+    ingress:
+      host: synapse.matrix.oscarr.nl
+
+  matrixAuthenticationService:
+    ingress:
+      host: account.matrix.oscarr.nl
+
+  elementWeb:
+    ingress:
+      host: chat.matrix.oscarr.nl
+
+  elementAdmin:
+    ingress:
+      host: admin.matrix.oscarr.nl
+
+  matrixRTC:
+    ingress:
+      host: rtc.matrix.oscarr.nl
+    sfu:
+      # Media goes straight to this LB address, not through the Gateway.
+      useStunToDiscoverPublicIP: false
+      manualIP: "2a05:f080:0:3800:1b::4"
+      exposedServices:
+        rtcTcp:
+          portType: LoadBalancer
+          annotations:
+            lbipam.cilium.io/ips: "2a05:f080:0:3800:1b::4"
+            lbipam.cilium.io/sharing-key: matrix-rtc
+        rtcMuxedUdp:
+          portType: LoadBalancer
+          annotations:
+            lbipam.cilium.io/ips: "2a05:f080:0:3800:1b::4"
+            lbipam.cilium.io/sharing-key: matrix-rtc
