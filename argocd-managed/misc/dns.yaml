@@ -75,6 +75,11 @@ spec:
         - 0 issue letsencrypt.org
         - 0 issuewild letsencrypt.org
         - 0 iodef mailto:caa@oscarr.nl
+    - dnsName: headscale.oscarr.nl
+      recordTTL: 1
+      recordType: CAA
+      targets:
+        - 0 issue letsencrypt.org;validationmethods=tls-alpn-01
 ---
 apiVersion: externaldns.k8s.io/v1alpha1
 kind: DNSEndpoint
