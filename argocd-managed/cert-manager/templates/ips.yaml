@@ -1,25 +1,29 @@
-{{- range $ip := .Values.ips }}
-{{- $noDotsIP :=  regexReplaceAll "\\W+" $ip.address "-" | nospace }}
+{{- with .Values.ips }}
+{{- $first := index . 0 }}
 ---
+# One certificate for all of the cluster's public addresses. Let's Encrypt only
+# issues IP certificates on the shortlived profile, validated per address.
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: {{ $noDotsIP }}
+  name: ip-addresses
 spec:
-  secretName: {{ $noDotsIP }}-tls
+  secretName: ip-addresses-tls
   issuerRef:
-    name: {{ $ip.issuer | default "letsencrypt-shortlived-http01" }}
+    name: {{ $.Values.ipsIssuer | default "letsencrypt-shortlived-http01" }}
     kind: Issuer
   privateKey:
     rotationPolicy: Always
     algorithm: ECDSA
   ipAddresses:
-    - "{{ $ip.address }}"
+    {{- range . }}
+    - {{ .address | quote }}
+    {{- end }}
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
-  name: traefik-tls-{{ $noDotsIP }}
+  name: traefik-tls-ip-addresses
 spec:
   entryPoints:
     - websecure
@@ -30,7 +34,13 @@ spec:
         - name: noop@internal
           kind: TraefikService
   tls:
-    secretName: {{ $noDotsIP }}-tls
+    secretName: ip-addresses-tls
     domains:
-      - main: "{{ $ip.address }}"
+      - main: {{ $first.address | quote }}
+        {{- with rest . }}
+        sans:
+          {{- range . }}
+          - {{ .address | quote }}
+          {{- end }}
+        {{- end }}
 {{- end }}
