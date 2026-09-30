@@ -1,7 +1,0 @@
----
-# The API is reachable over IPv4 through HAProxy on this address, so it has to be
-# in the apiserver's serving certificate or kubectl fails TLS validation.
-apiVersion: v1alpha1
-kind: KubeAPIServerConfig
-certExtraSANs:
-  - 192.168.122.1
