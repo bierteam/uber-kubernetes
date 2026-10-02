@@ -2,6 +2,8 @@
 One ApplicationSet per .Values.applicationSets entry. A cluster gets the app when
 its ArgoCD cluster secret carries the label `apps.oscarr.nl/<name>: "true"`.
 Braces wrapped in {{` `}} are left for ArgoCD's goTemplate, the rest is helm.
+Set `helm: false` for a non-helm source (kustomize, plain manifests): an explicit
+helm block would make ArgoCD treat the folder as a chart.
 */}}
 {{- range $appset := .Values.applicationSets }}
 {{- $namespace := $appset.namespace | default $appset.name }}
@@ -42,10 +44,12 @@ spec:
         path: {{ default (print "argocd-managed/" $appset.name) $appset.folder }}
         repoURL: https://github.com/bierteam/{{ $appset.repository | default "uber-kubernetes" }}.git
         targetRevision: HEAD
+        {{- if ne "false" ($appset.helm | toString) }}
         helm:
           ignoreMissingValueFiles: true
           valueFiles:
             - 'values-{{`{{ .name }}`}}.yaml'
+        {{- end }}
       syncPolicy:
         syncOptions:
           - CreateNamespace=true
