@@ -1,6 +1,6 @@
 domains:
   - name: 0scar.nl
-    issuer: letsencrypt-shortlived-servfail
+    issuer: letsencrypt-servfail
   - name: bruinsma.it
   - name: devopscar.nl
   - name: doktermarjolein.nl
@@ -8,7 +8,7 @@ domains:
   - name: ninoo.nl
   - name: oscarr.nl
   - name: oscarrr.nl
-    issuer: letsencrypt-shortlived-servfail
+    issuer: letsencrypt-servfail
   - name: vdbrom.com
 
 ips:
@@ -16,44 +16,23 @@ ips:
   - address: 2a05:f080:0:3800:be24:11ff:fee2:7e61
 
 issuers:
-  # https://letsencrypt.org/docs/profiles/#classic
+  # Profile defaults to shortlived in templates/issuers.yaml, set `profile:` to
+  # override: https://letsencrypt.org/docs/profiles/
   - name: letsencrypt
-    profile: classic
     cloudflare: true
+  - name: letsencrypt-servfail
+    servfail: true
   - name: letsencrypt-http01
-    profile: classic
-    http01: true
-  # https://letsencrypt.org/docs/profiles/#tlsserver
-  - name: letsencrypt-tlsserver
-    profile: tlsserver
-    cloudflare: true
-  - name: letsencrypt-tlsserver-servfail
-    profile: tlsserver
-    servfail: true
-  - name: letsencrypt-tlsserver-http01
-    profile: tlsserver
-    http01: true
-  # https://letsencrypt.org/docs/profiles/#shortlived
-  - name: letsencrypt-shortlived
-    profile: shortlived
-    cloudflare: true
-  - name: letsencrypt-shortlived-servfail
-    profile: shortlived
-    servfail: true
-  - name: letsencrypt-shortlived-http01
-    profile: shortlived
     http01: true
   # https://letsencrypt.org/docs/staging-environment/
-  - name: letsencrypt-staging-shortlived
-    server: https://acme-staging-v02.api.letsencrypt.org/directory
-    profile: shortlived
-    cloudflare: true
-    account-key: letsencrypt-staging
-  - name: letsencrypt-staging-shortlived-http01
-    server: https://acme-staging-v02.api.letsencrypt.org/directory
-    profile: shortlived
-    http01: true
-    account-key: letsencrypt-staging
+  # - name: letsencrypt-staging
+  #   server: https://acme-staging-v02.api.letsencrypt.org/directory
+  #   cloudflare: true
+  #   account_key: letsencrypt-staging
+  # - name: letsencrypt-staging-http01
+  #   server: https://acme-staging-v02.api.letsencrypt.org/directory
+  #   http01: true
+  #   account_key: letsencrypt-staging
 
 # https://github.com/cert-manager/cert-manager/blob/master/deploy/charts/cert-manager/values.yaml
 cert-manager: # set values for wrapper/umbrella chart

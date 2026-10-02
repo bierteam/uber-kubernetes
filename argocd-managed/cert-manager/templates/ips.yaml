@@ -10,7 +10,7 @@ metadata:
 spec:
   secretName: ip-addresses-tls
   issuerRef:
-    name: {{ $.Values.ipsIssuer | default "letsencrypt-shortlived-http01" }}
+    name: {{ $.Values.ipsIssuer | default "letsencrypt-http01" }}
     kind: Issuer
   privateKey:
     rotationPolicy: Always
