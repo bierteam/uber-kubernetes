@@ -3,10 +3,24 @@
 # certificates/TLSA records for the domains below are owned by in-cluster.
 domains: []
 ips: []
-issuers: []
+# Cluster-wide HTTP-01 through each app's own Gateway. Convention: the Gateway
+# is named `gateway`, in the same namespace as the Certificate. No DNS-01
+# issuers here, so the Cloudflare/servfail SealedSecrets aren't rendered.
+issuers:
+  - name: letsencrypt
+    kind: ClusterIssuer
+    http01Gateway: gateway
 
 cert-manager-webhook-pdns:
   enabled: false
 
 tlsa-dnsendpoint-controller:
   enabled: false
+
+cert-manager:
+  # Lets the ClusterIssuer solve HTTP-01 through a Gateway (gatewayHTTPRoute
+  # solver). Needs the Gateway API CRDs from gateway-api-talos.
+  config:
+    apiVersion: controller.config.cert-manager.io/v1alpha1
+    kind: ControllerConfiguration
+    enableGatewayAPI: true

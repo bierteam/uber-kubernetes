@@ -19,6 +19,11 @@ cilium: # set values for wrapper/umbrella chart
   k8sServicePort: 7445
   l2announcements:
     enabled: true
+  # Ingress for the talos cluster (the element Gateway). Needs the Gateway API
+  # CRDs from gateway-api-talos present when the operator starts, or it skips
+  # the controller -- restart cilium-operator and ds/cilium after enabling.
+  gatewayAPI:
+    enabled: true
   k8sClientRateLimit:
     qps: 50
     burst: 100

@@ -2,7 +2,8 @@
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
-  name: matrix
+  # The talos ClusterIssuer's HTTP-01 solver looks for a Gateway named `gateway`.
+  name: gateway
 spec:
   gatewayClassName: cilium
   addresses:

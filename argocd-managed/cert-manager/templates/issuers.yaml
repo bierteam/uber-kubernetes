@@ -1,7 +1,7 @@
 {{- range $issuer := .Values.issuers }}
 ---
 apiVersion: cert-manager.io/v1
-kind: Issuer
+kind: {{ $issuer.kind | default "Issuer" }}
 metadata:
   name: {{ $issuer.name }}
 spec:
@@ -10,7 +10,7 @@ spec:
     email: {{ $issuer.email | default "oscar@oscarr.nl" }}
     privateKeySecretRef:
       name: {{ $issuer.account_key | default "letsencrypt" }}
-    profile: {{ $issuer.profile | default "classic" }}
+    profile: {{ $issuer.profile | default "shortlived" }}
     solvers:
     {{- if $issuer.cloudflare }}
       - dns01:
@@ -35,5 +35,13 @@ spec:
       - http01:
           ingress:
             class: traefik
+    {{- else if $issuer.http01Gateway }}
+      # The parentRef has no namespace, so it resolves to the namespace of each
+      # Certificate: every app using this issuer names its Gateway the same.
+      - http01:
+          gatewayHTTPRoute:
+            parentRefs:
+              - kind: Gateway
+                name: {{ $issuer.http01Gateway }}
     {{- end }}
 {{- end }}

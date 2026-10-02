@@ -11,7 +11,7 @@ metadata:
   name: https-redirect
 spec:
   parentRefs:
-    - name: matrix
+    - name: gateway
       sectionName: http
   rules:
     - filters:
@@ -27,7 +27,7 @@ metadata:
   name: well-known
 spec:
   parentRefs:
-    - name: matrix
+    - name: gateway
       sectionName: https
   hostnames:
     - {{ $ms.serverName | quote }}
@@ -42,7 +42,7 @@ metadata:
   name: synapse
 spec:
   parentRefs:
-    - name: matrix
+    - name: gateway
       sectionName: https
   hostnames:
     - {{ $ms.synapse.ingress.host | quote }}
@@ -79,7 +79,7 @@ metadata:
   name: matrix-authentication-service
 spec:
   parentRefs:
-    - name: matrix
+    - name: gateway
       sectionName: https
   hostnames:
     - {{ $ms.matrixAuthenticationService.ingress.host | quote }}
@@ -94,7 +94,7 @@ metadata:
   name: element-web
 spec:
   parentRefs:
-    - name: matrix
+    - name: gateway
       sectionName: https
   hostnames:
     - {{ $ms.elementWeb.ingress.host | quote }}
@@ -109,7 +109,7 @@ metadata:
   name: element-admin
 spec:
   parentRefs:
-    - name: matrix
+    - name: gateway
       sectionName: https
   hostnames:
     - {{ $ms.elementAdmin.ingress.host | quote }}
@@ -124,7 +124,7 @@ metadata:
   name: matrix-rtc
 spec:
   parentRefs:
-    - name: matrix
+    - name: gateway
       sectionName: https
   hostnames:
     - {{ $ms.matrixRTC.ingress.host | quote }}
