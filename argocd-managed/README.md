@@ -5,7 +5,7 @@
 
 | Name | Status | Cluster | Namespace | Docs |
 | ---- | ------ | ------- | --------- | ---- |
-| cert-manager | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=cert-manager&revision=true)](https://argocd.lab.oscarr.nl/applications/cert-manager) | in-cluster | cert-manager | [Upstream](https://cert-manager.io/) |
+| cert-manager | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=cert-manager&revision=true)](https://argocd.lab.oscarr.nl/applications/cert-manager) | in-cluster + apps.oscarr.nl/cert-manager | cert-manager | [Upstream](https://cert-manager.io/) |
 | cilium | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=cilium&revision=true)](https://argocd.lab.oscarr.nl/applications/cilium) | talos-cluster | kube-system | [Upstream](https://cilium.io/) |
 | cnpg | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=cnpg&revision=true)](https://argocd.lab.oscarr.nl/applications/cnpg) | in-cluster | cnpg-system | [Upstream](https://cloudnative-pg.io/) |
 | cyberchef | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=cyberchef&revision=true)](https://argocd.lab.oscarr.nl/applications/cyberchef) | in-cluster | cyberchef | [Upstream](https://github.com/gchq/CyberChef) |
@@ -34,4 +34,4 @@
 | vikunja | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=vikunja&revision=true)](https://argocd.lab.oscarr.nl/applications/vikunja) | in-cluster | vikunja | [Upstream](https://vikunja.io/) |
 | wildlife-api | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=wildlife-api&revision=true)](https://argocd.lab.oscarr.nl/applications/wildlife-api) | in-cluster | wildlife-api |  |
 | wildlife-database | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=wildlife-database&revision=true)](https://argocd.lab.oscarr.nl/applications/wildlife-database) | in-cluster | wildlife-database |  |
-| wildlife-frontend | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=wildlife-frontend&revision=true)](https://argocd.lab.oscarr.nl/applications/wildlife-frontend) | in-cluster | wildlife-frontend | |
+| wildlife-frontend | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=wildlife-frontend&revision=true)](https://argocd.lab.oscarr.nl/applications/wildlife-frontend) | in-cluster | wildlife-frontend |  |

@@ -1,0 +1,18 @@
+---
+# ArgoCD's local cluster has no secret by default, which leaves it nothing to
+# label. This one exists only to carry the `apps.oscarr.nl/<app>` labels that
+# the cluster generators in argocd-apps/templates/applicationset-template.yaml
+# select on. No credentials: ArgoCD uses its own service account for it.
+apiVersion: v1
+kind: Secret
+metadata:
+  name: in-cluster
+  namespace: argocd
+  labels:
+    argocd.argoproj.io/secret-type: cluster
+    apps.oscarr.nl/cert-manager: "true"
+type: Opaque
+stringData:
+  name: in-cluster
+  server: https://kubernetes.default.svc
+  config: '{"tlsClientConfig":{"insecure":false}}'

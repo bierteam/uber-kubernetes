@@ -1,0 +1,12 @@
+# Overrides for the talos-cluster. Only cert-manager itself is installed here:
+# there is no traefik, sealed-secrets or external-dns on this cluster, and the
+# certificates/TLSA records for the domains below are owned by in-cluster.
+domains: []
+ips: []
+issuers: []
+
+cert-manager-webhook-pdns:
+  enabled: false
+
+tlsa-dnsendpoint-controller:
+  enabled: false

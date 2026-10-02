@@ -1,0 +1,65 @@
+{{- /*
+One ApplicationSet per .Values.applicationSets entry. A cluster gets the app when
+its ArgoCD cluster secret carries the label `apps.oscarr.nl/<name>: "true"`.
+Braces wrapped in {{` `}} are left for ArgoCD's goTemplate, the rest is helm.
+*/}}
+{{- range $appset := .Values.applicationSets }}
+{{- $namespace := $appset.namespace | default $appset.name }}
+---
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: {{ $appset.name }}
+  namespace: argocd
+spec:
+  goTemplate: true
+  goTemplateOptions: ['missingkey=error']
+  # Deleting the ApplicationSet, or unlabelling a cluster, removes the
+  # Application but leaves its resources (CRDs, CNI, ...) running.
+  syncPolicy:
+    preserveResourcesOnDeletion: true
+  generators:
+    - clusters:
+        selector:
+          matchLabels:
+            apps.oscarr.nl/{{ $appset.name }}: "true"
+  template:
+    metadata:
+      {{- if $appset.primaryCluster }}
+      # The app on {{ $appset.primaryCluster }} keeps the bare name of the Application it replaced.
+      name: '{{`{{ if eq .name "`}}{{ $appset.primaryCluster }}{{`" }}`}}{{ $appset.name }}{{`{{ else }}`}}{{ $appset.name }}-{{`{{ .name }}{{ end }}`}}'
+      {{- else }}
+      name: '{{ $appset.name }}-{{`{{ .name }}`}}'
+      {{- end }}
+      annotations:
+        argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
+    spec:
+      destination:
+        namespace: {{ $namespace }}
+        name: '{{`{{ .name }}`}}'
+      project: default
+      source:
+        path: {{ default (print "argocd-managed/" $appset.name) $appset.folder }}
+        repoURL: https://github.com/bierteam/{{ $appset.repository | default "uber-kubernetes" }}.git
+        targetRevision: HEAD
+        helm:
+          ignoreMissingValueFiles: true
+          valueFiles:
+            - 'values-{{`{{ .name }}`}}.yaml'
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+          - ServerSideApply={{ $appset.serverSideApply | default "true" }}
+        managedNamespaceMetadata:
+          labels:
+            pod-security.kubernetes.io/enforce: {{ $appset.podSecurity | default "restricted" | toString }}
+            {{- if ne $appset.podSecurity "privileged" }}
+            pod-security.kubernetes.io/audit: restricted
+            pod-security.kubernetes.io/warn: restricted
+            {{- end }}
+        {{- if ne "false" ($appset.autosync | toString) }}
+        automated:
+          prune: true
+          selfHeal: true
+        {{- end }}
+{{- end }}

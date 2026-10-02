@@ -41,11 +41,20 @@ generate() {
 | ---- | ------ | ------- | --------- | ---- |
 EOF
 
-  yq eval -r '
-    .argocdApps[]
-    | [.name, (.server // "in-cluster"), (.namespace // .name), (.docs // "")]
-    | @tsv
-  ' "$values" | sort -f | while IFS=$'\t' read -r name server namespace docs; do
+  # ApplicationSets list the cluster their bare-named app runs on; the rest of
+  # their clusters are picked at runtime by the apps.oscarr.nl/<name> label.
+  {
+    yq eval -r '
+      .argocdApps[]
+      | [.name, (.server // "in-cluster"), (.namespace // .name), (.docs // "")]
+      | @tsv
+    ' "$values"
+    yq eval -r '
+      .applicationSets[]
+      | [.name, (.primaryCluster // "-") + " + apps.oscarr.nl/" + .name, (.namespace // .name), (.docs // "")]
+      | @tsv
+    ' "$values"
+  } | sort -f | while IFS=$'\t' read -r name server namespace docs; do
     badge="[![App Status](${argocd_url}/api/badge?name=${name}&revision=true)](${argocd_url}/applications/${name})"
     link=""
     [ -n "$docs" ] && link="[Upstream](${docs})"
@@ -65,7 +74,7 @@ check_links() {
       2*) printf '  ok    %-22s %s\n' "$name" "$url" ;;
       *)  printf '  FAIL  %-22s %s (HTTP %s)\n' "$name" "$url" "$code"; failed=1 ;;
     esac
-  done < <(yq eval -r '.argocdApps[] | select(.docs) | [.name, .docs] | @tsv' "$values")
+  done < <(yq eval -r '(.argocdApps[], .applicationSets[]) | select(.docs) | [.name, .docs] | @tsv' "$values")
 
   if [ "$failed" -ne 0 ]; then
     echo "one or more docs links are dead; fix or drop them in ${values}" >&2

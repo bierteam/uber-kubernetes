@@ -3,9 +3,6 @@ argocdApps:
   # - name: agones
   #   server: talos-cluster
   #   podSecurity: baseline
-  - name: cert-manager
-    docs: https://cert-manager.io/
-    podSecurity: baseline # TODO verify if this can be restricted
   - name: cilium
     docs: https://cilium.io/
     namespace: kube-system
@@ -112,3 +109,13 @@ argocdApps:
     podSecurity: baseline # TODO verify if this can be restricted
   - name: wildlife-database
     podSecurity: baseline # TODO verify if this can be restricted
+
+# Rendered by templates/applicationset-template.yaml. Deployed to every cluster
+# whose ArgoCD cluster secret has the label `apps.oscarr.nl/<name>: "true"`, with
+# `values-<cluster>.yaml` from the app folder layered on top when it exists.
+# primaryCluster: the app on that cluster is named <name>, elsewhere <name>-<cluster>.
+applicationSets:
+  - name: cert-manager
+    docs: https://cert-manager.io/
+    podSecurity: baseline # TODO verify if this can be restricted
+    primaryCluster: in-cluster
