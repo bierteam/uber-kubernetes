@@ -15,6 +15,7 @@ traefik: # set values for wrapper/umbrella chart
       http:
         middlewares:
           - traefik-hsts@kubernetescrd
+          - traefik-no-compression@kubernetescrd
     unifi-inform:
       expose:
         default: true

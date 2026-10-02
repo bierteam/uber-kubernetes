@@ -1,0 +1,10 @@
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: no-compression
+spec:
+  headers:
+    customRequestHeaders:
+      # an empty value removes the header, so backends never compress (internet.nl / BREACH)
+      Accept-Encoding: ""

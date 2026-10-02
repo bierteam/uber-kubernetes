@@ -16,7 +16,9 @@ data:
       </head>
       <body>
         <div class="bodyContainer">
-          <div id="player" allow="autoplay; fullscreen"></div>
+          <!-- youtube refuses embeds without a referer, so override the no-referrer header for this iframe only -->
+          <iframe id="player" width="560" height="315" allow="autoplay; fullscreen" referrerpolicy="strict-origin-when-cross-origin"
+            src="https://www.youtube.com/embed/dQw4w9WgXcQ?enablejsapi=1&autoplay=1&controls=0&modestbranding=1&rel=0&showinfo=0&loop=1&playlist=dQw4w9WgXcQ&disablekb=1"></iframe>
 
           <button id="button" class="button" role="button">Klik mij!</button>
 
@@ -166,20 +168,7 @@ data:
 
     var player
     function onYouTubeIframeAPIReady() {
-      player = new YT.Player('player', {
-        height: '315',
-        width: '560',
-        videoId: 'dQw4w9WgXcQ',
-        playerVars: {
-          'autoplay': 1,
-          'controls': 0,
-          'modestbranding': 1,
-          'rel': 0,
-          'showinfo': 0,
-          'loop': 1,
-          'disablekb': 1
-        }
-      })
+      player = new YT.Player('player')
     }
     // Change the LinkedIn link based on the URL
     document.addEventListener("DOMContentLoaded", function () {
@@ -348,7 +337,7 @@ spec:
     # stsPreload: true
     # generated with https://report-uri.com/home/generate
     contentSecurityPolicy: default-src 'none'; script-src 'self' https://www.youtube.com; style-src 'self'; img-src 'self'; frame-src https://youtube.com https://www.youtube.com; frame-ancestors 'none'; form-action 'none'; base-uri 'none'
-    referrerPolicy: strict-origin
+    referrerPolicy: no-referrer
     contentTypeNosniff: true
     frameDeny: true
     # generated with https://www.permissionspolicy.com/
