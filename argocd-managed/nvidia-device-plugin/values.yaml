@@ -1,0 +1,8 @@
+# https://github.com/NVIDIA/k8s-device-plugin
+nvidia-device-plugin: # set values for wrapper/umbrella chart
+  # Talos only exposes the NVIDIA runtime through the `nvidia` RuntimeClass
+  # (templates/runtimeclass.yaml); the default runc handler has no GPU access.
+  # The chart's default affinity already selects nodes labelled
+  # nvidia.com/gpu.present=true (set by talos5's KubeNodeConfig patch) and it
+  # tolerates the nvidia.com/gpu taint, so no NFD/GFD is needed.
+  runtimeClassName: nvidia

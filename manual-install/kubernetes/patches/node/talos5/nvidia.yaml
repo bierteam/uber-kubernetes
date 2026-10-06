@@ -1,0 +1,32 @@
+---
+# https://docs.siderolabs.com/talos/v1.14/configure-your-talos-cluster/hardware-and-drivers/nvidia-gpu
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: nvidia
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: nvidia_uvm
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: nvidia_drm
+---
+apiVersion: v1alpha1
+kind: KernelModuleConfig
+name: nvidia_modeset
+---
+apiVersion: v1alpha1
+kind: SysctlConfig
+params:
+  net.core.bpf_jit_harden: "1"
+---
+# The label lets the nvidia-device-plugin DaemonSet schedule here without Node
+# Feature Discovery. The taint keeps everything but GPU workloads off this node,
+# since it is offline whenever the PC is booted into Windows or Bazzite.
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+labels:
+  nvidia.com/gpu.present: "true"
+taints:
+  nvidia.com/gpu: present:NoSchedule

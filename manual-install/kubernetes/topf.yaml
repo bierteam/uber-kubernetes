@@ -12,8 +12,8 @@ data:
 nodes:
   # The control planes are SecureBoot VMs with a TPM, so they get the secureboot
   # installer and the qemu-guest-agent schematic. talos4 is bare metal running the
-  # plain metal-installer image, which is why secureboot/schematicId are set per
-  # node instead of cluster-wide.
+  # plain metal-installer image with its own schematic, which is why
+  # secureboot/schematicId are set per node instead of cluster-wide.
   - host: talos1
     ip: 2a05:f080:0:3800:be24:11ff:fe6c:6e3d
     role: control-plane
@@ -32,5 +32,12 @@ nodes:
   - host: talos4
     ip: 2a05:f080:0:3800:56bf:64ff:fe93:5e26
     role: worker
+    schematicId: "@schematic-metal.yaml"
     data:
       link: enp1s0
+  - host: talos5
+    ip: 2a05:f080:0:3800:9e6b:ff:fe59:7961
+    role: worker
+    schematicId: "@schematic-gpu.yaml"
+    data:
+      link: enp7s0

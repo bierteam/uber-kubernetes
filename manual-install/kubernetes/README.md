@@ -20,10 +20,12 @@ encrypted file as-is and fails.
 | --- | --- |
 | `topf.yaml` | Cluster name, endpoint, versions, node list |
 | `schematic.yaml` | Image factory schematic for the control planes, referenced as `@schematic.yaml` |
+| `schematic-metal.yaml` | Image factory schematic for bare metal nodes (talos4), referenced as `@schematic-metal.yaml` |
+| `schematic-gpu.yaml` | Image factory schematic for the game PC (talos5, RTX 3080) with the NVIDIA open modules, referenced as `@schematic-gpu.yaml` |
 | `secrets.yaml` | SOPS-encrypted Talos secrets bundle (was `talsecret.sops.yaml`) |
 | `patches/all/` | Applied to every node |
 | `patches/control-plane/` | Control planes only |
-| `patches/node/<host>/` | Per-node (none currently) |
+| `patches/node/<host>/` | Per-node: `talos5/` pins the install disk by WWID and loads the NVIDIA modules |
 
 Patches merge in that order, lexicographically within a directory — hence the
 numeric prefixes. `.yaml.tpl` files are Go templates with `.Node.Host`,

@@ -1,0 +1,48 @@
+# https://github.com/otwld/ollama-helm
+ollama: # set values for wrapper/umbrella chart
+  # Requesting the GPU (plus the chart's matching toleration) is what lands this
+  # on talos5, the RTX 3080 game PC. That node is offline while it is booted into
+  # Windows/Bazzite, so the pod sits Pending until it comes back.
+  runtimeClassName: nvidia
+  ollama:
+    gpu:
+      enabled: true
+      type: nvidia
+      number: 1
+    models:
+      # One model for chat, edits and autocomplete. The Q4_K_M weights are ~9 GB,
+      # which leaves little of the 3080's 10 GB for anything else.
+      pull:
+        - qwen2.5-coder:14b
+  extraEnv:
+    - name: OLLAMA_KEEP_ALIVE
+      value: "-1"
+    - name: OLLAMA_MAX_LOADED_MODELS
+      value: "1"
+    # The 14B's KV cache is ~100 KB/token at q8_0, so 8k is ~0.8 GB on top of the
+    # weights. Anything that does not fit in VRAM is offloaded to CPU by Ollama,
+    # which is slower; `ollama ps` should show 100% GPU.
+    - name: OLLAMA_CONTEXT_LENGTH
+      value: "8192"
+    # single user; every parallel slot reserves its own full-length KV cache
+    - name: OLLAMA_NUM_PARALLEL
+      value: "1"
+    - name: OLLAMA_FLASH_ATTENTION
+      value: "1"
+    # halves KV cache memory with no noticeable quality loss
+    - name: OLLAMA_KV_CACHE_TYPE
+      value: q8_0
+  persistentVolume:
+    enabled: true
+    size: 30Gi
+    # Models can be pulled again, no need to keep them around after a delete.
+    storageClass: nfs-deletable
+  resources:
+    requests:
+      cpu: "1"
+      memory: 4Gi
+    limits:
+      memory: 12Gi
+  # helm test pod; ArgoCD would keep it around as a stray resource
+  tests:
+    enabled: false

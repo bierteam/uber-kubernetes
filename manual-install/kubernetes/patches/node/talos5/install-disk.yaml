@@ -1,0 +1,11 @@
+---
+# The game PC also has the Windows/Bazzite SSDs attached, so the install disk is
+# pinned to the 128 GB Samsung MZ7PC128 instead of a /dev/sdX name, which can
+# shuffle between boots. Its `serial` attribute is empty; the serial only shows
+# up at the end of the WWID (`talosctl get disk <id> -o yaml`).
+apiVersion: v1alpha1
+kind: UnattendedInstallConfig
+provisioning:
+  diskSelector:
+    match: disk.wwid.contains("S11VNSAD206398")
+  wipe: false

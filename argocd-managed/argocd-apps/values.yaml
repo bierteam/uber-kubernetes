@@ -62,6 +62,14 @@ argocdApps:
     namespace: kube-system
     podSecurity: privileged # node plugin mounts hostPath and runs privileged
     server: talos-cluster
+  - name: nvidia-device-plugin
+    docs: https://github.com/NVIDIA/k8s-device-plugin
+    podSecurity: privileged # mounts the kubelet device-plugins hostPath
+    server: talos-cluster
+  - name: ollama
+    docs: https://github.com/otwld/ollama-helm
+    podSecurity: baseline # upstream image runs as root
+    server: talos-cluster
   - name: rick
   - name: sealed-secrets
     docs: https://github.com/bitnami-labs/sealed-secrets
