@@ -9,11 +9,25 @@ ollama: # set values for wrapper/umbrella chart
       enabled: true
       type: nvidia
       number: 1
-    models:
-      # One model for chat, edits and autocomplete. The Q4_K_M weights are ~9 GB,
-      # which leaves little of the 3080's 10 GB for anything else.
-      pull:
-        - qwen2.5-coder:14b
+  # Replaces the chart's model-pull hook (ollama.models.pull), adding a GPU check.
+  # After talos5 boots, the scheduler can start this pod before the gpu-operator
+  # has its toolkit/CDI injection running; the container then comes up without
+  # /dev/nvidia0 or libcuda and Ollama silently falls back to CPU. Failing the
+  # hook makes the kubelet recreate the container until the GPU is injected.
+  lifecycle:
+    postStart:
+      exec:
+        command:
+          - /bin/sh
+          - -c
+          - |
+            [ -e /dev/nvidia0 ] && ldconfig -p | grep -q libcuda.so.1 || exit 1
+            while ! /bin/ollama ps > /dev/null 2>&1; do
+              sleep 5
+            done
+            # One model for chat, edits and autocomplete. The Q4_K_M weights are
+            # ~9 GB, which leaves little of the 3080's 10 GB for anything else.
+            /bin/ollama pull qwen2.5-coder:14b
   extraEnv:
     - name: OLLAMA_KEEP_ALIVE
       value: "-1"
