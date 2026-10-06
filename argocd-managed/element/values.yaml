@@ -48,6 +48,25 @@ matrix-stack:
   synapse:
     ingress:
       host: synapse.matrix.oscarr.nl
+    # The main process is a singleton; these workers take over its client and
+    # federation request handling and can run multiple replicas. HAProxy routes
+    # to them, so the HTTPRoutes don't change.
+    workers:
+      client-reader:
+        enabled: true
+        replicas: 2
+      synchrotron:
+        enabled: true
+        replicas: 2
+      sliding-sync:
+        enabled: true
+        replicas: 2
+      federation-inbound:
+        enabled: true
+        replicas: 2
+      federation-reader:
+        enabled: true
+        replicas: 2
     postgres:
       host: matrix-db-rw
       port: 5432
@@ -61,6 +80,29 @@ matrix-stack:
   matrixAuthenticationService:
     ingress:
       host: account.matrix.oscarr.nl
+    additional:
+      0-sso:
+        # The provider id is a fixed ULID, it is also part of the redirect
+        # URI registered in Dex below. Changing it unlinks existing users.
+        config: |
+          upstream_oauth2:
+            providers:
+              - id: 01M49KAGMX5YFEJ39Q5ET5ZBZP
+                human_name: IT4IT
+                issuer: https://sso.matrix.oscarr.nl
+                client_id: matrix
+                # Public client with PKCE, so no shared secret between MAS and Dex.
+                token_endpoint_auth_method: none
+                pkce_method: always
+                scope: openid profile email
+                claims_imports:
+                  localpart:
+                    action: require
+                    # Dex puts the SAML username attribute in `name`.
+                    template: "{{ user.name }}"
+                  email:
+                    action: suggest
+                    template: "{{ user.email }}"
     postgres:
       host: matrix-db-rw
       port: 5432
@@ -97,3 +139,69 @@ matrix-stack:
           annotations:
             lbipam.cilium.io/ips: "2a05:f080:0:3800:1b::4"
             lbipam.cilium.io/sharing-key: matrix-rtc
+
+# https://github.com/dexidp/helm-charts/blob/master/charts/dex/values.yaml
+# Separate from the Dex on k3s (auth.oscarr.nl) so the SAML login doesn't mix
+# with the GitHub one. The SAML IdP only ever talks to the user's browser; the
+# only back-channel is MAS -> this Dex.
+dex:
+  replicaCount: 2
+
+  # Only needed for Dex's kubernetes storage.
+  rbac:
+    create: false
+
+  envVars:
+    - name: DB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: matrix-db-app
+          key: password
+
+  httpRoute:
+    enabled: true
+    parentRefs:
+      - name: gateway
+        sectionName: https
+    hostnames:
+      - sso.matrix.oscarr.nl
+
+  config:
+    issuer: https://sso.matrix.oscarr.nl
+
+    # Database from templates/postgres.yaml, $DB_PASSWORD is expanded by Dex.
+    storage:
+      type: postgres
+      config:
+        host: matrix-db-rw
+        port: 5432
+        database: dex
+        user: matrix
+        password: $DB_PASSWORD
+        ssl:
+          mode: require
+
+    oauth2:
+      skipApprovalScreen: true
+
+    connectors:
+      - type: saml
+        id: saml
+        name: IT4IT
+        config:
+          ssoURL: https://keycloak-lab.intern.ind.nl/realms/it4it/protocol/saml
+          # Base64 PEM of the realm's signing certificate. Dex never contacts
+          # Keycloak (it's internal only), this is how it verifies responses.
+          caData: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUNtVENDQVlFQ0JnR2JUL01VUlRBTkJna3Foa2lHOXcwQkFRc0ZBREFRTVE0d0RBWURWUVFEREFWcGREUnAKZERBZUZ3MHlOVEV5TWpReE1ETTVORGxhRncwek5URXlNalF4TURReE1qbGFNQkF4RGpBTUJnTlZCQU1NQldsMApOR2wwTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUF3NGcyeWdxNmtjc0RYUmNLClVBczNxNWwvYUJYeW8rdUdBbGVvU1hKOWhoeFp1WHBpZEN2V0s5SEVoc213RlE2SXFCYVJHOUgzYnhMTGIraHAKQVc4TkVHUEx2OVNZZnRwNWdiQ09kaHR6Mlk4SEZUQTY2S2FoMDRnN29hWkZrQ0EzckQvVncxZCtOck91QjFDego3MzJvOWNrMWxnbUxkbHVHd3ZIS0g1OHBsSDZxOHIwRTNCenZhQ2tjQ2F4QnJFUE82cHFjZldrcWQ5RTFnRjA4CnJ2SDgxQVhrZnNwbXJoWTJhRno0bjBqNDBZR09OUlU0Y0w2dkY2Zyt4TlBhU21iU3l4bDdBZUh6VEd3MlNLVEQKK1NGMDkyV0N1SDlyUEVvWTlubHV2RVdCaXVwZHViVi9hY1EwQllmb1ZIOE1jdDlYU2tzTmlneTh0Znpwa0VmMwpqbjMvV1FJREFRQUJNQTBHQ1NxR1NJYjNEUUVCQ3dVQUE0SUJBUUJMc1hFM1JYZUZ3T2NMT0FCL1NHUVZsZ0RTCjZ2M2FlVUUzM1Y1Z2lBVGtxSldaVkVmY3M4RTRZdDcvUlkzYk9CNlN1aC83K0dpMVdjRnlNc2VCaHZSTUd4cUEKT3NoZVNvLzdPTGFCSjVmSjJPUFBQVW5tRmdoYnMrRzkzd2E0MzF3SFF3aUwyc0JNdUpsOUtUMlQzc1RSbEVvZgpia3J5dGZLd1FlZXlrRnE1eU85NnZaQ3pWTWxCNy9wbmRPSEtwM3NpcmtNZXNIYU1zYTErb1BvSEQ2VHphT0pMCkhQcEp6aktDUElPd1lmNjF2ME5NbG9QN281QkF5ajBaQWRJRFBNQTA4V1dpeDgwK0VCZElFd043L1hDeHBvS0EKV05EZGxDZ2xMUGllZVNJS1dJbVpQd3g3QndJcGg4aEkrc280VHZtSXhaVEJBUGtWZWJ2eDdySElXL1diCi0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+          redirectURI: https://sso.matrix.oscarr.nl/callback
+          entityIssuer: https://sso.matrix.oscarr.nl/callback
+          usernameAttr: username
+          emailAttr: email
+          nameIDPolicyFormat: persistent
+
+    staticClients:
+      - id: matrix
+        name: Matrix
+        public: true
+        redirectURIs:
+          - https://account.matrix.oscarr.nl/upstream/callback/01M49KAGMX5YFEJ39Q5ET5ZBZP
