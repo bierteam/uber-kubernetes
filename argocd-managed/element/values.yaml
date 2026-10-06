@@ -16,7 +16,7 @@ gateway:
 postgres:
   name: matrix-db
   instances: 2
-  image: ghcr.io/cloudnative-pg/postgresql:18.3-system-trixie
+  image: ghcr.io/cloudnative-pg/postgresql:18.6-system-trixie
   storageClass: local-path
   size: 10Gi
   owner: matrix
