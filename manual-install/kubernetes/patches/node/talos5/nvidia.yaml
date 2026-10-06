@@ -21,9 +21,10 @@ kind: SysctlConfig
 params:
   net.core.bpf_jit_harden: "1"
 ---
-# The label lets the nvidia-device-plugin DaemonSet schedule here without Node
-# Feature Discovery. The taint keeps everything but GPU workloads off this node,
-# since it is offline whenever the PC is booted into Windows or Bazzite.
+# The gpu-operator finds the GPU through Node Feature Discovery and sets this
+# label itself; setting it here only makes it present from the first boot. The
+# taint keeps everything but GPU workloads off this node, since it is offline
+# whenever the PC is booted into Windows or Bazzite.
 apiVersion: v1alpha1
 kind: KubeNodeConfig
 labels:

@@ -18,6 +18,9 @@ set -uo pipefail
 KUBE_VERSION="${KUBE_VERSION:-1.33.0}"
 SKIP_APPS="${SKIP_APPS:-}"
 CATALOG='https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json'
+# Checked before the catalog, for CRDs whose catalog schema lags behind the chart
+# that is deployed. Generated from the chart's CRDs with hack/gen-crd-schema.sh.
+LOCAL_SCHEMAS="$(cd "$(dirname "$0")" && pwd)/schemas/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json"
 
 # kubeconform's built-in `default` location points at the -standalone-strict
 # bundles, which have every $ref inlined. CustomResourceDefinition is absent
@@ -30,6 +33,7 @@ kubeconform_args=(
   -strict                                # reject unknown fields on core types too
   -kubernetes-version "$KUBE_VERSION"
   -schema-location default
+  -schema-location "$LOCAL_SCHEMAS"
   -schema-location "$CATALOG"
   -schema-location "$K8S_SCHEMAS"        # so CustomResourceDefinition is checked
   -ignore-missing-schemas                # kinds with no schema anywhere are skipped, not failed

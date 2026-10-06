@@ -42,6 +42,10 @@ argocdApps:
     podSecurity: baseline # TODO verify if this can be restricted
   - name: gim-tracker
     podSecurity: baseline # TODO verify if this can be restricted
+  - name: gpu-operator
+    docs: https://github.com/NVIDIA/gpu-operator
+    podSecurity: privileged # driver validation, toolkit and device plugin need host access
+    server: talos-cluster
   - name: kubelet-csr-approver
     docs: https://github.com/postfinance/kubelet-csr-approver
     server: talos-cluster
@@ -61,10 +65,6 @@ argocdApps:
     docs: https://github.com/kubernetes-csi/csi-driver-nfs
     namespace: kube-system
     podSecurity: privileged # node plugin mounts hostPath and runs privileged
-    server: talos-cluster
-  - name: nvidia-device-plugin
-    docs: https://github.com/NVIDIA/k8s-device-plugin
-    podSecurity: privileged # mounts the kubelet device-plugins hostPath
     server: talos-cluster
   - name: ollama
     docs: https://github.com/otwld/ollama-helm

@@ -2,8 +2,8 @@
 ollama: # set values for wrapper/umbrella chart
   # Requesting the GPU (plus the chart's matching toleration) is what lands this
   # on talos5, the RTX 3080 game PC. That node is offline while it is booted into
-  # Windows/Bazzite, so the pod sits Pending until it comes back.
-  runtimeClassName: nvidia
+  # Windows/Bazzite, so the pod sits Pending until it comes back. No
+  # runtimeClassName: the gpu-operator injects the GPU through CDI.
   ollama:
     gpu:
       enabled: true

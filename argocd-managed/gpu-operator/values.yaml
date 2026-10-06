@@ -1,0 +1,22 @@
+# https://github.com/NVIDIA/gpu-operator
+gpu-operator: # set values for wrapper/umbrella chart
+  # Configured as the Talos nvidia-container-toolkit extension README prescribes
+  # (https://github.com/siderolabs/extensions/tree/main/nvidia-gpu/nvidia-container-toolkit).
+  # The extensions only ship the kernel modules and driver userspace under
+  # /usr/local; the operator installs the container toolkit under writable /var
+  # and hands GPUs to containers through CDI, registered with containerd via NRI.
+  # No NVIDIA RuntimeClass is involved, so GPU pods must not set runtimeClassName.
+  driver:
+    enabled: false
+  toolkit:
+    enabled: true
+    installDir: /var/lib/nvidia
+  cdi:
+    enabled: true
+    nriPluginEnabled: true
+  hostPaths:
+    driverInstallDir: /usr/local
+  dcgmExporter:
+    serviceMonitor:
+      # no Prometheus Operator in this cluster
+      enabled: false
