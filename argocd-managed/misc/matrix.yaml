@@ -1,7 +1,9 @@
 ---
 # Matrix (ESS) runs on the IPv6-only Talos cluster. IPv6 clients reach its
 # Gateway directly; IPv4 clients land here on the firewall's 443 and get their
-# TLS passed through, unterminated, to the talos Gateway over IPv6.
+# TLS passed through, unterminated, to the talos Gateway over IPv6. On port 80
+# only ACME HTTP-01 challenges are forwarded, so Let's Encrypt can validate over
+# IPv4 too; the rest of port 80 keeps the entrypoint's redirect to https.
 kind: Service
 apiVersion: v1
 metadata:
@@ -12,6 +14,9 @@ spec:
   ipFamilies:
     - IPv6
   ports:
+    - name: http
+      port: 80
+      targetPort: 80
     - name: https
       port: 443
       targetPort: 443
@@ -27,6 +32,9 @@ endpoints:
   - addresses:
       - "2a05:f080:0:3800:1b::3"
 ports:
+  - name: http
+    port: 80
+    protocol: TCP
   - name: https
     port: 443
     protocol: TCP
@@ -47,3 +55,21 @@ spec:
           port: 443
   tls:
     passthrough: true
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: matrix-talos-acme
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: >-
+        (Host(`matrix.oscarr.nl`) ||
+        HostRegexp(`^[a-z0-9-]+\.matrix\.oscarr\.nl$`)) &&
+        PathPrefix(`/.well-known/acme-challenge/`)
+      kind: Rule
+      services:
+        - name: matrix-talos
+          port: 80
+          passHostHeader: true
