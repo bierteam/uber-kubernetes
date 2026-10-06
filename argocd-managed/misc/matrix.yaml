@@ -31,6 +31,11 @@ addressType: IPv6
 endpoints:
   - addresses:
       - "2a05:f080:0:3800:1b::3"
+    # Traefik's TCP (passthrough) service skips endpoints without an explicit
+    # ready condition, leaving it with no servers; HTTP routes don't care.
+    conditions:
+      ready: true
+      serving: true
 ports:
   - name: http
     port: 80
