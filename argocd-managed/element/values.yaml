@@ -223,7 +223,9 @@ dex:
           entityIssuer: https://sso.matrix.oscarr.nl/callback
           usernameAttr: username
           emailAttr: email
-          nameIDPolicyFormat: persistent
+          # Keycloak's persistent format stores a generated id on the user,
+          # which fails for read-only (LDAP) users. The username is stable too.
+          nameIDPolicyFormat: unspecified
 
     staticClients:
       - id: matrix
