@@ -1,0 +1,23 @@
+{{- /*
+Synapse connects to Redis with Twisted's connectTCP, which only resolves IPv4.
+On the IPv6-only cluster the chart's (headless) valkey Service name never
+resolves, so it gets this Service's fixed ClusterIP as a literal instead.
+*/ -}}
+{{- $host := (index .Values "matrix-stack" "synapse" "redisOrValkey").host }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-valkey-ipv6
+spec:
+  type: ClusterIP
+  clusterIP: {{ $host }}
+  ipFamilies:
+    - IPv6
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: valkey
+      port: 6379
+      targetPort: valkey
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}-valkey
