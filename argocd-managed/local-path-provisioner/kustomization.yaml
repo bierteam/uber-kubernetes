@@ -7,3 +7,12 @@ resources:
   - https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.37/deploy/local-path-storage.yaml
 patches:
   - path: local-path-config.yaml
+  # the namespace is part of the manifest, so ArgoCD's managedNamespaceMetadata
+  # does not label it; helper pods mount hostPath
+  - target:
+      kind: Namespace
+    patch: |-
+      - op: add
+        path: /metadata/labels
+        value:
+          pod-security.kubernetes.io/enforce: privileged
