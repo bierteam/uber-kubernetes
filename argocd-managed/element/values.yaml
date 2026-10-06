@@ -23,6 +23,11 @@ postgres:
 
 # https://github.com/element-hq/ess-helm/blob/main/charts/matrix-stack/values.yaml
 matrix-stack:
+  # Talos is IPv6-only. The default (dual-stack) makes HAProxy accept only IPv4
+  # addresses for its backends, so it never finds Synapse.
+  networking:
+    ipFamily: ipv6
+
   # Replaced by the CNPG cluster above.
   postgres:
     enabled: false
