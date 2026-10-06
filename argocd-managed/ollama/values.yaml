@@ -9,11 +9,18 @@ ollama: # set values for wrapper/umbrella chart
       enabled: true
       type: nvidia
       number: 1
-  # Replaces the chart's model-pull hook (ollama.models.pull), adding a GPU check.
+  # Replaces the chart's model hook (ollama.models.*), adding a GPU check.
   # After talos5 boots, the scheduler can start this pod before the gpu-operator
   # has its toolkit/CDI injection running; the container then comes up without
   # /dev/nvidia0 or libcuda and Ollama silently falls back to CPU. Failing the
   # hook makes the kubelet recreate the container until the GPU is injected.
+  #
+  # Three variants, each with the largest context that still fits fully in the
+  # 3080's 10 GB (measured with `ollama ps`). Clients pick one by name; only one
+  # is in VRAM at a time and swapping takes a few seconds.
+  #   coder  qwen2.5-coder:7b   32k (its trained maximum)  5.7 GB  ~128 tok/s
+  #   long   qwen3:4b-instruct  64k                        8.0 GB  ~178 tok/s
+  #   huge   granite4:tiny-h    256k (hybrid Mamba, cheap)  6.3 GB  ~230 tok/s
   lifecycle:
     postStart:
       exec:
@@ -25,19 +32,25 @@ ollama: # set values for wrapper/umbrella chart
             while ! /bin/ollama ps > /dev/null 2>&1; do
               sleep 5
             done
-            # One model for chat, edits and autocomplete. The Q4_K_M weights are
-            # ~9 GB, which leaves little of the 3080's 10 GB for anything else.
-            /bin/ollama pull qwen2.5-coder:14b
+            variant() { # name base num_ctx
+              /bin/ollama pull "$2" || exit 1
+              printf 'FROM %s\nPARAMETER num_ctx %s\n' "$2" "$3" > "/tmp/$1.Modelfile"
+              /bin/ollama create "$1" -f "/tmp/$1.Modelfile" || exit 1
+            }
+            variant coder qwen2.5-coder:7b 32768
+            variant long qwen3:4b-instruct 65536
+            variant huge granite4:tiny-h 262144
+            # load the default one; OLLAMA_KEEP_ALIVE keeps it in VRAM
+            /bin/ollama run coder "" > /dev/null
   extraEnv:
     - name: OLLAMA_KEEP_ALIVE
       value: "-1"
+    # the variants do not fit in VRAM next to each other
     - name: OLLAMA_MAX_LOADED_MODELS
       value: "1"
-    # The 14B's KV cache is ~100 KB/token at q8_0, so 8k is ~0.8 GB on top of the
-    # weights. Anything that does not fit in VRAM is offloaded to CPU by Ollama,
-    # which is slower; `ollama ps` should show 100% GPU.
+    # fallback for models without their own num_ctx
     - name: OLLAMA_CONTEXT_LENGTH
-      value: "8192"
+      value: "32768"
     # single user; every parallel slot reserves its own full-length KV cache
     - name: OLLAMA_NUM_PARALLEL
       value: "1"
@@ -48,9 +61,10 @@ ollama: # set values for wrapper/umbrella chart
       value: q8_0
   persistentVolume:
     enabled: true
-    size: 30Gi
-    # Models can be pulled again, no need to keep them around after a delete.
-    storageClass: nfs-deletable
+    size: 40Gi
+    # talos5's local user volume: a cold model load from NFS took ~70s. The volume
+    # is pinned to talos5, which is the only node this can run on anyway.
+    storageClass: local-path
   resources:
     requests:
       cpu: "1"
