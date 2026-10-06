@@ -215,7 +215,7 @@ dex:
         id: saml
         name: IT4IT
         config:
-          ssoURL: https://keycloak-lab.internal.example/realms/it4it/protocol/saml
+          ssoURL: https://keycloak-staging.internal.example/realms/it4it/protocol/saml
           # Base64 PEM of the realm's signing certificate. Dex never contacts
           # Keycloak (it's internal only), this is how it verifies responses.
           caData: REDACTED
