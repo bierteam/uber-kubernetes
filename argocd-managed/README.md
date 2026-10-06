@@ -7,7 +7,7 @@
 | ---- | ------ | ------- | --------- | ---- |
 | cert-manager | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=cert-manager&revision=true)](https://argocd.lab.oscarr.nl/applications/cert-manager) | in-cluster + apps.oscarr.nl/cert-manager | cert-manager | [Upstream](https://cert-manager.io/) |
 | cilium | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=cilium&revision=true)](https://argocd.lab.oscarr.nl/applications/cilium) | talos-cluster | kube-system | [Upstream](https://cilium.io/) |
-| cnpg | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=cnpg&revision=true)](https://argocd.lab.oscarr.nl/applications/cnpg) | in-cluster | cnpg-system | [Upstream](https://cloudnative-pg.io/) |
+| cnpg | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=cnpg&revision=true)](https://argocd.lab.oscarr.nl/applications/cnpg) | in-cluster + apps.oscarr.nl/cnpg | cnpg-system | [Upstream](https://cloudnative-pg.io/) |
 | cyberchef | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=cyberchef&revision=true)](https://argocd.lab.oscarr.nl/applications/cyberchef) | in-cluster | cyberchef | [Upstream](https://github.com/gchq/CyberChef) |
 | dex | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=dex&revision=true)](https://argocd.lab.oscarr.nl/applications/dex) | in-cluster | dex | [Upstream](https://dexidp.io/) |
 | drinkn | [![App Status](https://argocd.lab.oscarr.nl/api/badge?name=drinkn&revision=true)](https://argocd.lab.oscarr.nl/applications/drinkn) | in-cluster | drinkn | [Upstream](https://github.com/bierteam/drinkn) |

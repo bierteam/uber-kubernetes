@@ -18,6 +18,7 @@ spec:
       labels:
         apps.oscarr.nl/cert-manager: "true"
         apps.oscarr.nl/gateway-api: "true"
+        apps.oscarr.nl/cnpg: "true"
         argocd.argoproj.io/secret-type: cluster
       name: talos-cluster
       namespace: argocd
