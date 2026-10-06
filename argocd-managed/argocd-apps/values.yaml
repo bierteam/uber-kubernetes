@@ -12,6 +12,9 @@ argocdApps:
     docs: https://cloudnative-pg.io/
     namespace: cnpg-system
     podSecurity: baseline # TODO verify if this can be restricted
+    # Moving to the cnpg ApplicationSet: without the finalizer, pruning this
+    # Application leaves the CRDs, and every Postgres cluster, in place.
+    finalizer: false
   - name: cyberchef
     docs: https://github.com/gchq/CyberChef
     podSecurity: baseline # TODO verify if this can be restricted
