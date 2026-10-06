@@ -165,6 +165,14 @@ dex:
       drop:
         - ALL
 
+  # Dex's entrypoint renders its config to /tmp.
+  volumes:
+    - name: tmp
+      emptyDir: {}
+  volumeMounts:
+    - name: tmp
+      mountPath: /tmp
+
   envVars:
     - name: DB_PASSWORD
       valueFrom:
