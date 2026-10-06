@@ -104,6 +104,17 @@ spec:
       recordType: AAAA
       targets:
         - 2a05:f080:0:3800:1b::3
+    # oscarr.nl's CAA (set outside this repo) only allows DNS-01. The talos
+    # ClusterIssuer validates over HTTP-01, so this subtree allows that too.
+    # CAA lookups stop at the closest name with a record, covering every
+    # *.matrix.oscarr.nl host; wildcard certificates stay forbidden.
+    - dnsName: matrix.oscarr.nl
+      recordTTL: 1
+      recordType: CAA
+      targets:
+        - 0 issue letsencrypt.org;validationmethods=http-01
+        - 0 issuewild ;
+        - 0 iodef mailto:caa@oscarr.nl
 ---
 apiVersion: externaldns.k8s.io/v1alpha1
 kind: DNSEndpoint
