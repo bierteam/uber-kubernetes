@@ -1,0 +1,9 @@
+---
+# keep in sync with control-plane/disk-encryption.yaml
+apiVersion: v1alpha1
+kind: VolumeConfig
+name: EPHEMERAL
+provisioning:
+  diskSelector:
+    match: system_disk
+  maxSize: 50GiB

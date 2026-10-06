@@ -52,6 +52,10 @@ argocdApps:
   - name: kubeseal-webgui
     docs: https://github.com/jaydee94/kubeseal-webgui
     podSecurity: baseline # TODO verify if this can be restricted
+  - name: local-path-provisioner
+    docs: https://github.com/rancher/local-path-provisioner
+    podSecurity: privileged # helper pods create volume directories through hostPath
+    server: talos-cluster
   # - name: longhorn
   #   namespace: longhorn-system
   #   podSecurity: privileged
