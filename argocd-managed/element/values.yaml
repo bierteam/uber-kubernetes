@@ -48,6 +48,10 @@ matrix-stack:
   synapse:
     ingress:
       host: synapse.matrix.oscarr.nl
+    # Fixed ClusterIP from the static band of the service CIDR, see
+    # templates/valkey.yaml. MatrixRTC still makes the chart deploy Valkey.
+    redisOrValkey:
+      host: "fd26:4340:84fe::10"
     # The main process is a singleton; these workers take over its client and
     # federation request handling and can run multiple replicas. HAProxy routes
     # to them, so the HTTPRoutes don't change.
