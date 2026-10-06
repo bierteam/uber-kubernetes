@@ -39,4 +39,14 @@ spec:
     name: {{ .name }}
   name: mas
   owner: {{ .owner }}
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: {{ .name }}-dex
+spec:
+  cluster:
+    name: {{ .name }}
+  name: dex
+  owner: {{ .owner }}
 {{- end }}

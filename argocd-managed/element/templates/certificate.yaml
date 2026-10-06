@@ -16,3 +16,4 @@ spec:
     - {{ $ms.elementWeb.ingress.host }}
     - {{ $ms.elementAdmin.ingress.host }}
     - {{ $ms.matrixRTC.ingress.host }}
+    - {{ first .Values.dex.httpRoute.hostnames }}
