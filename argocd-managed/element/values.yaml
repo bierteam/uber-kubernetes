@@ -12,8 +12,20 @@ gateway:
     name: letsencrypt
     kind: ClusterIssuer
 
+# CNPG cluster for Synapse and MAS, see templates/postgres.yaml.
+postgres:
+  name: matrix-db
+  instances: 2
+  image: ghcr.io/cloudnative-pg/postgresql:18.3-system-trixie
+  storageClass: local-path
+  size: 10Gi
+  owner: matrix
+
 # https://github.com/element-hq/ess-helm/blob/main/charts/matrix-stack/values.yaml
 matrix-stack:
+  # Replaced by the CNPG cluster above.
+  postgres:
+    enabled: false
   # Permanent: this is the domain in every user ID (@user:matrix.oscarr.nl).
   serverName: matrix.oscarr.nl
 
@@ -31,10 +43,28 @@ matrix-stack:
   synapse:
     ingress:
       host: synapse.matrix.oscarr.nl
+    postgres:
+      host: matrix-db-rw
+      port: 5432
+      user: matrix
+      database: synapse
+      sslMode: require
+      password:
+        secret: matrix-db-app
+        secretKey: password
 
   matrixAuthenticationService:
     ingress:
       host: account.matrix.oscarr.nl
+    postgres:
+      host: matrix-db-rw
+      port: 5432
+      user: matrix
+      database: mas
+      sslMode: require
+      password:
+        secret: matrix-db-app
+        secretKey: password
 
   elementWeb:
     ingress:

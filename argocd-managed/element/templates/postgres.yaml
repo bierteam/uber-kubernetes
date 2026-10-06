@@ -1,0 +1,42 @@
+{{- with .Values.postgres }}
+---
+# Postgres for Synapse and MAS, run by the CNPG operator (cnpg ApplicationSet).
+# The chart's built-in Postgres can't live on the Synology NFS share: DSM's ACLs
+# keep every directory at 0777, which Postgres refuses. local-path is a Talos
+# user volume, so each instance sits on its own node's disk; the second instance
+# is a streaming replica on another node.
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .name }}
+spec:
+  instances: {{ .instances }}
+  # Pinned: an operator upgrade must not change the Postgres major version.
+  imageName: {{ .image }}
+  affinity:
+    enablePodAntiAffinity: true
+    podAntiAffinityType: required
+    topologyKey: kubernetes.io/hostname
+  storage:
+    storageClass: {{ .storageClass }}
+    size: {{ .size }}
+  bootstrap:
+    initdb:
+      # The owner's credentials end up in the `<name>-app` Secret.
+      database: synapse
+      owner: {{ .owner }}
+      # Synapse requires C collation and ctype.
+      encoding: UTF8
+      localeCollate: C
+      localeCType: C
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: {{ .name }}-mas
+spec:
+  cluster:
+    name: {{ .name }}
+  name: mas
+  owner: {{ .owner }}
+{{- end }}
