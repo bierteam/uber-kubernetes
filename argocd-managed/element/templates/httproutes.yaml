@@ -59,6 +59,23 @@ spec:
       backendRefs:
         - name: {{ $rel }}-matrix-authentication-service
           port: 8080
+    {{- if $ms.hookshot.enabled }}
+    # Hookshot's webhooks and widgets, longest prefix wins over /_matrix.
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /_matrix/hookshot/widgetapi/v1
+      backendRefs:
+        - name: {{ $rel }}-hookshot
+          port: 7778
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /_matrix/hookshot
+      backendRefs:
+        - name: {{ $rel }}-hookshot
+          port: 7775
+    {{- end }}
     - matches:
         - path:
             type: PathPrefix
