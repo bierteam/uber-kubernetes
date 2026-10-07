@@ -117,6 +117,12 @@ matrix-stack:
         secret: matrix-db-app
         secretKey: password
 
+  # Generic webhooks into rooms (and GitHub/GitLab/RSS). Webhook URLs live
+  # under synapse.matrix.oscarr.nl/_matrix/hookshot/webhook/, routed in
+  # templates/httproutes.yaml.
+  hookshot:
+    enabled: true
+
   elementWeb:
     ingress:
       host: chat.matrix.oscarr.nl
