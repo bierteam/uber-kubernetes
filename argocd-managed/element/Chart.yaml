@@ -9,5 +9,5 @@ dependencies:
     repository: oci://ghcr.io/element-hq/ess-helm
   # Matrix-only Dex, brokers the SAML login to MAS (which only speaks OIDC)
   - name: dex
-    version: 0.25.2
+    version: 0.26.0
     repository: https://charts.dexidp.io
