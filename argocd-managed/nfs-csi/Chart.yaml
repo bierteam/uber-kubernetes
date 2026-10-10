@@ -4,5 +4,5 @@ type: application
 version: 1.0.0
 dependencies:
   - name: csi-driver-nfs
-    version: 4.13.4
+    version: 4.13.5
     repository: https://kubernetes-csi.github.io/csi-driver-nfs
