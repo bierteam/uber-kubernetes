@@ -11,6 +11,6 @@ dependencies:
     repository: https://zachomedia.github.io/cert-manager-webhook-pdns
     condition: cert-manager-webhook-pdns.enabled
   - name: tlsa-dnsendpoint-controller
-    version: 0.2.4
+    version: 0.2.6
     repository: oci://ghcr.io/oscrx/charts
     condition: tlsa-dnsendpoint-controller.enabled
