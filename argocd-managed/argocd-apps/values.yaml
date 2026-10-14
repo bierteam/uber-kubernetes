@@ -81,7 +81,7 @@ argocdApps:
     podSecurity: privileged
   # - name: shulker
   #   server: talos-cluster
-  - name: talos5-boot
+  - name: talos5-power
     podSecurity: privileged # hostNetwork for wake-on-lan and Bazzite's link-local address
     server: talos-cluster
   - name: traefik
