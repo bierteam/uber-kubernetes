@@ -136,6 +136,19 @@ spec:
         - 0 issuewild letsencrypt.org
         - 0 iodef mailto:caa@oscarr.nl
 
+    # Open WebUI on the Talos cluster. AAAA is its Cilium Gateway, A is the
+    # firewall's public v4, passed through by Traefik (see chat-doktermarjolein.yaml).
+    - dnsName: chat.doktermarjolein.nl
+      recordTTL: 1
+      recordType: A
+      targets:
+        - 185.132.110.37
+    - dnsName: chat.doktermarjolein.nl
+      recordTTL: 1
+      recordType: AAAA
+      targets:
+        - 2a05:f080:0:3800:1b::5
+
     # Minecraft on the Talos cluster. AAAA is the Cilium LoadBalancer that
     # Velocity holds, so IPv6 clients reach the proxy directly. A is the public
     # v4 of the firewall, where HAProxy fronts the same proxy -- the cluster is

@@ -70,6 +70,10 @@ argocdApps:
     docs: https://github.com/otwld/ollama-helm
     podSecurity: baseline # upstream image runs as root
     server: talos-cluster
+  - name: open-webui
+    docs: https://docs.openwebui.com/
+    podSecurity: baseline # upstream image runs as root
+    server: talos-cluster
   - name: rick
   - name: sealed-secrets
     docs: https://github.com/bitnami-labs/sealed-secrets
