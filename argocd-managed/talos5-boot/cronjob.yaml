@@ -1,0 +1,84 @@
+---
+# Never runs on its own: Home Assistant (or anyone with the ArgoCD "Create Job"
+# action, or `kubectl create job --from=cronjob/talos5-boot`) starts a Job from
+# it. The `homeassistant` ArgoCD account may only run that action.
+#
+# The SSH key is not in git, talos-cluster has no sealed-secrets controller:
+#   kubectl -n talos5-boot create secret generic talos5-boot-ssh --from-file=id_ed25519=<key>
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: talos5-boot
+spec:
+  suspend: true
+  schedule: "0 0 31 2 *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 86400
+      backoffLimit: 0
+      activeDeadlineSeconds: 900
+      template:
+        spec:
+          restartPolicy: Never
+          # The magic packet and Bazzite's link-local address need the LAN link.
+          hostNetwork: true
+          affinity:
+            nodeAffinity:
+              requiredDuringSchedulingIgnoredDuringExecution:
+                nodeSelectorTerms:
+                  - matchExpressions:
+                      - key: kubernetes.io/hostname
+                        operator: NotIn
+                        values:
+                          - talos5
+          securityContext:
+            runAsNonRoot: true
+            # ssh refuses a uid without a passwd entry, nobody is in the image.
+            runAsUser: 65534
+            runAsGroup: 65534
+            fsGroup: 65534
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: boot
+              # Alpine with openssh and perl
+              image: alpine/git:2.54.0@sha256:ce84fd6a057b4dc5cf5009da2dd832f1c6d096c1984bf50496cf3c256402264d
+              command:
+                - /bin/sh
+                - /config/boot.sh
+              env:
+                - name: HOME
+                  value: /tmp
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 64Mi
+              volumeMounts:
+                - name: config
+                  mountPath: /config
+                - name: ssh
+                  mountPath: /ssh
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: config
+              configMap:
+                name: talos5-boot
+            - name: ssh
+              secret:
+                secretName: talos5-boot-ssh
+                # Owned by root, so ssh accepts the group bit fsGroup needs.
+                defaultMode: 0440
+            - name: tmp
+              emptyDir: {}
