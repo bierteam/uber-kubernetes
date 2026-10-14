@@ -21,6 +21,8 @@ argo-cd: # set values for wrapper/umbrella chart
       exec.enabled: "true"
       statusbadge.url: https://argocd.lab.oscarr.nl/
       statusbadge.enabled: "true"
+      # Home Assistant runs talos5-boot's create-job action to boot the game PC into Talos.
+      accounts.homeassistant: apiKey
       resource.exclusions: |
         - apiGroups:
             - velero.io
@@ -35,6 +37,7 @@ argo-cd: # set values for wrapper/umbrella chart
       policy.csv: |
         p, role:anonymous, applications, get, *, allow
         p, role:anonymous, applicationssets, get, *, allow
+        p, homeassistant, applications, action/batch/CronJob/create-job, default/talos5-boot, allow
 
         g, bierteam, role:admin
         g, oscrx, role:admin

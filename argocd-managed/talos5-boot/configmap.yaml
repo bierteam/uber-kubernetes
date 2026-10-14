@@ -1,0 +1,65 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: talos5-boot
+data:
+  # The game PC (talos5) normally sits in Bazzite or is powered off. This wakes
+  # it, asks Bazzite for a one-shot UEFI BootNext into Talos and reboots it. The
+  # permanent BootOrder keeps Bazzite first, so a reboot from Talos goes back.
+  boot.sh: |
+    #!/bin/sh
+    set -eu
+
+    MAC=9c:6b:00:59:79:61
+    # Talos' SLAAC address (EUI-64 of the MAC above), apid listens on 50000.
+    TALOS_IP=2a05:f080:0:3800:9e6b:ff:fe59:7961
+    # Bazzite's stable-privacy link-local address, stable across boots.
+    BAZZITE_IP=fe80::e7e:e233:5d58:c224
+
+    # The cluster is IPv6-only, so the magic packet goes to the all-nodes
+    # multicast address on the node's LAN link; the NIC matches the payload.
+    IFACE=$(ip -6 route show default | sed -n 's/.* dev \([^ ]*\).*/\1/p' | head -1)
+    # musl only resolves numeric scope ids, ssh fails on `%ens18`.
+    SCOPE=$(ip -o link show dev "$IFACE" | cut -d: -f1)
+
+    port_open() {
+      perl -MIO::Socket::IP -e 'exit(IO::Socket::IP->new(PeerHost => $ARGV[0], PeerPort => $ARGV[1], Timeout => 3) ? 0 : 1)' "$1" "$2"
+    }
+
+    wait_port() {
+      for _ in $(seq 60); do
+        port_open "$1" "$2" && return 0
+        sleep 5
+      done
+      return 1
+    }
+
+    if port_open "$TALOS_IP" 50000; then
+      echo "talos5 is already running Talos"
+      exit 0
+    fi
+
+    echo "sending magic packet to $MAC via ff02::1%$IFACE ($SCOPE)"
+    perl -MIO::Socket::IP -e '
+      my ($mac, $dst) = @ARGV;
+      my $sock = IO::Socket::IP->new(PeerHost => $dst, PeerPort => 9, Proto => "udp") or die "socket: $@";
+      $sock->send(("\xff" x 6) . (pack("H*", $mac =~ s/://gr) x 16)) or die "send: $!";
+    ' "$MAC" "ff02::1%$SCOPE"
+
+    echo "waiting for ssh on Bazzite"
+    wait_port "$BAZZITE_IP%$SCOPE" 22 || { echo "Bazzite did not come up"; exit 1; }
+
+    # The key is restricted on Bazzite to a forced command that sets BootNext to
+    # the Talos entry and reboots, so the command sent here is ignored. The
+    # connection drops on reboot, hence the exit status is not checked.
+    ssh -i /ssh/id_ed25519 \
+      -o BatchMode=yes -o ConnectTimeout=10 \
+      -o UserKnownHostsFile=/config/known_hosts -o HostKeyAlias=daenerys \
+      "oscar@$BAZZITE_IP%$SCOPE" reboot-to-talos || true
+
+    echo "waiting for Talos"
+    wait_port "$TALOS_IP" 50000 || { echo "Talos did not come up"; exit 1; }
+    echo "talos5 is running Talos"
+  known_hosts: |
+    daenerys ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILcS9027vLeXzET+20lIOXpZ2XNTVcDARExp/4GivDBO
