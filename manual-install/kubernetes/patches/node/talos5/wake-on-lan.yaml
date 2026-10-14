@@ -1,0 +1,9 @@
+---
+# Without this Talos leaves the NIC's Wake-on-LAN as the firmware set it, which
+# is off after a Talos shutdown, so talos5-power could not wake the PC again.
+# https://docs.siderolabs.com/talos/v1.14/reference/configuration/network/ethernetconfig
+apiVersion: v1alpha1
+kind: EthernetConfig
+name: enp7s0
+wakeOnLan:
+  - magic
