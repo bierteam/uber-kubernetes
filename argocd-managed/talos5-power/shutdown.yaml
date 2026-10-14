@@ -1,0 +1,80 @@
+---
+# Talos issues a talosconfig for this into the secret of the same name. Needs
+# KubeTalosAPIAccessConfig on the control planes (manual-install/kubernetes).
+apiVersion: talos.dev/v1alpha1
+kind: ServiceAccount
+metadata:
+  name: talos5-shutdown
+spec:
+  roles:
+    - os:operator
+---
+# Never runs on its own, started like the talos5-boot CronJob through the "Create Job" action.
+# Talos cordons and drains talos5 before it powers off.
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: talos5-shutdown
+spec:
+  suspend: true
+  schedule: "0 0 31 2 *"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 86400
+      backoffLimit: 0
+      activeDeadlineSeconds: 300
+      template:
+        spec:
+          restartPolicy: Never
+          # The Talos API access feature only exists on the control planes, so
+          # the pod talks to apid on its own control plane, which proxies to talos5.
+          nodeSelector:
+            node-role.kubernetes.io/control-plane: ""
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            runAsGroup: 65534
+            seccompProfile:
+              type: RuntimeDefault
+          containers:
+            - name: shutdown
+              image: ghcr.io/siderolabs/talosctl:v1.15.0-alpha.0@sha256:6ff2016eefb89a76c8d2e1b93717b0f0655b713b054e60269a554bc428c87945
+              args:
+                - --talosconfig=/var/run/secrets/talos.dev/config
+                - --endpoints=$(NODE_IP)
+                - --nodes=2a05:f080:0:3800:9e6b:ff:fe59:7961
+                - shutdown
+                - --wait=false
+              env:
+                - name: NODE_IP
+                  valueFrom:
+                    fieldRef:
+                      fieldPath: status.hostIP
+                - name: HOME
+                  value: /tmp
+              securityContext:
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              resources:
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 128Mi
+              volumeMounts:
+                - name: talos-secrets
+                  mountPath: /var/run/secrets/talos.dev
+                - name: tmp
+                  mountPath: /tmp
+          volumes:
+            - name: talos-secrets
+              secret:
+                secretName: talos5-shutdown
+            - name: tmp
+              emptyDir: {}

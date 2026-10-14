@@ -4,7 +4,7 @@
 # it. The `homeassistant` ArgoCD account may only run that action.
 #
 # The SSH key is not in git, talos-cluster has no sealed-secrets controller:
-#   kubectl -n talos5-boot create secret generic talos5-boot-ssh --from-file=id_ed25519=<key>
+#   kubectl -n talos5-power create secret generic talos5-boot-ssh --from-file=id_ed25519=<key>
 apiVersion: batch/v1
 kind: CronJob
 metadata:

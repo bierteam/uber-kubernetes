@@ -1,0 +1,10 @@
+---
+# Lets pods talk to the Talos API with a talos.dev ServiceAccount; only works on
+# control planes. talos5-power shuts the game PC down with os:operator.
+# https://docs.siderolabs.com/kubernetes-guides/advanced-guides/talos-api-access-from-k8s
+apiVersion: v1alpha1
+kind: KubeTalosAPIAccessConfig
+allowedRoles:
+  - os:operator
+allowedKubernetesNamespaces:
+  - talos5-power
