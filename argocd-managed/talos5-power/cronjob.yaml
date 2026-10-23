@@ -45,7 +45,7 @@ spec:
           containers:
             - name: boot
               # Alpine with openssh and perl
-              image: alpine/git:2.54.0@sha256:ce84fd6a057b4dc5cf5009da2dd832f1c6d096c1984bf50496cf3c256402264d
+              image: alpine/git:2.54.0@sha256:4fac439ee3b9204bec99c712b8a15942999632458f716ae8149fbb97cb760cd4
               command:
                 - /bin/sh
                 - /config/boot.sh
