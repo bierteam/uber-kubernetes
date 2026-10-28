@@ -23,10 +23,6 @@ argocdApps:
     podSecurity: baseline # TODO verify if this can be restricted
   - name: drinkn-hooks
     podSecurity: baseline # TODO verify if this can be restricted
-  - name: element
-    docs: https://github.com/element-hq/ess-helm
-    namespace: matrix
-    server: talos-cluster
   - name: external-dns
     docs: https://github.com/kubernetes-sigs/external-dns
     podSecurity: baseline # TODO verify if this can be restricted
