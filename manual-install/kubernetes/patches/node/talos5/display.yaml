@@ -1,0 +1,10 @@
+---
+# The monitor on the game PC only matters in Windows/Bazzite, so Talos forces
+# its connector to disconnected and the GPU stops driving it, instead of the
+# dashboard keeping it lit. The firmware and early boot still show output
+# until nvidia-drm takes over.
+# https://docs.siderolabs.com/talos/v1.14/reference/configuration/runtime/sysfsconfig
+apiVersion: v1alpha1
+kind: SysfsConfig
+params:
+  class.drm.card1-DP-1.status: "off"
