@@ -4,5 +4,5 @@ type: application
 version: 1.0.0
 dependencies:
   - name: kubeseal-webgui
-    version: 6.0.4
-    repository: https://jaydee94.github.io/kubeseal-webgui
+    version: 6.0.17
+    repository: oci://ghcr.io/jaydee94/kubeseal-webgui/charts
