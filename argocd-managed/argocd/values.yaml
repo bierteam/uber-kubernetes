@@ -13,8 +13,8 @@ argo-cd: # set values for wrapper/umbrella chart
         name: dex
         issuer: https://auth.oscarr.nl
         clientID: argocd
-        clientSecret: $oidc.dex.clientSecret
         cliClientID: argocd-cli
+        enablePKCEAuthentication: true
       admin.enabled: "false"
       users.anonymous.enabled: "true"
       server.rbac.log.enforce.enable: "true"
