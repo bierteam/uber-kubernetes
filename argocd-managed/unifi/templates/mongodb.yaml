@@ -16,12 +16,41 @@ spec:
     spec:
       template:
         spec:
+          # replaces the operator default pod securityContext as a whole, so repeat its defaults
+          securityContext:
+            fsGroup: 2000
+            runAsNonRoot: true
+            runAsUser: 2000
+            seccompProfile:
+              type: RuntimeDefault
+          # container securityContexts are merged with the operator defaults
+          # (allowPrivilegeEscalation: false, readOnlyRootFilesystem: true)
+          initContainers:
+            - name: mongod-posthook
+              securityContext:
+                capabilities:
+                  drop:
+                    - ALL
+            - name: mongodb-agent-readinessprobe
+              securityContext:
+                capabilities:
+                  drop:
+                    - ALL
           containers:
             - name: mongod
               resources:
                 limits:
                   cpu: 1000m
                   memory: 1024Mi
+              securityContext:
+                capabilities:
+                  drop:
+                    - ALL
+            - name: mongodb-agent
+              securityContext:
+                capabilities:
+                  drop:
+                    - ALL
   users:
     - name: unifi
       db: admin

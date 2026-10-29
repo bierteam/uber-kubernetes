@@ -2,3 +2,14 @@ community-operator:
   # operator:
   #   watchNamespace: "*" # cluster wide install
   createResource: false
+  operator:
+    podSecurityContext:
+      runAsNonRoot: true
+      runAsUser: 2000
+      seccompProfile:
+        type: RuntimeDefault
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL

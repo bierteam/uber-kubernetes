@@ -28,6 +28,13 @@ spec:
         app: unifi
     spec:
       restartPolicy: Always
+      # the linuxserver init needs root and its default capabilities to chown
+      # and drop to the abc user, so run it in a user namespace: root in the
+      # container maps to an unprivileged uid on the node
+      hostUsers: false
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: unifi
           resources:
@@ -63,6 +70,8 @@ spec:
                   key: password
           image: ghcr.io/linuxserver/unifi-network-application:10.6.109
           imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
           ports:
             # https://help.ui.com/hc/en-us/articles/218506997-UniFi-Network-Required-Ports-Reference
             # Device communication
