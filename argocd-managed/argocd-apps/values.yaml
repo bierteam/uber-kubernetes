@@ -12,7 +12,6 @@ argocdApps:
     docs: https://github.com/gchq/CyberChef
   - name: dex
     docs: https://dexidp.io/
-    podSecurity: baseline # TODO verify if this can be restricted
   # - name: dns-updater
   #   podSecurity: restricted
   - name: drinkn
@@ -26,11 +25,8 @@ argocdApps:
   # - name: external-secrets
   - name: factorio
     docs: https://github.com/SQLJames/factorio-server-charts
-    podSecurity: baseline # TODO verify if this can be restricted
   - name: friend-tracker
-    podSecurity: baseline # TODO verify if this can be restricted
   - name: gim-tracker
-    podSecurity: baseline # TODO verify if this can be restricted
   - name: gpu-operator
     docs: https://github.com/NVIDIA/gpu-operator
     podSecurity: privileged # driver validation, toolkit and device plugin need host access
@@ -63,7 +59,6 @@ argocdApps:
     server: talos-cluster
   - name: open-webui
     docs: https://docs.openwebui.com/
-    podSecurity: baseline # upstream image runs as root
     server: talos-cluster
   - name: rick
   - name: sealed-secrets
@@ -109,7 +104,6 @@ argocdApps:
 applicationSets:
   - name: cert-manager
     docs: https://cert-manager.io/
-    podSecurity: baseline # TODO verify if this can be restricted
     primaryCluster: in-cluster
   - name: gateway-api
     docs: https://github.com/kubernetes-sigs/gateway-api
