@@ -19,7 +19,6 @@ argocdApps:
     folder: charts/pils
     repository: drinkn
   - name: drinkn-hooks
-    podSecurity: baseline # TODO verify if this can be restricted
   - name: external-dns
     docs: https://github.com/kubernetes-sigs/external-dns
   # - name: external-secrets
