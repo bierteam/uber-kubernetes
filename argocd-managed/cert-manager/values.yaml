@@ -40,5 +40,21 @@ cert-manager: # set values for wrapper/umbrella chart
   featureGates: ACMEUseARI=true
   enableCertificateOwnerRef: true
 
+# https://github.com/zachomedia/cert-manager-webhook-pdns/blob/main/deploy/cert-manager-webhook-pdns/values.yaml
+cert-manager-webhook-pdns:
+  # Restricted pod security. The image has no USER (root), the chart already
+  # runs it as 100:100; it only reads the mounted serving cert.
+  podSecurityContext:
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  containerSecurityContext:
+    runAsUser: 100
+    runAsGroup: 100
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop: [ALL]
+
 # https://github.com/oscrx/tlsa-dnsendpoint-controller
 tlsa-dnsendpoint-controller: {}

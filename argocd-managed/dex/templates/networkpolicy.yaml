@@ -1,0 +1,69 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: dex
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: dex
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # every client, including oauth2-proxy and argocd, comes in through
+    # auth.oscarr.nl and so through traefik
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: traefik
+      ports:
+        - port: http
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    # dex keeps its state in kubernetes custom resources
+    # kube-apiserver. These addresses are specific to the k3s cluster: the
+    # kubernetes service IPs and the k3s2 node, for IPv4 and IPv6. kube-router
+    # matches after the service IP is DNATed to the node, so the node
+    # addresses are the ones that take effect.
+    - to:
+        - ipBlock:
+            cidr: 10.43.0.1/32
+        - ipBlock:
+            cidr: fd42:4242:43::1/128
+        - ipBlock:
+            cidr: 192.168.123.0/32
+        - ipBlock:
+            cidr: 2a05:f080:0:3800:be24:11ff:fee2:7e61/128
+      ports:
+        - port: 443
+        - port: 6443
+    # the github connector
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+        - ipBlock:
+            cidr: ::/0
+      ports:
+        - port: 443

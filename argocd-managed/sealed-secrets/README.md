@@ -1,3 +1,7 @@
-helm repo add sealed-secrets https://bitnami-labs.github.io/sealed-secrets
+# Installing
 
-helm upgrade --install sealed-secrets -n kube-system --set-string fullnameOverride=sealed-secrets-controller sealed-secrets/sealed-secrets
+```shell
+helm dependency update
+helm template sealed-secrets --values values.yaml --namespace kube-system . > tmp.yaml
+kubectl apply -f tmp.yaml --namespace kube-system
+```

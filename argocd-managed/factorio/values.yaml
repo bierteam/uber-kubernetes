@@ -1,6 +1,19 @@
 # https://github.com/SQLJames/factorio-server-charts/blob/main/charts/factorio-server-charts/values.yaml
 factorio-server-charts: # set values for wrapper/umbrella chart
   hostNetworkEnabled: false
+  # restricted pod security, the chart already runs everything as uid/gid 845
+  securityContext: # pod level
+    fsGroup: 845
+    runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
+  podSecurityContext: # container level, despite the name
+    runAsUser: 845
+    runAsGroup: 845
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
   image:
     repository: docker.io/factoriotools/factorio
     tag: "2.1.24"

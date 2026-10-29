@@ -2,6 +2,27 @@
 dex: # set values for wrapper/umbrella chart
   replicaCount: 2
 
+  # Restricted pod security. The image's USER is the name `dex` (1001), so the
+  # uid is set explicitly for runAsNonRoot. docker-entrypoint renders the
+  # config to /tmp, hence the emptyDir with a read-only root filesystem.
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1001
+    runAsGroup: 1001
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    readOnlyRootFilesystem: true
+    capabilities:
+      drop: [ALL]
+  volumes:
+    - name: tmp
+      emptyDir: {}
+  volumeMounts:
+    - name: tmp
+      mountPath: /tmp
+
   envFrom:
     - secretRef:
         name: dex-secrets

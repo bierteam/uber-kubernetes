@@ -97,11 +97,9 @@ argocdApps:
   - name: wildlife-api
     folder: charts
     repository: wildlife-api
-    podSecurity: baseline # TODO verify if this can be restricted
   - name: wildlife-frontend
     folder: charts
     repository: wildlife-frontend
-    podSecurity: baseline # TODO verify if this can be restricted
   - name: wildlife-database
 
 # Rendered by templates/applicationset-template.yaml. Deployed to every cluster

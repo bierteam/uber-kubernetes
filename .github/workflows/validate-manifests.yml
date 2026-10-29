@@ -29,6 +29,4 @@ jobs:
           kubeconform -v
 
       - name: Validate
-        # sealed-secrets' chart repo (bitnami-labs.github.io) returns 404 and
-        # cannot be rendered. Drop it from SKIP_APPS once the chart has a home.
         run: ./hack/validate-manifests.sh

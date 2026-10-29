@@ -13,9 +13,60 @@ spec:
       labels:
         app: gim-tracker-frontend
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000 # node user of the base image; the image itself runs as root
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: work
+          emptyDir: {}
+      initContainers:
+        # The entrypoint rewrites src/data/api.js and bundles into public/ at
+        # startup, relative to the working directory, and /app is root-owned.
+        # Stage a writable copy of /app, symlinking the large read-only parts.
+        - name: stage-app
+          image: docker.io/chrisleeeee/group-ironmen-tracker-frontend:latest
+          command:
+            - sh
+            - -ec
+            - |
+              cd /app
+              for f in *; do
+                case "$f" in
+                  node_modules) ln -s "/app/$f" "/work/$f" ;;
+                  public)
+                    mkdir /work/public
+                    for p in public/*; do
+                      case "$p" in
+                        public/data) cp -R "$p" /work/public/ ;;
+                        *) ln -s "/app/$p" "/work/$p" ;;
+                      esac
+                    done ;;
+                  *) cp -R "$f" /work/ ;;
+                esac
+              done
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: work
+              mountPath: /work
       containers:
         - name: group-ironmen-tracker-frontend
           image: docker.io/chrisleeeee/group-ironmen-tracker-frontend:latest
+          workingDir: /work
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: work
+              mountPath: /work
           ports:
             - containerPort: 4000
           # resources:
@@ -47,9 +98,40 @@ spec:
       labels:
         app: gim-tracker-backend
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000 # the image runs as root by default
+        runAsGroup: 1000
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+        - name: app
+          emptyDir: {}
+      initContainers:
+        # The entrypoint writes config.toml and secret into /app, which is
+        # root-owned, so run from a writable copy of it.
+        - name: stage-app
+          image: docker.io/chrisleeeee/group-ironmen-tracker-backend:latest
+          command: ["cp", "-R", "/app/.", "/work/"]
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: app
+              mountPath: /work
       containers:
         - name: group-ironmen-tracker-backend
           image: docker.io/chrisleeeee/group-ironmen-tracker-backend:latest
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+          volumeMounts:
+            - name: app
+              mountPath: /app
           ports:
             - containerPort: 8080
           # resources:

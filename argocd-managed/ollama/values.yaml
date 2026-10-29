@@ -9,11 +9,14 @@ ollama: # set values for wrapper/umbrella chart
       enabled: true
       type: nvidia
       number: 1
+    # see podSecurityContext below
+    mountPath: /ollama
   # Replaces the chart's model hook (ollama.models.*), adding a GPU check.
   # After talos5 boots, the scheduler can start this pod before the gpu-operator
   # has its toolkit/CDI injection running; the container then comes up without
-  # /dev/nvidia0 or libcuda and Ollama silently falls back to CPU. Failing the
-  # hook makes the kubelet recreate the container until the GPU is injected.
+  # a usable /dev/nvidia0 or libcuda and Ollama silently falls back to CPU.
+  # Failing the hook makes the kubelet recreate the container until the GPU is
+  # injected.
   #
   # Three variants, each with the largest context that still fits fully in the
   # 3080's 10 GB (measured with `ollama ps`). Clients pick one by name; only one
@@ -28,7 +31,7 @@ ollama: # set values for wrapper/umbrella chart
           - /bin/sh
           - -c
           - |
-            [ -e /dev/nvidia0 ] && ldconfig -p | grep -q libcuda.so.1 || exit 1
+            [ -w /dev/nvidia0 ] && ldconfig -p | grep -q libcuda.so.1 || exit 1
             while ! /bin/ollama ps > /dev/null 2>&1; do
               sleep 5
             done
@@ -42,7 +45,29 @@ ollama: # set values for wrapper/umbrella chart
             variant huge granite4:tiny-h 262144
             # load the default one; OLLAMA_KEEP_ALIVE keeps it in VRAM
             /bin/ollama run coder "" > /dev/null
+  # Restricted pod security. The image has no USER and keeps its data in
+  # /root/.ollama, which a non-root user cannot reach, so the volume moves to
+  # /ollama and HOME points there; Ollama keeps its key and models in
+  # $HOME/.ollama. 1000 is the image's ubuntu user. The volume is a local-path
+  # hostPath, for which the kubelet ignores fsGroup, but local-path creates its
+  # root 0777. The root-owned files from before (models/, id_ed25519) stay
+  # behind unused there; the hook pulls the models again into .ollama/models.
+  # The NVIDIA driver creates its device nodes 0666, so the GPU needs no root
+  # either; the hook's -w check catches it if a node is not usable.
+  podSecurityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    runAsGroup: 1000
+    seccompProfile:
+      type: RuntimeDefault
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
   extraEnv:
+    - name: HOME
+      value: /ollama
     - name: OLLAMA_KEEP_ALIVE
       value: "-1"
     # the variants do not fit in VRAM next to each other

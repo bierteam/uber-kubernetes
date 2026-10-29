@@ -19,7 +19,14 @@ spec:
       labels:
         app.kubernetes.io/name: open-webui
     spec:
+      # The image runs as root by default but is built to run as any uid in
+      # group 0: the static/ dir it rewrites on every start is group-writable
+      # for root's group only, so runAsGroup stays 0 (allowed under restricted).
+      # The data volume needs no fsGroup: everything on it is already 0777.
       securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 0
         seccompProfile:
           type: RuntimeDefault
       containers:
@@ -70,6 +77,9 @@ spec:
               memory: 2Gi
           securityContext:
             allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
           # First boot runs the DB migrations and downloads the RAG embedding model.
           startupProbe:
             httpGet:
