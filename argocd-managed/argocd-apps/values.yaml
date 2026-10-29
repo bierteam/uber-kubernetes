@@ -10,7 +10,6 @@ argocdApps:
     server: talos-cluster
   - name: cyberchef
     docs: https://github.com/gchq/CyberChef
-    podSecurity: baseline # TODO verify if this can be restricted
   - name: dex
     docs: https://dexidp.io/
     podSecurity: baseline # TODO verify if this can be restricted
@@ -20,12 +19,10 @@ argocdApps:
     docs: https://github.com/bierteam/drinkn
     folder: charts/pils
     repository: drinkn
-    podSecurity: baseline # TODO verify if this can be restricted
   - name: drinkn-hooks
     podSecurity: baseline # TODO verify if this can be restricted
   - name: external-dns
     docs: https://github.com/kubernetes-sigs/external-dns
-    podSecurity: baseline # TODO verify if this can be restricted
   # - name: external-secrets
   - name: factorio
     docs: https://github.com/SQLJames/factorio-server-charts
@@ -55,7 +52,6 @@ argocdApps:
     docs: https://github.com/itzg/minecraft-server-charts
     server: talos-cluster
   - name: misc
-    podSecurity: baseline # TODO verify if this can be restricted
   - name: nfs-csi
     docs: https://github.com/kubernetes-csi/csi-driver-nfs
     namespace: kube-system
@@ -81,7 +77,6 @@ argocdApps:
     server: talos-cluster
   - name: traefik
     docs: https://github.com/traefik/traefik
-    podSecurity: baseline # TODO verify if this can be restricted
   - name: unifi
     docs: https://github.com/linuxserver/docker-unifi-network-application
     podSecurity: baseline # TODO verify if this can be restricted
@@ -90,12 +85,10 @@ argocdApps:
     docs: https://github.com/oauth2-proxy/oauth2-proxy
     folder: argocd-managed/oauth2-proxy
     valuesFile: values-oscarr.yaml
-    podSecurity: baseline # TODO verify if this can be restricted
   - name: proxy-bruinsma
     docs: https://github.com/oauth2-proxy/oauth2-proxy
     folder: argocd-managed/oauth2-proxy
     valuesFile: values-bruinsma.yaml
-    podSecurity: baseline # TODO verify if this can be restricted
   # - name: valheim
   # - name: velero
   #   podSecurity: privileged
@@ -110,7 +103,6 @@ argocdApps:
     repository: wildlife-frontend
     podSecurity: baseline # TODO verify if this can be restricted
   - name: wildlife-database
-    podSecurity: baseline # TODO verify if this can be restricted
 
 # Rendered by templates/applicationset-template.yaml. Deployed to every cluster
 # whose ArgoCD cluster secret has the label `apps.oscarr.nl/<name>: "true"`, with
@@ -129,5 +121,4 @@ applicationSets:
   - name: cnpg
     docs: https://cloudnative-pg.io/
     namespace: cnpg-system
-    podSecurity: baseline # TODO verify if this can be restricted
     primaryCluster: in-cluster

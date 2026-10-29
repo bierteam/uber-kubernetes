@@ -9,6 +9,8 @@ metadata:
 spec:
   securityContext:
     runAsNonRoot: true
+    seccompProfile:
+      type: RuntimeDefault
   containers:
     - name: wget
       image: cgr.dev/chainguard/curl:latest
