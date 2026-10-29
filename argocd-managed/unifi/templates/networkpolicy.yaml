@@ -1,0 +1,180 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: unifi
+spec:
+  podSelector:
+    matchLabels:
+      app: unifi
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    # the web ui and device inform; neither stun nor l2 discovery is exposed
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: traefik
+      ports:
+        - port: 8080
+        - port: 8443
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    - to:
+        - podSelector:
+            matchLabels:
+              app: mongodb-svc
+      ports:
+        - port: 27017
+    # ui.com cloud access and update checks (mqtt over tls on 8883)
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+        - ipBlock:
+            cidr: ::/0
+      ports:
+        - port: 443
+        - port: 8883
+---
+# mongod with its agent, and the community operator
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mongodb
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - mongodb-svc
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app: unifi
+        # the agent reaches its own mongod through the pod address
+        - podSelector:
+            matchLabels:
+              app: mongodb-svc
+        - podSelector:
+            matchLabels:
+              name: mongodb-kubernetes-operator
+      ports:
+        - port: 27017
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mongodb-egress
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - mongodb-svc
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    - to:
+        - podSelector:
+            matchLabels:
+              app: mongodb-svc
+      ports:
+        - port: 27017
+    # kube-apiserver, which the readiness hook uses to annotate the pod. These
+    # addresses are specific to the k3s cluster: the kubernetes service IPs
+    # and the k3s2 node, for IPv4 and IPv6. kube-router matches after the
+    # service IP is DNATed to the node, so the node addresses take effect.
+    - to:
+        - ipBlock:
+            cidr: 10.43.0.1/32
+        - ipBlock:
+            cidr: fd42:4242:43::1/128
+        - ipBlock:
+            cidr: 192.168.123.0/32
+        - ipBlock:
+            cidr: 2a05:f080:0:3800:be24:11ff:fee2:7e61/128
+      ports:
+        - port: 443
+        - port: 6443
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: mongodb-operator
+spec:
+  podSelector:
+    matchLabels:
+      name: mongodb-kubernetes-operator
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    - to:
+        - podSelector:
+            matchLabels:
+              app: mongodb-svc
+      ports:
+        - port: 27017
+    # kube-apiserver, see mongodb-egress
+    - to:
+        - ipBlock:
+            cidr: 10.43.0.1/32
+        - ipBlock:
+            cidr: fd42:4242:43::1/128
+        - ipBlock:
+            cidr: 192.168.123.0/32
+        - ipBlock:
+            cidr: 2a05:f080:0:3800:be24:11ff:fee2:7e61/128
+      ports:
+        - port: 443
+        - port: 6443
