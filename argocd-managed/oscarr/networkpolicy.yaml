@@ -1,0 +1,29 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+# static files only, so nothing goes out
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: static-files
+spec:
+  podSelector:
+    matchLabels:
+      app: static-files
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: traefik
+      ports:
+        - port: 80

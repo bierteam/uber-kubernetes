@@ -1,0 +1,126 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: vikunja
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: vikunja
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: traefik
+      ports:
+        - port: 3456
+  egress:
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    - to:
+        - podSelector:
+            matchLabels:
+              cnpg.io/cluster: vikunja
+      ports:
+        - port: 5432
+    # the OIDC provider at auth.oscarr.nl, which resolves to public addresses
+    # that can change, so allow HTTPS to anywhere
+    - to:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+        - ipBlock:
+            cidr: ::/0
+      ports:
+        - port: 443
+---
+# CloudNativePG instances and their join/initdb jobs
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: vikunja-database
+spec:
+  podSelector:
+    matchLabels:
+      cnpg.io/cluster: vikunja
+  policyTypes:
+    - Ingress
+    - Egress
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              cnpg.io/cluster: vikunja
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: vikunja
+      ports:
+        - port: 5432
+    # the operator polls the instance manager
+    - from:
+        - podSelector:
+            matchLabels:
+              cnpg.io/cluster: vikunja
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: cnpg-system
+      ports:
+        - port: 8000
+  egress:
+    - to:
+        - podSelector:
+            matchLabels:
+              cnpg.io/cluster: vikunja
+      ports:
+        - port: 5432
+        - port: 8000
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+    # kube-apiserver. These addresses are specific to the k3s cluster: the
+    # kubernetes service IPs and the k3s2 node, for IPv4 and IPv6. kube-router
+    # matches after the service IP is DNATed to the node, so the node
+    # addresses are the ones that take effect.
+    - to:
+        - ipBlock:
+            cidr: 10.43.0.1/32
+        - ipBlock:
+            cidr: fd42:4242:43::1/128
+        - ipBlock:
+            cidr: 192.168.123.0/32
+        - ipBlock:
+            cidr: 2a05:f080:0:3800:be24:11ff:fee2:7e61/128
+      ports:
+        - port: 443
+        - port: 6443

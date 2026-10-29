@@ -1,0 +1,27 @@
+---
+# traefik has to reach every backend and the external hosts in misc, so only
+# its entrypoints are restricted; the api, ping and metrics ports stay private
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: traefik
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: traefik
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - ipBlock:
+            cidr: 0.0.0.0/0
+        - ipBlock:
+            cidr: ::/0
+      ports:
+        - port: 8000
+        - port: 8443
+        - port: 8443
+          protocol: UDP
+        - port: 8081
+        - port: 31497
+          protocol: UDP

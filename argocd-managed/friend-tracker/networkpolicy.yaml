@@ -1,0 +1,29 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+---
+# keeps its state in memory, so nothing goes out
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: friend-tracker
+spec:
+  podSelector:
+    matchLabels:
+      app: friend-tracker
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: traefik
+      ports:
+        - port: 3000

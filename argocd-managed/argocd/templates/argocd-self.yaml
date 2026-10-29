@@ -22,7 +22,7 @@ spec:
       - ServerSideApply=true
     managedNamespaceMetadata:
       labels:
-        pod-security.kubernetes.io/enforce: baseline
+        pod-security.kubernetes.io/enforce: restricted
     automated:
       prune: false
       selfHeal: true
