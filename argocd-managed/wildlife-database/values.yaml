@@ -1,6 +1,8 @@
 cluster:
   type: postgis
   cluster:
+    # was the floating bullseye "16-3.4" tag; after the switch REINDEX and run SELECT postgis_extensions_upgrade();
+    imageName: ghcr.io/cloudnative-pg/postgis:16-3.6-system-trixie
     postgresql:
       parameters:
         max_connections: "100"
