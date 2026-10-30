@@ -25,6 +25,12 @@ spec:
     - name: not-oscarr-nl
       expression: >-
         !has(object.spec.hostnames) || !object.spec.hostnames.exists(h, h == 'oscarr.nl')
+    # Only routes that serve something. Cilium keeps one copy of identical rules
+    # on a hostname, and the copy from an http-to-https redirect route only
+    # matches when X-Forwarded-Proto isn't https, so HTTPS requests miss it.
+    - name: has-backends
+      expression: >-
+        object.spec.rules.exists(r, has(r.backendRefs) && size(r.backendRefs) > 0)
     - name: not-already-present
       expression: >-
         !object.spec.rules.exists(r, has(r.matches) &&
