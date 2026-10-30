@@ -11,5 +11,31 @@
     "managerFilePatterns": [
       "/\\.yaml$/"
     ]
-  }
+  },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "CloudNativePG Cluster imageName",
+      "managerFilePatterns": [
+        "/\\.yaml$/"
+      ],
+      "matchStrings": [
+        "imageName:\\s*\"?(?<depName>[^\\s:\"]+):(?<currentValue>[^\\s@\"]+)"
+      ],
+      "datasourceTemplate": "docker"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "PostgreSQL major upgrades need a planned migration",
+      "matchPackageNames": [
+        "ghcr.io/cloudnative-pg/postgresql",
+        "ghcr.io/cloudnative-pg/postgis"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
+    }
+  ]
 }
