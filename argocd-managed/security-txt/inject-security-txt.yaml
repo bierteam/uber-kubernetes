@@ -1,0 +1,61 @@
+# Gateway API has no route priority, so the global security.txt IngressRoute in
+# oscarr/ingress.yaml has no equivalent: a hostname-less HTTPRoute always loses
+# to a route with hostnames. Instead every HTTPRoute gets an Exact match rule,
+# which beats the route's own prefix matches on the same hostname.
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingAdmissionPolicy
+metadata:
+  name: inject-security-txt
+spec:
+  failurePolicy: Fail
+  reinvocationPolicy: Never
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["gateway.networking.k8s.io"]
+        apiVersions: ["v1"]
+        operations: ["CREATE", "UPDATE"]
+        resources: ["httproutes"]
+    # cert-manager resets any HTTP-01 solver route whose spec differs from its own
+    objectSelector:
+      matchExpressions:
+        - key: acme.cert-manager.io/http01-solver
+          operator: DoesNotExist
+  matchConditions:
+    # oscarr.nl serves the file itself, the redirect would loop there
+    - name: not-oscarr-nl
+      expression: >-
+        !has(object.spec.hostnames) || !object.spec.hostnames.exists(h, h == 'oscarr.nl')
+    - name: not-already-present
+      expression: >-
+        !object.spec.rules.exists(r, has(r.matches) &&
+          r.matches.exists(m, has(m.path) && m.path.value == '/.well-known/security.txt'))
+  mutations:
+    - patchType: JSONPatch
+      jsonPatch:
+        # Plain map literals don't type check with mixed value types, hence the
+        # typed constructors.
+        expression: >-
+          [JSONPatch{
+            op: "add",
+            path: "/spec/rules/-",
+            value: Object.spec.rules{
+              matches: [Object.spec.rules.matches{
+                path: Object.spec.rules.matches.path{type: "Exact", value: "/.well-known/security.txt"}
+              }],
+              filters: [Object.spec.rules.filters{
+                type: "RequestRedirect",
+                requestRedirect: Object.spec.rules.filters.requestRedirect{
+                  scheme: "https", hostname: "oscarr.nl", statusCode: 302
+                }
+              }]
+            }
+          }]
+---
+apiVersion: admissionregistration.k8s.io/v1
+kind: MutatingAdmissionPolicyBinding
+metadata:
+  name: inject-security-txt
+spec:
+  policyName: inject-security-txt
+  matchResources:
+    namespaceSelector: {}  # apply to all namespaces

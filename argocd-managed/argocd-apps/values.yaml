@@ -113,3 +113,7 @@ applicationSets:
     docs: https://cloudnative-pg.io/
     namespace: cnpg-system
     primaryCluster: in-cluster
+  - name: security-txt
+    docs: https://kubernetes.io/docs/reference/access-authn-authz/mutating-admission-policy/
+    namespace: default
+    helm: false # plain manifests, a cluster-scoped MutatingAdmissionPolicy
