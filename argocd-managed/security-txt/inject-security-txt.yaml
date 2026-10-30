@@ -25,9 +25,8 @@ spec:
     - name: not-oscarr-nl
       expression: >-
         !has(object.spec.hostnames) || !object.spec.hostnames.exists(h, h == 'oscarr.nl')
-    # Only routes that serve something. Cilium keeps one copy of identical rules
-    # on a hostname, and the copy from an http-to-https redirect route only
-    # matches when X-Forwarded-Proto isn't https, so HTTPS requests miss it.
+    # Only routes that serve something. Redirect-only routes, like http-to-https,
+    # already send the request on; the redirect below would keep plain http.
     - name: has-backends
       expression: >-
         object.spec.rules.exists(r, has(r.backendRefs) && size(r.backendRefs) > 0)
@@ -39,7 +38,10 @@ spec:
     - patchType: JSONPatch
       jsonPatch:
         # Plain map literals don't type check with mixed value types, hence the
-        # typed constructors.
+        # typed constructors. No scheme: Cilium only matches a scheme redirect
+        # when X-Forwarded-Proto differs from it (a loop guard for
+        # http-to-https), so HTTPS requests would never hit it. Without one the
+        # request keeps its scheme and listener port.
         expression: >-
           [JSONPatch{
             op: "add",
@@ -51,7 +53,7 @@ spec:
               filters: [Object.spec.rules.filters{
                 type: "RequestRedirect",
                 requestRedirect: Object.spec.rules.filters.requestRedirect{
-                  scheme: "https", hostname: "oscarr.nl", statusCode: 302
+                  hostname: "oscarr.nl", statusCode: 302
                 }
               }]
             }
