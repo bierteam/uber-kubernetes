@@ -2,6 +2,9 @@ community-operator:
   # operator:
   #   watchNamespace: "*" # cluster wide install
   createResource: false
+  # 0.13.0 is the last community-operator release and pins an older agent
+  agent:
+    version: 108.0.27.9091-1
   operator:
     podSecurityContext:
       runAsNonRoot: true
