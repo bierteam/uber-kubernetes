@@ -1,0 +1,64 @@
+# DN42 ROAs over RTR for bird2 on talos4.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stayrtr
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: stayrtr
+  template:
+    metadata:
+      labels:
+        app: stayrtr
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: stayrtr
+          image: rpki/stayrtr:v0.6.4@sha256:a2a8ac7ef504a7ae416b058c761d6c70e217afd5994eeac430f42b0a48b121ef
+          args:
+            - -cache=https://dn42.burble.com/roa/dn42_roa_46.json
+            - -bind=[::]:8282
+            - -metrics.addr=[::]:9847
+            - -checktime=false
+          ports:
+            - name: rtr
+              containerPort: 8282
+            - name: metrics
+              containerPort: 9847
+          readinessProbe:
+            httpGet:
+              path: /metrics
+              port: metrics
+          resources:
+            requests:
+              cpu: 10m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: stayrtr
+spec:
+  # bird on talos4 connects to this address
+  clusterIP: fd26:4340:84fe::8282
+  ipFamilies: [IPv6]
+  selector:
+    app: stayrtr
+  ports:
+    - name: rtr
+      port: 8282
+      targetPort: rtr

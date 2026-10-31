@@ -17,6 +17,8 @@ cilium: # set values for wrapper/umbrella chart
   kubeProxyReplacement: true
   k8sServiceHost: localhost
   k8sServicePort: 7445
+  # only the LAN NICs, not the dn42 WireGuard links on talos4
+  devices: en+
   l2announcements:
     enabled: true
   # Ingress for the talos cluster (the element Gateway). Needs the Gateway API

@@ -3,3 +3,4 @@ customization:
   systemExtensions:
     officialExtensions:
       - siderolabs/kata-containers
+      - siderolabs/bird2
