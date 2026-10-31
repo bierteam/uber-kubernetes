@@ -4,8 +4,7 @@
 # Wrapper-chart values, consumed by templates/loadbalancer.yaml and bgp.yaml.
 loadBalancer:
   enabled: false
-  pool:
-    blocks: []
+  pools: []  # [{name, blocks, serviceSelector}]
   l2:
     interfaces: []
   bgp:

@@ -1,12 +1,26 @@
 # Overrides for the talos-cluster (IPv6-only, KubePrism, Cilium LB-IPAM + L2/BGP).
 loadBalancer:
   enabled: true
-  pool:
-    blocks:
-      # inside the LAN /64, reachable through L2 announcements only
-      - "2a05:f080:0:3800:1b::/112"
-      # routed /64 from the /56, announced to OPNsense over BGP
-      - "2a05:f080:0:38ff::/64"
+  pools:
+    - name: default-pool
+      blocks:
+        # inside the LAN /64, reachable through L2 announcements only
+        - "2a05:f080:0:3800:1b::/112"
+        # routed /64 from the /56, announced to OPNsense over BGP
+        - "2a05:f080:0:38ff::/64"
+      serviceSelector:
+        matchExpressions:
+          - key: lb.oscarr.nl/pool
+            operator: NotIn
+            values: ["dn42"]
+    # Opt-in with the label lb.oscarr.nl/pool: dn42. Announced to OPNsense like
+    # the rest; bird on talos4 already announces the whole /48 to DN42.
+    - name: dn42
+      blocks:
+        - "fd69:420:cafe:ff::/64"
+      serviceSelector:
+        matchLabels:
+          lb.oscarr.nl/pool: dn42
   l2:
     interfaces:
       - "^en.+"
