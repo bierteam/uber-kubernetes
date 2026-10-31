@@ -80,6 +80,12 @@ spec:
       recordType: CAA
       targets:
         - 0 issue letsencrypt.org;validationmethods=tls-alpn-01
+    # DN42 WireGuard endpoint on talos4, for peers that only accept a hostname
+    - dnsName: nl-hou01.dn42.oscarr.nl
+      recordTTL: 1
+      recordType: AAAA
+      targets:
+        - 2a05:f080:0:3800::1019
 ---
 apiVersion: externaldns.k8s.io/v1alpha1
 kind: DNSEndpoint
