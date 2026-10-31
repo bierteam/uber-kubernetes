@@ -10,6 +10,13 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 spec:
+  # Nodes opt out with bgp.oscarr.nl/peer: "false", e.g. talos4, which routes
+  # DN42 and would reply to LB traffic around OPNsense.
+  nodeSelector:
+    matchExpressions:
+      - key: bgp.oscarr.nl/peer
+        operator: NotIn
+        values: ["false"]
   bgpInstances:
     - name: default
       localASN: {{ .Values.loadBalancer.bgp.localASN | int64 }}
