@@ -1,0 +1,20 @@
+# TSIG keys for updates to oscrx.dn42, sealed for talos-cluster: tsig.conf is
+# included by knot.conf, external-dns is the same external-dns secret for the
+# external-dns pod. The cert-manager key's secret is also sealed as dn42-tsig
+# in the cert-manager app. Generated in memory with
+# head -c 32 /dev/urandom | base64 and piped straight into
+# kubeseal --context talos-cluster --controller-namespace kube-system --controller-name sealed-secrets-talos-cluster
+---
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: knot-tsig
+  namespace: dn42
+spec:
+  encryptedData:
+    external-dns: AgB4SkL3sOFWGey0V+pgPj0VowKYUOFaBBQSdbyB0ymh5dA7uDGl28uAG5n94pLdfQfkB7zfYJptkW0LLVPM7v9MK/XkiHbCvyl2slTsdeTbvwAFWaK0v7ZEcl5hLWZ7wLTEu/Fjv6Wl4wZl+h7NCSf9ZJ5jFsvmi3PwfbLvdB5vQz2kJw4iWRJnIKlUlb6QA0L26xTk4ZVl2jofrAJqjRdqgfMelPN/XaxEX7M5O7qOVy0wLdMwFledWC4yji1odQOA+RKdpAbhTf6MUj8JlSs/AbLSq+jE97grnOJbZfze+7Ohw2Fn++HBSxV97RoGfi9eVjb2DoAOqUVD2trIoaySm2u+FITssFadNNgNhpfZhLAYg/kQPydqlDZjzsqrBWPb6LnbAc4hrpDRXINB8r06rHjTzZhiwvdAX/Lcu6UM64Ij74j1bHVVi/iCEanT3IRVOPo/4VNze+c/vtWFov3d3eh51JqnSzoZuF22R7Mf+2gu4rYyFBByk7+VNVO3jJFoACLhuoJUbRw74jxtSNd6j575mTtLh2HZyRd0lfezlM77+g/swzjvjPhO6Bjs1isFY5BTWh/4c0rYYcRA+IfeMJIA0xGkrnUbA9YTijsBW/ukkq8B3od7rXBFBuq6BeSWl8UcUQ5u6O7sd6EBsKtNtWMDBkdwhALRw1Z3Y1Nd6JWbQoOn71alX2ftg4oUfnPN/7rVintLgWeQcnV5WjMq7gllesmvhHOnaT8uR8Vuj0R7BtEwmf5I7wMeAQ==
+    tsig.conf: AgC6tL7xI00j84aLYT2fxidw+iyaa2iw8XIFo5NhI6A05of5xliKLylxaD2aJ/+w099RJ92DkIEapE1tR7Xgb/F1OBSnW4aAnf0KgD1B6OMsOhXyWBhsuDIWIHqts2kpqWM2SEUJZvkgKG14jVyiA4xSx4dI1OBpq0extm0y4empdrPUHs+3R4A0N77kA7c3pMYp4I8jFnC6Ktw1xflZ7nftHQwZsI9HSm572BuCXn05c2gIc9TU92j5AT3HbZ+a593MEhRDXtGzbgo+nXcygYQGJ+CCJU3appk0nXLNVX0Qnq5+1BC+KjptBeftCnvHS+uUt2cwxyDx6UV8eWIzFRQ5zWSoYWw1WdWb8Pj0uLX+zhPB+KNDkhXkTyl81duSGBfTAjsSKWZUANOklXRUm+kbcFgP4cEVt/oC6/9xCnJ5uSYGfSCaFjOyNDse3RRD5RVYhaUThdKDTwZ9ckWh1cnaGPr9V7PxhgxkaJgL8YpmGvojjjmpxq1dOhqVxEduJyrcgPINy4+2R1ZiEThnXy6oGRVf59yoALUjYwij23FHKlCZszXG+wu6WYjaDDo1vvocMp+f2kWMVi/nxlfGxZl1vtwxUHWdYNqnr3hPYOe4Q0ZrKSAvaHlgNuCo8IDyX3C2EjAB3O/ZU8w/92UtGztaY7nm01D68hyyZc06TvYJ5dk5sJfnW+cX2u02tlankkt1smGteizUZT307g3e1GKUvtyOdVYhsox0qIcJcT7V5ldAMGB2VUWrfpeUoahegZbsCEgmqCVxfKdxHFxPgJ004pSmviFX2yZWUsuG7Ae9WlOstMqLlEW7FSsfwXEApSkSXTwZ0u3kpDnwUh0VPTSdLuXWJd/4eQ2TjFV+85awukwHexVVmRF80CTaAU0nG5hPIA0sadmecK1vtomSFN+wFf0v5jzEWpFVH1rAITouJwSR7/9pFtV85jo9kvJBGdC+ZVkoodjYKdBGchX+2kM9eBQcq55Clw==
+  template:
+    metadata:
+      name: knot-tsig
+      namespace: dn42

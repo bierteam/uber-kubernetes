@@ -1,0 +1,180 @@
+# Authoritative DNS for oscrx.dn42 and fd69:420:cafe::/48, as
+# ns1 (fd69:420:cafe:ff::53) and ns2 (fd69:420:cafe:ff::5353).
+# Stateless: the DNSSEC keys (knot-keys) and TSIG keys (knot-tsig) are
+# SealedSecrets, and the keys are imported into an empty /storage at start.
+# The ds-rdata in the DN42 registry is pinned to knot-keys.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: knot
+spec:
+  # one instance: updates land in its journal, there is nothing to sync
+  replicas: 1
+  selector:
+    matchLabels:
+      app: knot
+  template:
+    metadata:
+      labels:
+        app: knot
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        fsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: import-keys
+          image: cznic/knot:v3.6.2@sha256:174b0fcb24c6c3bc5065c9d1ce46b588eec607a5f32bc40ff0cda60150f00bd9
+          command:
+            - sh
+            - /config/import-keys.sh
+            - oscrx.dn42
+            - dynamic.oscrx.dn42
+            - e.f.a.c.0.2.4.0.9.6.d.f.ip6.arpa
+          env: &env
+            - name: KNOT_CONFIG
+              value: /config/knot.conf
+          securityContext: &securityContext
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts: &volumeMounts
+            - name: config
+              mountPath: /config
+            - name: zones
+              mountPath: /zones
+            - name: keys
+              mountPath: /keys
+            - name: tsig
+              mountPath: /tsig
+            - name: storage
+              mountPath: /storage
+            - name: rundir
+              mountPath: /rundir
+            # knotd keeps its config database in a temporary directory
+            - name: tmp
+              mountPath: /tmp
+      containers:
+        - name: knot
+          image: cznic/knot:v3.6.2@sha256:174b0fcb24c6c3bc5065c9d1ce46b588eec607a5f32bc40ff0cda60150f00bd9
+          command: [knotd, --config, /config/knot.conf]
+          env: *env
+          ports:
+            - name: dns-udp
+              containerPort: 5353
+              protocol: UDP
+            - name: dns-tcp
+              containerPort: 5353
+              protocol: TCP
+          readinessProbe:
+            tcpSocket:
+              port: dns-tcp
+          livenessProbe:
+            tcpSocket:
+              port: dns-tcp
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              memory: 256Mi
+          securityContext: *securityContext
+          volumeMounts: *volumeMounts
+      volumes:
+        - name: config
+          configMap:
+            name: knot-config
+        - name: zones
+          configMap:
+            name: knot-zones
+        - name: keys
+          secret:
+            secretName: knot-keys
+            defaultMode: 0440
+        - name: tsig
+          secret:
+            secretName: knot-tsig
+            defaultMode: 0440
+            items:
+              - key: tsig.conf
+                path: tsig.conf
+        - name: storage
+          emptyDir: {}
+        - name: rundir
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: knot
+  labels:
+    lb.oscarr.nl/pool: dn42
+  annotations:
+    # ns1.oscrx.dn42, the glue in the DN42 registry
+    lbipam.cilium.io/ips: fd69:420:cafe:ff::53
+spec:
+  type: LoadBalancer
+  ipFamilies: [IPv6]
+  selector:
+    app: knot
+  ports:
+    - name: dns-udp
+      port: 53
+      targetPort: dns-udp
+      protocol: UDP
+    - name: dns-tcp
+      port: 53
+      targetPort: dns-tcp
+      protocol: TCP
+---
+# ns2.oscrx.dn42: a second address for the same server
+apiVersion: v1
+kind: Service
+metadata:
+  name: knot-ns2
+  labels:
+    lb.oscarr.nl/pool: dn42
+  annotations:
+    lbipam.cilium.io/ips: fd69:420:cafe:ff::5353
+spec:
+  type: LoadBalancer
+  ipFamilies: [IPv6]
+  selector:
+    app: knot
+  ports:
+    - name: dns-udp
+      port: 53
+      targetPort: dns-udp
+      protocol: UDP
+    - name: dns-tcp
+      port: 53
+      targetPort: dns-tcp
+      protocol: TCP
+---
+# where external-dns and cert-manager send their updates; a fixed address, as
+# cert-manager's rfc2136 solver wants an IP
+apiVersion: v1
+kind: Service
+metadata:
+  name: knot-update
+spec:
+  clusterIP: fd26:4340:84fe::53
+  ipFamilies: [IPv6]
+  selector:
+    app: knot
+  ports:
+    - name: dns-udp
+      port: 53
+      targetPort: dns-udp
+      protocol: UDP
+    - name: dns-tcp
+      port: 53
+      targetPort: dns-tcp
+      protocol: TCP

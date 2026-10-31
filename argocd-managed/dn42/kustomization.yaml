@@ -1,0 +1,19 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - stayrtr.yaml
+  - knot.yaml
+  - knot-keys.yaml
+  - knot-tsig.yaml
+  - external-dns.yaml
+# hashed names, so editing a zone rolls the knot pod
+configMapGenerator:
+  - name: knot-config
+    files:
+      - knot/knot.conf
+      - knot/import-keys.sh
+  - name: knot-zones
+    files:
+      - knot/oscrx.dn42.zone
+      - knot/dynamic.oscrx.dn42.zone
+      - knot/e.f.a.c.0.2.4.0.9.6.d.f.ip6.arpa.zone

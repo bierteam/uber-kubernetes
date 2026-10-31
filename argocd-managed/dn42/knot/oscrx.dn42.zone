@@ -1,0 +1,14 @@
+$ORIGIN oscrx.dn42.
+$TTL 3600
+; Knot replaces the serial when it signs the zone.
+@    SOA ns1 hostmaster 1 3600 900 604800 300
+@    NS  ns1
+@    NS  ns2
+ns1  AAAA fd69:420:cafe:ff::53
+ns2  AAAA fd69:420:cafe:ff::5353
+
+; generated reverse DNS names, see knot.conf
+dynamic NS ns1
+dynamic NS ns2
+; from the dynamic.oscrx.dn42 key in knot-keys
+dynamic DS 54937 13 2 E59738D869EE0EBAAA77D3A012BAF69482B6E90BA89E025DF20E1037953A2699

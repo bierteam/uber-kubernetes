@@ -1,0 +1,6 @@
+$ORIGIN dynamic.oscrx.dn42.
+$TTL 3600
+; Only the apex: mod-synthrecord answers AAAA for the generated names.
+@    SOA ns1.oscrx.dn42. hostmaster.oscrx.dn42. 1 3600 900 604800 300
+@    NS  ns1.oscrx.dn42.
+@    NS  ns2.oscrx.dn42.
