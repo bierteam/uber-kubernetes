@@ -65,7 +65,9 @@ coredns:
         - name: prometheus
           parameters: :9153
         - name: kubernetes
-          parameters: d.f.ip6.arpa
+          # the plugin refuses reverse zones only; this block never gets
+          # cluster.local queries
+          parameters: cluster.local d.f.ip6.arpa
           configBlock: |-
             fallthrough
             ttl 30
