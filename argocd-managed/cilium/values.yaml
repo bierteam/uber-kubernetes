@@ -1,13 +1,17 @@
 # Shared by every cluster. Per-cluster overrides live in values-<cluster>.yaml,
 # picked up by the cilium ApplicationSet (applicationSets in argocd-apps/values.yaml).
 
-# Wrapper-chart values, consumed by templates/loadbalancer.yaml.
+# Wrapper-chart values, consumed by templates/loadbalancer.yaml and bgp.yaml.
 loadBalancer:
   enabled: false
   pool:
     blocks: []
   l2:
     interfaces: []
+  bgp:
+    enabled: false
+    localASN: 64513
+    peers: []  # [{name, address, asn}]
 
 # https://github.com/cilium/cilium/blob/main/install/kubernetes/cilium/values.yaml
 cilium: # set values for wrapper/umbrella chart

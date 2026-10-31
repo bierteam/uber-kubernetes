@@ -1,0 +1,63 @@
+{{- if .Values.loadBalancer.bgp.enabled }}
+# Announces LoadBalancer IPs to the router over BGP, so it routes the pool to
+# the nodes (ECMP across all of them) instead of relying on NDP from a single
+# L2 leader. Needs cilium.bgpControlPlane.enabled; the operator registers these
+# CRDs on start, hence the dry run skip for the first sync.
+apiVersion: cilium.io/v2
+kind: CiliumBGPClusterConfig
+metadata:
+  name: default
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  bgpInstances:
+    - name: default
+      localASN: {{ .Values.loadBalancer.bgp.localASN | int64 }}
+      peers:
+        {{- range .Values.loadBalancer.bgp.peers }}
+        - name: {{ .name | quote }}
+          peerASN: {{ .asn | int64 }}
+          peerAddress: {{ .address | quote }}
+          peerConfigRef:
+            name: default
+        {{- end }}
+---
+apiVersion: cilium.io/v2
+kind: CiliumBGPPeerConfig
+metadata:
+  name: default
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  gracefulRestart:
+    enabled: true
+    restartTimeSeconds: 120
+  families:
+    - afi: ipv6
+      safi: unicast
+      advertisements:
+        matchLabels:
+          advertise: bgp
+---
+apiVersion: cilium.io/v2
+kind: CiliumBGPAdvertisement
+metadata:
+  name: loadbalancer-ips
+  labels:
+    advertise: bgp
+  annotations:
+    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+spec:
+  advertisements:
+    - advertisementType: Service
+      service:
+        addresses:
+          - LoadBalancerIP
+      # Every service with an LB IP. NotIn also matches services without the
+      # label, so a service only opts out with bgp.oscarr.nl/advertise: "false".
+      selector:
+        matchExpressions:
+          - key: bgp.oscarr.nl/advertise
+            operator: NotIn
+            values: ["false"]
+{{- end }}

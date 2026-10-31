@@ -1,12 +1,22 @@
-# Overrides for the talos-cluster (IPv6-only, KubePrism, Cilium LB-IPAM + L2).
+# Overrides for the talos-cluster (IPv6-only, KubePrism, Cilium LB-IPAM + L2/BGP).
 loadBalancer:
   enabled: true
   pool:
     blocks:
+      # inside the LAN /64, reachable through L2 announcements only
       - "2a05:f080:0:3800:1b::/112"
+      # routed /64 from the /56, announced to OPNsense over BGP
+      - "2a05:f080:0:38ff::/64"
   l2:
     interfaces:
       - "^en.+"
+  bgp:
+    enabled: true
+    peers:
+      # os-frr on OPNsense; it accepts only /128s from the 38ff pool
+      - name: opnsense
+        address: "2a05:f080:0:3800::a"
+        asn: 64512
 
 cilium:
   ipv4:
@@ -18,6 +28,8 @@ cilium:
   # only the LAN NICs, not the dn42 WireGuard links on talos4
   devices: en+
   l2announcements:
+    enabled: true
+  bgpControlPlane:
     enabled: true
   # Ingress for the talos cluster. Needs the Gateway API CRDs (gateway-api-talos app)
   # present before the operator starts, or it silently skips the controller.
