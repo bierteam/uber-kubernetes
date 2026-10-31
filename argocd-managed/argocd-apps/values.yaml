@@ -8,6 +8,7 @@ argocdApps:
     namespace: kube-system
     podSecurity: privileged
     server: talos-cluster
+    finalizer: false # moving to the cilium ApplicationSet; a prune must not take the CNI with it
   - name: cyberchef
     docs: https://github.com/gchq/CyberChef
   - name: dex
