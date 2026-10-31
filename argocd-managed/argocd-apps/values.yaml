@@ -62,6 +62,9 @@ argocdApps:
     docs: https://github.com/bitnami-labs/sealed-secrets
     namespace: kube-system
     podSecurity: privileged
+    # Moving to the sealed-secrets ApplicationSet: without the finalizer, pruning
+    # this Application leaves the CRD, and every SealedSecret, in place.
+    finalizer: false
   # - name: shulker
   #   server: talos-cluster
   - name: talos5-power
