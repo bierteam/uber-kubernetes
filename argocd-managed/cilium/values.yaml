@@ -16,6 +16,11 @@ loadBalancer:
 # https://github.com/cilium/cilium/blob/main/install/kubernetes/cilium/values.yaml
 cilium: # set values for wrapper/umbrella chart
   kubeProxyReplacement: true
+  # Restart on cilium-config changes; the operator only registers CRDs for
+  # newly enabled features (like BGP) at startup.
+  rollOutCiliumPods: true
+  operator:
+    rollOutPods: true
   k8sClientRateLimit:
     qps: 50
     burst: 100
