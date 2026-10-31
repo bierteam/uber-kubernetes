@@ -58,13 +58,6 @@ argocdApps:
     docs: https://docs.openwebui.com/
     server: talos-cluster
   - name: rick
-  - name: sealed-secrets
-    docs: https://github.com/bitnami-labs/sealed-secrets
-    namespace: kube-system
-    podSecurity: privileged
-    # Moving to the sealed-secrets ApplicationSet: without the finalizer, pruning
-    # this Application leaves the CRD, and every SealedSecret, in place.
-    finalizer: false
   # - name: shulker
   #   server: talos-cluster
   - name: talos5-power
@@ -119,6 +112,11 @@ applicationSets:
     namespace: kube-system
     podSecurity: privileged
     primaryCluster: talos-cluster
+  - name: sealed-secrets
+    docs: https://github.com/bitnami-labs/sealed-secrets
+    namespace: kube-system
+    podSecurity: privileged
+    primaryCluster: in-cluster
   - name: security-txt
     docs: https://kubernetes.io/docs/reference/access-authn-authz/mutating-admission-policy/
     namespace: default
