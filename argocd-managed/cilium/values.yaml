@@ -1,55 +1,19 @@
+# Shared by every cluster. Per-cluster overrides live in values-<cluster>.yaml,
+# picked up by the cilium ApplicationSet (applicationSets in argocd-apps/values.yaml).
+
 # Wrapper-chart values, consumed by templates/loadbalancer.yaml.
 loadBalancer:
-  enabled: true
+  enabled: false
   pool:
-    blocks:
-      - "2a05:f080:0:3800:1b::/112"
+    blocks: []
   l2:
-    interfaces:
-      - "^en.+"
+    interfaces: []
 
 # https://github.com/cilium/cilium/blob/main/install/kubernetes/cilium/values.yaml
 cilium: # set values for wrapper/umbrella chart
-  ipv4:
-    enabled: false
-  ipv6:
-    enabled: true
   kubeProxyReplacement: true
-  k8sServiceHost: localhost
-  k8sServicePort: 7445
-  # only the LAN NICs, not the dn42 WireGuard links on talos4
-  devices: en+
-  l2announcements:
-    enabled: true
-  # Ingress for the talos cluster (the element Gateway). Needs the Gateway API
-  # CRDs from gateway-api-talos present when the operator starts, or it skips
-  # the controller -- restart cilium-operator and ds/cilium after enabling.
-  gatewayAPI:
-    enabled: true
   k8sClientRateLimit:
     qps: 50
     burst: 100
   ipam:
     mode: kubernetes
-  securityContext:
-    capabilities:
-      ciliumAgent:
-        - CHOWN
-        - KILL
-        - NET_ADMIN
-        - NET_RAW
-        - IPC_LOCK
-        - SYS_ADMIN
-        - SYS_RESOURCE
-        - DAC_OVERRIDE
-        - FOWNER
-        - SETGID
-        - SETUID
-      cleanCiliumState:
-        - NET_ADMIN
-        - SYS_ADMIN
-        - SYS_RESOURCE
-  cgroup:
-    autoMount:
-      enabled: false
-    hostRoot: /sys/fs/cgroup

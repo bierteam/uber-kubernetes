@@ -3,12 +3,6 @@ argocdApps:
   # - name: agones
   #   server: talos-cluster
   #   podSecurity: baseline
-  - name: cilium
-    docs: https://cilium.io/
-    namespace: kube-system
-    podSecurity: privileged
-    server: talos-cluster
-    finalizer: false # moving to the cilium ApplicationSet; a prune must not take the CNI with it
   - name: cyberchef
     docs: https://github.com/gchq/CyberChef
   - name: dex
@@ -117,6 +111,11 @@ applicationSets:
     docs: https://cloudnative-pg.io/
     namespace: cnpg-system
     primaryCluster: in-cluster
+  - name: cilium
+    docs: https://cilium.io/
+    namespace: kube-system
+    podSecurity: privileged
+    primaryCluster: talos-cluster
   - name: security-txt
     docs: https://kubernetes.io/docs/reference/access-authn-authz/mutating-admission-policy/
     namespace: default
