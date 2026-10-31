@@ -1,0 +1,41 @@
+apiVersion: v1alpha1
+kind: WireguardConfig
+name: wg-nedifinita
+# public key: ForuR/5064JlniVCuU3crUo12OoV+eMiq4q9/oY5yzs=
+privateKey: ENC[AES256_GCM,data:mD8pMhC48JNpgs/Cc4jCBcLDPWuDKFP5BM08sjGSSde1EHCFKBaYQnu2yzg=,iv:Iy5Knh6oXiidCNoQsZ+I4efLXHh5JTrvYox3SOQHpnA=,tag:hBEBy6mFzTEOkHG3CvLowQ==,type:str]
+listenPort: 20454
+addresses:
+    - address: fe80::3818/64
+peers:
+    - publicKey: ocxC+26M4aZtQqUVyaPHetGMjRj4VnIUgo3DCu9e1W0=
+      endpoint: '[2a12:bec4:1821:855::a]:23818' # dn42v.nedifinita.com
+      persistentKeepaliveInterval: 25s
+      allowedIPs:
+        - fe80::/10
+        - fd00::/8
+sops:
+    encrypted_regex: ^privateKey$
+    lastmodified: "2026-10-31T03:27:23Z"
+    mac: ENC[AES256_GCM,data:5s4raepnUJbEwikyWy+zQv3pxkKP4/XnXb9DKIvNS6RM5zu4MCeQFUXy5v1m0A6tWYzI0FYS3h/G5zm6+A3Ow5OPOUyv2p/t2pYRgrUEYQTYYjc5OekS8a9mA028wpLuxY6k9FyZo5dbFyrtJ1Kb9sP4+ojYYM6I0KD+NZFCZb0=,iv:IOmKMIcT867byIyqHivvOmQJi2XtXUDaM3wtUQi4Epw=,tag:ORXzKb55l0rlsdFi+r0SiQ==,type:str]
+    pgp:
+        - created_at: "2026-10-31T03:27:23Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA8JLx4cwGUNQARAAuNGBDOWLCS0q2dlZIM0DzIGg4jcGuo8WgJBJsSOBiKij
+            TBavzs8/8Lrb/dUfZoyRxCzxHhoaCUN5qV4WRKy99s5S18r1X7VoXkFdr6fUPDgA
+            aBW7rHNkpgpUAlvJ19K4NZTYBtdkGsI5qpR2MoQXFTSG/4LKaOEhOa2rHPp7Z/kY
+            geuLRiBqXthaAn6qUIvlekeMRaAlddQZjXtaN6rvDW0tdf+az3QkX2IN2wtVqHFc
+            W/1jUVDbsoDviZSVCTaYyBOpaH93lAjTwF1manDoY7EUIFuATbfYnFnS8APC5PX+
+            yGDCOhYkY24t9ZKZj0Vx/Xyg3knfkWpDr+ULuB8I5DRApo999IUPvSfVkKiKIsk5
+            J9Z02QF1NicycKkNrbtHp3/RjHh/qS9AT55G3D6cBAZEKQfeCBUUd1VDelwuDibB
+            VKPD30JuS9jwx4WqmiaxxUgtDlqGPw4oy9RIMD6MPlzdzjUH47o8oQFG6ZZyrmYZ
+            1+qyOE+jZMP7AAqhv32U8yMWgyCJCga5vLy546aJMj52+vHNghow1QY9vtnhu7gc
+            6c0bFeDMOTak+7gdMlariqRxjZBieHAdFRpqTP4/Psi0/kaDtbRE0NNaOyETyFDb
+            ZLttfrGn+LcUntMy2SPx+yRSJUaM82ZRhIWsS1HgKOGHmOLEGX5N3dfffzyUgdXS
+            UQGsmHi5KjxzzHa0CYLF662jlllMqVfJelSvjBM7F67RZl1hmamQpe6JwmNuh4pQ
+            w+uel06E1V60T5FXajimPP+IKKz8mc0dKo7fILu+s8OIQQ==
+            =fRBe
+            -----END PGP MESSAGE-----
+          fp: A707B3FAB275E7AA3237110A64B839C17E31F151
+    version: 3.13.3

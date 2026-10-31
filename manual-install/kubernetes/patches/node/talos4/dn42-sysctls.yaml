@@ -1,0 +1,16 @@
+# Peers can send link-local packets through the tunnels, so ignore their
+# router advertisements and redirects.
+machine:
+  sysctls:
+    net.ipv6.conf.wg-iedon.accept_ra: "0"
+    net.ipv6.conf.wg-iedon.accept_redirects: "0"
+    net.ipv6.conf.wg-tech9.accept_ra: "0"
+    net.ipv6.conf.wg-tech9.accept_redirects: "0"
+    net.ipv6.conf.wg-moe233.accept_ra: "0"
+    net.ipv6.conf.wg-moe233.accept_redirects: "0"
+    net.ipv6.conf.wg-gload.accept_ra: "0"
+    net.ipv6.conf.wg-gload.accept_redirects: "0"
+    net.ipv6.conf.wg-s6v.accept_ra: "0"
+    net.ipv6.conf.wg-s6v.accept_redirects: "0"
+    net.ipv6.conf.wg-nedifinita.accept_ra: "0"
+    net.ipv6.conf.wg-nedifinita.accept_redirects: "0"

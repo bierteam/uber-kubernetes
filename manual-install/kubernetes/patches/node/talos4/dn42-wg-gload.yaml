@@ -1,0 +1,41 @@
+apiVersion: v1alpha1
+kind: WireguardConfig
+name: wg-gload
+# public key: BwkrK3duUCaBUtiW7NDatqgTRG2jTs6GzQqD9Mu8Glo=
+privateKey: ENC[AES256_GCM,data:F9T4TEh0Y0GxRHyHNxP9YGTycIGT3LFXHyGtuLH4++YeeLQdHi12L98/Ni4=,iv:tWVWVT/W9S8tRIygoAAXf98o4JpdnCUIKFL8zy1QXGQ=,tag:VexIdo9o4fLRQIyCUwnKmw==,type:str]
+listenPort: 23914
+addresses:
+    - address: fe80::ade1/64
+peers:
+    - publicKey: sLbzTRr2gfLFb24NPzDOpy8j09Y6zI+a7NkeVMdVSR8=
+      endpoint: '[2a03:90c0:1d7::60]:20032' # fr1.g-load.eu
+      persistentKeepaliveInterval: 25s
+      allowedIPs:
+        - fe80::/10
+        - fd00::/8
+sops:
+    encrypted_regex: ^privateKey$
+    lastmodified: "2026-10-31T03:09:58Z"
+    mac: ENC[AES256_GCM,data:QC3vak1L8Rqk/Vd2nnwY2hkzTUKe6ktryyMA7RQwFgph/lwxzrulxe+yyNhIvs9L4mK3GSxm9ZRMZzbBWZM54I7Z4cBja5ly9zhoGZoR3gr4eXBUA7vHtSuE9VLCn0dWwztth41alpoxcH721zw+AEARx/y7OWKUhe9EKoS0LGM=,iv:GvsjLjiYSClYj1/v9LwHLACEejK/4rfk4WHmxt8eTbM=,tag:066zaQSMqCUL6wSyTPPzAg==,type:str]
+    pgp:
+        - created_at: "2026-10-31T03:06:21Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA8JLx4cwGUNQARAAunFiX5gilUOHrhuWxIc+9DDiiZP8s33JBRym0l3nM/zh
+            CMcvY2WeJj6OiR3kRCxHXTRcmYETlo/UT+MUvsVlTYkPL6k7hHKp3K5CIx7PUll+
+            jK6dmR0wvW4JnKDhM6P0sAqpQSa4fIEBQ3GyAJIxVGAEA6RzkbZWI5C+qwFOc90V
+            qrb7jLi+/F9byUDg2Rgus6LHh++KZWgPnQ0+3v9nRgaEgyQ1MvLsqt0LMhYe3fFU
+            May9Kp/Qm0tPxykOnDeOiHenN96XfL7Ujh9JzE2ZKMg0ZrWZ1O3A0JXdq7Ehek7w
+            IumHIQtC503sPxXmP7W5Fq9gDU8ucnDH9lRMVEeF/7DmO6RSh/lr5oS6jGtmk4Yy
+            2CNFo350yt+TbTbGwJh9gyzyZlkDsW4E4GPMWHqwkeYV7uS3XV9IQkokErGzZbHc
+            V59UNeJVsT/8nTHNIipoW69ySdDlJVyLWFvHiVUv+B0sHVEUFlVmwhuHNDhgyk7a
+            X+yoolX5S6W5xQC5KWrXfYKxTA0Sy5SsYgghsoDIgU0vZtqRzagJFbOwiztRJHmR
+            ln0M6uyRlbI5a2jE9J/qy8CSMLn1GSdxhvKjrXH4oBX+hTjzuTnxzQ+0MEtmw2UR
+            qcDqj8H8YsC/WfU7egABQxPaJ7frilQEvt3wOp2DiUPEzQGLHViY46ficw49d7DS
+            UQEYRBmEZQnLyDFVWfN0I/06xiBbywaNKdwExFX27NIn9gIJCDCswx/uGNCTkyWh
+            HZpVsI7qI0hjNK0CK4xMzmLDk5HI6S6pAMIiJhLfxW/pkw==
+            =QwKu
+            -----END PGP MESSAGE-----
+          fp: A707B3FAB275E7AA3237110A64B839C17E31F151
+    version: 3.13.3

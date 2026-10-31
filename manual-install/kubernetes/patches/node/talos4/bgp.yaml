@@ -1,0 +1,6 @@
+# talos4 routes DN42 and would answer LB traffic straight into vrf-dn42,
+# bypassing OPNsense, so it doesn't announce LoadBalancer IPs (argocd-managed/cilium/templates/bgp.yaml).
+apiVersion: v1alpha1
+kind: KubeNodeConfig
+labels:
+  bgp.oscarr.nl/peer: "false"

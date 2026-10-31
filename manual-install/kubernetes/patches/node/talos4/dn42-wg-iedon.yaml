@@ -1,0 +1,41 @@
+apiVersion: v1alpha1
+kind: WireguardConfig
+name: wg-iedon
+# public key: Z+E2LCtW2d1RF/RY7H3jUTK3lTP3KGx8JGWpNbRYMBk=
+privateKey: ENC[AES256_GCM,data:/VCrn/SMeG0eoi0mBhnwUd8UZFy0hSmcaNS+4wmb0x++CJK7SvGRhTFxiXM=,iv:hAiNnMAxaMaLFulQprmLWuPIHMvhsTrHukpRIGxYHMM=,tag:Tvu8hzzLTnYIgzkANqlpBw==,type:str]
+listenPort: 22189
+addresses:
+    - address: fe80::3818/64
+peers:
+    - publicKey: d9pyoZJYxLcd47vWOcNRY7hCuvLBe94BLSn8Qz3Q/j0=
+      endpoint: '[2a0d:3003:b700:107:1c00:18ff:fe00:75d]:37426' # uk-lon.dn42.iedon.net
+      persistentKeepaliveInterval: 25s
+      allowedIPs:
+        - fe80::/10
+        - fd00::/8
+sops:
+    encrypted_regex: ^privateKey$
+    lastmodified: "2026-10-31T00:13:53Z"
+    mac: ENC[AES256_GCM,data:eDyhc3p3y6EDOkMY8UVYrBdORbTN9oL+tX4B0TI4+JMPJbk7DJe1rZeQcWKnuBcGmNbklUUE+umKSCvkkxQNUlxlUrTjbr57mRKWm2jhbMoSF69XCZBYRdJgnYLe9r6rX9/6psifVJoreMjnXyrEjfrreviovPkEdPeBxe8cIY4=,iv:nEwQng+a2KIOk8xhUr0sc4wwq1t5mAWN4VUqeOTGyE4=,tag:49CBex0TJ4b36sXnvDHXlg==,type:str]
+    pgp:
+        - created_at: "2026-10-31T00:13:53Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA8JLx4cwGUNQARAA1FU6myhu1/sv3xLwna/ilvRtX0WBNjRjsPjxBs7/umne
+            vuPZ0FrLJW+5pzz1LOq0LJjOW0t7Pxsb+27HrG62lXPLlFFdg6aZH+PZ9vx7JUVA
+            rhThEiC7FGDHCmQEgCJHk2pRZdFxcly0NURjDesbXWCIn/8gbSPBYxb46otOvB+6
+            Y+8E+wNHlSiiXrOVC5MD6bkjdsmr0csoYJPRavyE//0hxFK2VPrCVtbTFmNppB78
+            OdXV6SwrK1E6fSxoeuLPmaf0qb0M+3v01wf5cyENcLHxcab+84rk7e1eyg1XM48X
+            vxOend5V9ZvFUFAaeebZQDNmGwdPMLVic6nPYCz8q2j8IOfeCXrhMatwka8/k/Zf
+            VwK0VdYr515a5JrwNWLvWRsxOYrhp6BnSNqFZ1L4uYXhGmaHYErC2FGNU5cR1xLk
+            otyK8SoMI4MzLMiaCu3busWSzHA5oWicdww5hVR0LnjmeVpFFAnde8V/p8tEzPHd
+            CcGnkiNzCuPQ29DqCAAsQUDZT9+5y8vQcpVlYwNAb8jmL6NrjxNCetjsVomcSumS
+            E75wbqCbbbdpsNUF46xrFZqu9S9ARzHVi+7KwBvOF+a1bFFrA+FFfH64lAMsDmn3
+            Q/Pk9LdZBU/gT+9rX3q/5uhUeO51nijKac/OKu4hANWbar+ZtWOL7mgZzrxOVz3S
+            UQFx+YbV38vdcF63CmVcgfyOck/su+shx1zETF6RG3fu2h7yVfclbZYO9L0tmLv+
+            sivE7wXOkafPTMsnyIXnrbKbroWYxbJQ2kdiw+65W/b/Ig==
+            =OVBa
+            -----END PGP MESSAGE-----
+          fp: A707B3FAB275E7AA3237110A64B839C17E31F151
+    version: 3.13.3

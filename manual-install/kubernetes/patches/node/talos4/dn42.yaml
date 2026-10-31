@@ -1,0 +1,174 @@
+---
+# DN42 router. The tunnels live in vrf-dn42, whose table only leads to OPNsense,
+# so traffic from DN42 can't reach the node, the cluster or the LAN directly.
+apiVersion: v1alpha1
+kind: LinkConfig
+name: enp1s0
+routes:
+  - destination: fd69:420:cafe::/48
+    gateway: fe80::7c13:c1ff:fea5:6338 # OPNsense, the only way out of vrf-dn42
+    table: "42"
+---
+apiVersion: v1alpha1
+kind: VRFConfig
+name: vrf-dn42
+table: "42"
+links:
+  - wg-iedon
+  - wg-tech9
+  - wg-moe233
+  - wg-gload
+  - wg-s6v
+  - wg-nedifinita
+---
+# Only traffic forwarded by OPNsense goes into vrf-dn42. talos4's own pods
+# reach DN42 via the default route and OPNsense's NAT like on the other nodes,
+# instead of leaving the tunnels with a pod address. Pod and service traffic
+# from the other nodes stays in the main table.
+apiVersion: v1alpha1
+kind: RoutingRuleConfig
+name: "200"
+iifName: enp1s0
+dst: fd05:4786:835f::/48
+table: main
+---
+apiVersion: v1alpha1
+kind: RoutingRuleConfig
+name: "201"
+iifName: enp1s0
+dst: fd26:4340:84fe::/112
+table: main
+---
+apiVersion: v1alpha1
+kind: RoutingRuleConfig
+name: "210"
+iifName: enp1s0
+dst: fd00::/8
+table: "42"
+---
+# Catch-all for table 42. Without it, lookups that miss the VRF table fall
+# through to the main table, letting peers route into the LAN and pod networks.
+# Talos has no unreachable routes, so the default goes into a dummy link, which
+# drops everything.
+apiVersion: v1alpha1
+kind: DummyLinkConfig
+name: dn42-null
+routes:
+  - gateway: fe80::1
+    metric: 4278198272
+    table: "42"
+---
+apiVersion: v1alpha1
+kind: ExtensionServiceConfig
+name: bird2
+configFiles:
+  - mountPath: /usr/local/etc/bird.conf
+    content: |
+      define OWNAS = 4242423818;
+      define OWNNETv6 = fd69:420:cafe::/48;
+      define OWNNETSETv6 = [fd69:420:cafe::/48+];
+
+      router id 10.38.18.4;
+      log stderr all;
+
+      protocol device {
+        scan time 10;
+      }
+
+      function is_self_net_v6() -> bool {
+        return net ~ OWNNETSETv6;
+      }
+
+      function is_valid_network_v6() -> bool {
+        return net ~ [ fd00::/8{44,64} ];
+      }
+
+      # cluster pod and service ranges
+      function is_cluster_net_v6() -> bool {
+        return net ~ [ fd05:4786:835f::/48+, fd26:4340:84fe::/112+ ];
+      }
+
+      roa6 table dn42_roa6;
+
+      protocol rpki stayrtr {
+        roa6 { table dn42_roa6; };
+        remote fd26:4340:84fe::8282 port 8282;
+        refresh 600;
+        retry 30;
+        expire 7200;
+      }
+
+      protocol static {
+        route OWNNETv6 unreachable;
+        ipv6 {
+          import all;
+          export none;
+        };
+      }
+
+      protocol kernel {
+        vrf "vrf-dn42";
+        kernel table 42;
+        scan time 20;
+        learn off;
+        ipv6 {
+          import none;
+          export filter {
+            if source = RTS_STATIC then reject;
+            accept;
+          };
+        };
+      }
+
+      template bgp dnpeers {
+        vrf "vrf-dn42";
+        local as OWNAS;
+        path metric on;
+        ipv6 {
+          # keeps received routes so ROA updates re-run the import filter
+          import table on;
+          import filter {
+            if !is_valid_network_v6() || is_self_net_v6() || is_cluster_net_v6() then reject;
+            if roa_check(dn42_roa6, net, bgp_path.last) != ROA_VALID then {
+              print "[dn42] ROA check failed for ", net, " ASN ", bgp_path.last;
+              reject;
+            }
+            accept;
+          };
+          export filter {
+            if is_valid_network_v6() && source ~ [RTS_STATIC, RTS_BGP] then accept;
+            reject;
+          };
+          import limit 9000 action block;
+        };
+      }
+
+      protocol bgp iedon_uklon from dnpeers {
+        neighbor fe80::2189:122 as 4242422189;
+        interface "wg-iedon";
+      }
+
+      protocol bgp tech9_defra02 from dnpeers {
+        neighbor fe80::1588 as 4242421588;
+        interface "wg-tech9";
+      }
+
+      protocol bgp moe233_ams from dnpeers {
+        neighbor fe80::253 as 4242420253;
+        interface "wg-moe233";
+      }
+
+      protocol bgp gload_fr1 from dnpeers {
+        neighbor fe80::ade0 as 4242423914;
+        interface "wg-gload";
+      }
+
+      protocol bgp s6v_ams1 from dnpeers {
+        neighbor fe80::3432 as 4242423432;
+        interface "wg-s6v";
+      }
+
+      protocol bgp nedifinita_lelystad from dnpeers {
+        neighbor fe80::454 as 4242420454;
+        interface "wg-nedifinita";
+      }
