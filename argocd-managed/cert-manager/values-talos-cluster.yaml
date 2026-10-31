@@ -4,12 +4,26 @@
 domains: []
 ips: []
 # Cluster-wide HTTP-01 through each app's own Gateway. Convention: the Gateway
-# is named `gateway`, in the same namespace as the Certificate. No DNS-01
-# issuers here, so the Cloudflare/servfail SealedSecrets aren't rendered.
+# is named `gateway`, in the same namespace as the Certificate. The only DNS-01
+# issuer is dn42, so the Cloudflare/servfail SealedSecrets aren't rendered.
 issuers:
   - name: letsencrypt
     kind: ClusterIssuer
     http01Gateway: gateway
+  # .dn42 certificates from burble's ACME CA, DNS-01 through knot in the dn42
+  # app. Names need oscrx.dn42 delegated in the DN42 registry.
+  - name: dn42
+    kind: ClusterIssuer
+    server: https://acme.burble.dn42/v1/dn42/acme/directory
+    caBundleFile: files/dn42-root-ca.crt
+    account_key: dn42
+    profile: ""
+    rfc2136:
+      # knot-update in the dn42 namespace
+      nameserver: "[fd26:4340:84fe::53]:53"
+      tsigKeyName: cert-manager
+      secretName: dn42-tsig
+      zones: [oscrx.dn42]
 
 cert-manager-webhook-pdns:
   enabled: false
