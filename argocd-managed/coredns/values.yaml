@@ -1,0 +1,114 @@
+# https://github.com/coredns/helm/blob/master/charts/coredns/values.yaml
+# Replaces the CoreDNS that Talos deploys (KubeCoreDNSConfig enabled: false in
+# manual-install/kubernetes/patches/control-plane/coredns.yaml), so the Corefile
+# can send the DN42 zones to a different upstream than the rest.
+coredns:
+  # kube-dns everywhere: the Talos objects are named coredns, so the two run
+  # side by side during the handover, see the README.
+  fullnameOverride: kube-dns
+  k8sAppLabelOverride: kube-dns
+
+  replicaCount: 2
+  priorityClassName: system-cluster-critical
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 70Mi
+    limits:
+      cpu: "1" # the chart sets 100m, enough to throttle a DNS server; null does not unset a subchart default
+      memory: 170Mi
+  env:
+    - name: GOMEMLIMIT
+      value: 161MiB
+
+  service:
+    name: kube-dns
+    # what the kubelet hands out as nameserver, the 10th address of serviceSubnets
+    clusterIP: fd26:4340:84fe::a
+    # only the shared label, so the Talos pods keep serving until they are deleted
+    selector:
+      k8s-app: kube-dns
+
+  podDisruptionBudget:
+    maxUnavailable: 1
+
+  affinity:
+    podAntiAffinity:
+      preferredDuringSchedulingIgnoredDuringExecution:
+        - weight: 100
+          podAffinityTerm:
+            labelSelector:
+              matchLabels:
+                app.kubernetes.io/name: coredns
+                app.kubernetes.io/instance: coredns
+            topologyKey: kubernetes.io/hostname
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+
+  servers:
+    # DN42: only Unbound on OPNsense knows these. d.f.ip6.arpa is fd00::/8,
+    # which also holds the pod and service subnets, hence kubernetes again.
+    - zones:
+        - zone: dn42.
+          use_tcp: true
+        - zone: d.f.ip6.arpa.
+          use_tcp: true
+      port: 53
+      plugins:
+        - name: errors
+        - name: log
+          configBlock: |-
+            class error
+        - name: prometheus
+          parameters: :9153
+        - name: kubernetes
+          parameters: d.f.ip6.arpa
+          configBlock: |-
+            fallthrough
+            ttl 30
+        - name: forward
+          parameters: . 2a05:f080:0:3800::a
+        - name: cache
+          parameters: 30
+        - name: loop
+        - name: reload
+        - name: loadbalance
+    - zones:
+        - zone: .
+          use_tcp: true
+      port: 53
+      plugins:
+        - name: errors
+        - name: health
+          configBlock: |-
+            lameduck 5s
+        - name: ready
+        - name: log
+          configBlock: |-
+            class error
+        - name: prometheus
+          parameters: :9153
+        - name: kubernetes
+          parameters: cluster.local in-addr.arpa ip6.arpa
+          configBlock: |-
+            pods insecure
+            fallthrough in-addr.arpa ip6.arpa
+            ttl 30
+        # Unbound first, Cloudflare's DNS64 when it is down. All of them
+        # synthesise into 64:ff9b::/96, the NAT64 prefix on OPNsense.
+        - name: forward
+          parameters: . 2a05:f080:0:3800::a 2606:4700:4700::64 2606:4700:4700::6400
+          configBlock: |-
+            policy sequential
+            max_concurrent 1000
+        - name: cache
+          parameters: 30
+          configBlock: |-
+            disable success cluster.local
+            disable denial cluster.local
+        - name: loop
+        - name: reload
+        - name: loadbalance

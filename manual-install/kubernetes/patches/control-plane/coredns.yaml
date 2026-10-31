@@ -1,0 +1,7 @@
+---
+# CoreDNS comes from ArgoCD instead (argocd-managed/coredns), for a Corefile
+# that Talos doesn't let you set. Disabling it doesn't delete what Talos already
+# deployed, see the handover in argocd-managed/coredns/README.md.
+apiVersion: v1alpha1
+kind: KubeCoreDNSConfig
+enabled: false

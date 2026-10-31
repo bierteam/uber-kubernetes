@@ -3,6 +3,11 @@ argocdApps:
   # - name: agones
   #   server: talos-cluster
   #   podSecurity: baseline
+  - name: coredns
+    docs: https://github.com/coredns/helm
+    namespace: kube-system
+    podSecurity: privileged # kube-system also runs the privileged node agents
+    server: talos-cluster
   - name: cyberchef
     docs: https://github.com/gchq/CyberChef
   - name: dex
