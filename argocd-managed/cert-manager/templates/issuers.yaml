@@ -7,10 +7,17 @@ metadata:
 spec:
   acme:
     server: {{ $issuer.server | default "https://acme-v02.api.letsencrypt.org/directory" }}
+    {{- with $issuer.caBundleFile }}
+    # the CA the ACME server's own certificate chains to
+    caBundle: {{ $.Files.Get . | b64enc }}
+    {{- end }}
     email: {{ $issuer.email | default "oscar@oscarr.nl" }}
     privateKeySecretRef:
       name: {{ $issuer.account_key | default "letsencrypt" }}
-    profile: {{ $issuer.profile | default "shortlived" }}
+    {{- /* an empty profile: leaves it out, for CAs without ACME profiles */}}
+    {{- with ternary $issuer.profile "shortlived" (hasKey $issuer "profile") }}
+    profile: {{ . }}
+    {{- end }}
     solvers:
     {{- if $issuer.cloudflare }}
       - dns01:
@@ -31,6 +38,20 @@ spec:
               apiKeySecretRef:
                 name: servfail-api-key
                 key: key
+    {{- else if $issuer.rfc2136 }}
+      - dns01:
+          rfc2136:
+            nameserver: {{ $issuer.rfc2136.nameserver | quote }}
+            tsigKeyName: {{ $issuer.rfc2136.tsigKeyName }}
+            tsigAlgorithm: HMACSHA256
+            tsigSecretSecretRef:
+              name: {{ $issuer.rfc2136.secretName }}
+              key: secret
+        {{- with $issuer.rfc2136.zones }}
+        selector:
+          dnsZones:
+            {{- toYaml . | nindent 12 }}
+        {{- end }}
     {{- else if $issuer.http01 }}
       - http01:
           ingress:

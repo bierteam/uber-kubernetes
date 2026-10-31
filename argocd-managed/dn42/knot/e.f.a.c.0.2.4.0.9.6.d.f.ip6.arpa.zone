@@ -1,0 +1,11 @@
+; fd69:420:cafe::/48
+$ORIGIN e.f.a.c.0.2.4.0.9.6.d.f.ip6.arpa.
+$TTL 3600
+; Knot replaces the serial when it signs the zone.
+@    SOA ns1.oscrx.dn42. hostmaster.oscrx.dn42. 1 3600 900 604800 300
+@    NS  ns1.oscrx.dn42.
+@    NS  ns2.oscrx.dn42.
+; fd69:420:cafe:ff::53
+3.5.0.0.0.0.0.0.0.0.0.0.0.0.0.0.f.f.0.0  PTR ns1.oscrx.dn42.
+; fd69:420:cafe:ff::5353
+3.5.3.5.0.0.0.0.0.0.0.0.0.0.0.0.f.f.0.0  PTR ns2.oscrx.dn42.
