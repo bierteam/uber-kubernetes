@@ -1,6 +1,6 @@
 # Publishes oscrx.dn42 names for talos-cluster Services and HTTPRoutes into
 # knot over RFC2136, from the external-dns.kubernetes.io/hostname annotation
-# (v0.23 dropped the alpha prefix). Separate from the external-dns app, which
+# (v0.23 dropped the alpha prefix), plus DNSEndpoints such as TLSA records. Separate from the external-dns app, which
 # runs on the other cluster and writes to Cloudflare.
 apiVersion: v1
 kind: ServiceAccount
@@ -21,6 +21,13 @@ rules:
   - apiGroups: [gateway.networking.k8s.io]
     resources: [gateways, httproutes]
     verbs: [get, list, watch]
+  # the crd source, for the TLSA records from the tlsa-dnsendpoint-controller
+  - apiGroups: [externaldns.k8s.io]
+    resources: [dnsendpoints]
+    verbs: [get, list, watch]
+  - apiGroups: [externaldns.k8s.io]
+    resources: [dnsendpoints/status]
+    verbs: [update, patch]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -64,15 +71,18 @@ spec:
           args:
             - --source=service
             - --source=gateway-httproute
+            # DNSEndpoints, e.g. TLSA records from the tlsa-dnsendpoint-controller
+            - --source=crd
             - --domain-filter=oscrx.dn42
             # PTRs for the AAAA records, in the reverse zone of fd69:420:cafe::/48
             - --create-ptr
             - --domain-filter=e.f.a.c.0.2.4.0.9.6.d.f.ip6.arpa
-            # the defaults plus PTR, which --create-ptr needs
+            # the defaults plus PTR, which --create-ptr needs, and TLSA
             - --managed-record-types=A
             - --managed-record-types=AAAA
             - --managed-record-types=CNAME
             - --managed-record-types=PTR
+            - --managed-record-types=TLSA
             - --provider=rfc2136
             # knot-update
             - --rfc2136-host=fd26:4340:84fe::53
