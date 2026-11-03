@@ -5,10 +5,8 @@ metadata:
   name: proxmox
 subsets:
   - addresses:
-      - ip: 100.64.0.1
-      - ip: 100.64.0.2
-      - ip: 100.64.0.5
-      - ip: 100.64.0.6
+      - ip: 100.64.0.1 # pve02
+      - ip: 100.64.0.13 # pve05
     ports:
       - port: 8006
 ---
