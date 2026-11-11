@@ -7,16 +7,16 @@ listenPort: 22189
 addresses:
     - address: fe80::3818/64
 peers:
-    - publicKey: d9pyoZJYxLcd47vWOcNRY7hCuvLBe94BLSn8Qz3Q/j0=
-      endpoint: '[2a0d:3003:b700:107:1c00:18ff:fe00:75d]:37426' # uk-lon.dn42.iedon.net
+    - publicKey: 08dzv758I5APqJizgw/W6O+FceyHSCbx/L/GZ3TL5TQ=
+      endpoint: '[2001:bc8:1640:5bdb:dc00:ff:fe60:c2e3]:60887' # nl-ams.dn42.iedon.net
       persistentKeepaliveInterval: 25s
       allowedIPs:
         - fe80::/10
         - fd00::/8
 sops:
     encrypted_regex: ^privateKey$
-    lastmodified: "2026-10-31T00:13:53Z"
-    mac: ENC[AES256_GCM,data:eDyhc3p3y6EDOkMY8UVYrBdORbTN9oL+tX4B0TI4+JMPJbk7DJe1rZeQcWKnuBcGmNbklUUE+umKSCvkkxQNUlxlUrTjbr57mRKWm2jhbMoSF69XCZBYRdJgnYLe9r6rX9/6psifVJoreMjnXyrEjfrreviovPkEdPeBxe8cIY4=,iv:nEwQng+a2KIOk8xhUr0sc4wwq1t5mAWN4VUqeOTGyE4=,tag:49CBex0TJ4b36sXnvDHXlg==,type:str]
+    lastmodified: "2026-11-04T09:46:12Z"
+    mac: ENC[AES256_GCM,data:6ePR/R2UKiXKN+j8jEC6PSj+dBR1s5MWFmuo5CVwJ3AyecQ1RwNG6uyoDig08I7FzsmtQzjC6XET2sVyAmcHcyIESAU1SaUZvisGuYF1yB/3lMdvjXgdS+JBXS9MzQ+rS6gWD6ZmqjlweS0gATCH4W7v0lF1B95ZwvWyBqsksdc=,iv:SbYoynsmT36YRFjDnl9+BnGyFL0/Mf6X4FQxXcFwuWs=,tag:t+zOlPrhDd+eNaKhujyb1w==,type:str]
     pgp:
         - created_at: "2026-10-31T00:13:53Z"
           enc: |-

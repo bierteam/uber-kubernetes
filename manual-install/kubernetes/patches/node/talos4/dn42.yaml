@@ -20,6 +20,19 @@ links:
   - wg-gload
   - wg-s6v
   - wg-nedifinita
+  - wg-headscarf
+  - wg-routedbits
+  - wg-yuyuko
+  - dn42-lo
+---
+# The router's own address inside vrf-dn42, for the multihop session to the
+# route collector and for ping/traceroute. The /128 is more specific than the
+# /48 towards OPNsense, so packets for it are delivered locally.
+apiVersion: v1alpha1
+kind: DummyLinkConfig
+name: dn42-lo
+addresses:
+  - address: fd69:420:cafe:ffff::1/128
 ---
 # Only traffic forwarded by OPNsense goes into vrf-dn42. talos4's own pods
 # reach DN42 via the default route and OPNsense's NAT like on the other nodes,
@@ -120,6 +133,61 @@ configFiles:
         };
       }
 
+      # DN42 link communities (dn42.eu/howto/BGP-communities). Each route carries
+      # the worst latency, bandwidth and crypto seen along its path, so every
+      # hop replaces the value with the worse of it and its own link's.
+      function update_latency(int own) -> int {
+        int v = own;
+        for pair c in bgp_community do
+          if c ~ [(64511, 1..9)] && c.data > v then v = c.data;
+        bgp_community.delete([(64511, 1..9)]);
+        bgp_community.add((64511, v));
+        return v;
+      }
+
+      function update_bandwidth(int own) {
+        int v = own;
+        for pair c in bgp_community do
+          if c ~ [(64511, 21..29)] && c.data < v then v = c.data;
+        bgp_community.delete([(64511, 21..29)]);
+        bgp_community.add((64511, v));
+      }
+
+      function update_crypto(int own) {
+        int v = own;
+        for pair c in bgp_community do
+          if c ~ [(64511, 31..34)] && c.data < v then v = c.data;
+        bgp_community.delete([(64511, 31..34)]);
+        bgp_community.add((64511, v));
+      }
+
+      function update_link(int lat; int bw; int crypto) -> int {
+        update_bandwidth(bw);
+        update_crypto(crypto);
+        return update_latency(lat);
+      }
+
+      function dn42_import(int lat; int bw; int crypto) -> bool {
+        if !is_valid_network_v6() || is_self_net_v6() || is_cluster_net_v6() then return false;
+        if roa_check(dn42_roa6, net, bgp_path.last) != ROA_VALID then {
+          print "[dn42] ROA check failed for ", net, " ASN ", bgp_path.last;
+          return false;
+        }
+        # prefer low-latency paths over short ones: latency 2 gets 180, 5 gets 150
+        bgp_local_pref = 200 - 10 * update_link(lat, bw, crypto);
+        return true;
+      }
+
+      function dn42_export(int lat; int bw; int crypto) -> bool {
+        if !is_valid_network_v6() || !(source ~ [RTS_STATIC, RTS_BGP]) then return false;
+        if source = RTS_STATIC then {
+          bgp_community.add((64511, 41));   # region: Europe
+          bgp_community.add((64511, 1528)); # country: Netherlands
+        }
+        update_link(lat, bw, crypto);
+        return true;
+      }
+
       template bgp dnpeers {
         vrf "vrf-dn42";
         local as OWNAS;
@@ -127,48 +195,103 @@ configFiles:
         ipv6 {
           # keeps received routes so ROA updates re-run the import filter
           import table on;
-          import filter {
-            if !is_valid_network_v6() || is_self_net_v6() || is_cluster_net_v6() then reject;
-            if roa_check(dn42_roa6, net, bgp_path.last) != ROA_VALID then {
-              print "[dn42] ROA check failed for ", net, " ASN ", bgp_path.last;
-              reject;
-            }
-            accept;
-          };
-          export filter {
-            if is_valid_network_v6() && source ~ [RTS_STATIC, RTS_BGP] then accept;
-            reject;
-          };
           import limit 9000 action block;
         };
       }
 
-      protocol bgp iedon_uklon from dnpeers {
-        neighbor fe80::2189:122 as 4242422189;
+      # Link values per peer: latency from the minimum RTT to the endpoint (from OPNsense),
+      # 25 for our gigabit uplink unless the peer is slower, 34 for WireGuard.
+      protocol bgp iedon_nlams from dnpeers {
+        neighbor fe80::2189:177 as 4242422189;
         interface "wg-iedon";
+        ipv6 {
+          import where dn42_import(2, 24, 34);
+          export where dn42_export(2, 24, 34);
+        };
       }
 
       protocol bgp tech9_defra02 from dnpeers {
         neighbor fe80::1588 as 4242421588;
         interface "wg-tech9";
+        ipv6 {
+          import where dn42_import(3, 25, 34);
+          export where dn42_export(3, 25, 34);
+        };
       }
 
       protocol bgp moe233_ams from dnpeers {
         neighbor fe80::253 as 4242420253;
         interface "wg-moe233";
+        ipv6 {
+          import where dn42_import(2, 25, 34);
+          export where dn42_export(2, 25, 34);
+        };
       }
 
-      protocol bgp gload_fr1 from dnpeers {
+      protocol bgp gload_uk1 from dnpeers {
         neighbor fe80::ade0 as 4242423914;
         interface "wg-gload";
+        ipv6 {
+          import where dn42_import(3, 25, 34);
+          export where dn42_export(3, 25, 34);
+        };
       }
 
       protocol bgp s6v_ams1 from dnpeers {
         neighbor fe80::3432 as 4242423432;
         interface "wg-s6v";
+        ipv6 {
+          import where dn42_import(2, 25, 34);
+          export where dn42_export(2, 25, 34);
+        };
+      }
+
+      # DN42 Global Route Collector: feeds the maps and lg.collector.dn42. It
+      # never sends routes, and add paths shows it every path, not only the best.
+      protocol bgp route_collector {
+        vrf "vrf-dn42";
+        local fd69:420:cafe:ffff::1 as OWNAS;
+        neighbor fd42:d42:d42:179::1 as 4242422602;
+        multihop;
+        ipv6 {
+          add paths tx;
+          import none;
+          export where is_valid_network_v6() && source ~ [RTS_STATIC, RTS_BGP];
+        };
       }
 
       protocol bgp nedifinita_lelystad from dnpeers {
         neighbor fe80::454 as 4242420454;
         interface "wg-nedifinita";
+        ipv6 {
+          import where dn42_import(2, 25, 34);
+          export where dn42_export(2, 25, 34);
+        };
+      }
+
+      protocol bgp headscarf_nlams from dnpeers {
+        neighbor fe80::842 as 4242420842;
+        interface "wg-headscarf";
+        ipv6 {
+          import where dn42_import(2, 25, 34);
+          export where dn42_export(2, 25, 34);
+        };
+      }
+
+      protocol bgp routedbits_fra1 from dnpeers {
+        neighbor fe80::207 as 4242420207;
+        interface "wg-routedbits";
+        ipv6 {
+          import where dn42_import(3, 25, 34);
+          export where dn42_export(3, 25, 34);
+        };
+      }
+
+      protocol bgp yuyuko_nlams from dnpeers {
+        neighbor fe80::1117 as 4242421117;
+        interface "wg-yuyuko";
+        ipv6 {
+          import where dn42_import(2, 25, 34);
+          export where dn42_export(2, 25, 34);
+        };
       }

@@ -5,18 +5,18 @@ name: wg-gload
 privateKey: ENC[AES256_GCM,data:F9T4TEh0Y0GxRHyHNxP9YGTycIGT3LFXHyGtuLH4++YeeLQdHi12L98/Ni4=,iv:tWVWVT/W9S8tRIygoAAXf98o4JpdnCUIKFL8zy1QXGQ=,tag:VexIdo9o4fLRQIyCUwnKmw==,type:str]
 listenPort: 23914
 addresses:
-    - address: fe80::ade1/64
+    - address: fe80::3818/64
 peers:
     - publicKey: sLbzTRr2gfLFb24NPzDOpy8j09Y6zI+a7NkeVMdVSR8=
-      endpoint: '[2a03:90c0:1d7::60]:20032' # fr1.g-load.eu
+      endpoint: '[2a0e:dc0:5:4b5e::1]:20054' # uk1.g-load.eu
       persistentKeepaliveInterval: 25s
       allowedIPs:
         - fe80::/10
         - fd00::/8
 sops:
     encrypted_regex: ^privateKey$
-    lastmodified: "2026-10-31T03:09:58Z"
-    mac: ENC[AES256_GCM,data:QC3vak1L8Rqk/Vd2nnwY2hkzTUKe6ktryyMA7RQwFgph/lwxzrulxe+yyNhIvs9L4mK3GSxm9ZRMZzbBWZM54I7Z4cBja5ly9zhoGZoR3gr4eXBUA7vHtSuE9VLCn0dWwztth41alpoxcH721zw+AEARx/y7OWKUhe9EKoS0LGM=,iv:GvsjLjiYSClYj1/v9LwHLACEejK/4rfk4WHmxt8eTbM=,tag:066zaQSMqCUL6wSyTPPzAg==,type:str]
+    lastmodified: "2026-11-04T09:49:13Z"
+    mac: ENC[AES256_GCM,data:FOfd3oQmQbp3moe7F/tB3mt7uSq5EwAzXlmdNUff2QV8NdvicSujJiRWr8YjDVF888bgT+tqathW72sYce6BwRaRH40DBGbgRtpH1G9rlK2T8WCoKEEljUnJi7zbtTeSUnB0iXGtFQn3o7N5WtGLyRHEyo9Uelw7h+E9TMHmSec=,iv:qYNpLiYJeT3xCLYM5e/VNbkgLisBqGYqLkGZTG74ih4=,tag:pYllsocEMFCAwb1Pg9ziAw==,type:str]
     pgp:
         - created_at: "2026-10-31T03:06:21Z"
           enc: |-

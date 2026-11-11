@@ -1,0 +1,41 @@
+apiVersion: v1alpha1
+kind: WireguardConfig
+name: wg-yuyuko
+# public key: CtJ4UixZQ2k1gVWLqpdDx37VEqASCBYSsw/87aGtcyo=
+privateKey: ENC[AES256_GCM,data:MXv7c/le4aknNz+j1GnxNRLBZVqJAbD/tCq0LFGxGwNDNZW0D5wYRPxtaTQ=,iv:w1wUDS7ulPzPK9ZcLWciZ3NdgqA9LGv5Pe5J4cHN/f8=,tag:s9oIVPRUEzlDYDIT/njzyg==,type:str]
+listenPort: 21117
+addresses:
+    - address: fe80::3818/64
+peers:
+    - publicKey: 9oVGKPUnxykn9y/CeNmHbImnX2WRsHk6VzSIAQfy0hc=
+      endpoint: '[2001:bc8:1640:5af4:dc00:ff:fe60:6c4b]:23818' # nl01.dn42.yuyuko.com
+      persistentKeepaliveInterval: 25s
+      allowedIPs:
+        - fe80::/10
+        - fd00::/8
+sops:
+    encrypted_regex: ^privateKey$
+    lastmodified: "2026-11-11T22:20:57Z"
+    mac: ENC[AES256_GCM,data:9Ez9FOk/Z6GTGN9mZgXXOOb/qFTWbV/bv0dgGqdpUNTLNdSLMWQ3zrXoCW5DIjYA3OJXNsmASM17cr3mdcFC72fHPQBEHbk4EyjZBgjjBKnqRtyJXROZG8nnfL5GBx+LHUuh0uI1pGoRweYlRPFbgbJLS8DxXJBnV0tcoss4EI8=,iv:8rV7M4Yv9tGz3lBaE+arpcAOt/4Bt3HwyriRrtb/iho=,tag:9SSVGuRk1okuH2Z10zK9xg==,type:str]
+    pgp:
+        - created_at: "2026-11-11T22:15:13Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA8JLx4cwGUNQARAAmIZIkLkvk13RATTKr6cSOrEs/0UntCSxq4jd/MEHjLXE
+            l+aYR/8eHZjE4l3SeGjCk0GSoVTlVMdqlvmTsnrXHb6HU0tXdcRoQww761pb1SNP
+            5n8lj+NwP1pDv9FvC8TctRCPHvBCWALC50Dbo/iTeaC+s9Yy7a4PwTl0e91rONpO
+            +5DYayCf9kizdhWfSuAVAIEywcuxD8yfhZJgDP6zFpiKjShozDNQ7oUNnnzvCuYD
+            BW3mHG33cLocu9nu0r3jwF1I37Y/E5E4Td4J+zHAX5+SBfIwcR1ry05qx3Js0i1s
+            LbSVRslzr+geXzc1/znAepi7ofO5PBoqTGIng9dktFxCbE+puqPc+gJS3jIBfWNF
+            PWyJF+L+qiX7oD7RU9lx2r5UHujQZ4OktLCRH0pGnF9G0QAg0Dykn4GIFJ8sXIrS
+            QQjzUkd6BA/G2DAN+98atUScPLCOij6rxEA29kCFwtukucON3nCK4+g8lDNdCOW3
+            eO5ZkK/bBEvtsk7CF7E7xnGNXAaCZgOeSpn4c5rhcm+PNaieJDLrZovZMF1i5vL/
+            kY/3muYWpuxotth0cdLxD5VDJeKGmL11ybIYc4HPoG+LBm+/1yqM8IXgv7HalJs8
+            EUZygRN+1urMyEo2z/ktQnyrw/rEhpWahmLXoDe1dEjqX1giXRMIG8yp9UOFEhLS
+            UQHcuhZyCq7LU9S9wkpU1AdHXJFgjsR9D/I7QKOXGd9gcjZeR8KinihutsxDucA+
+            zE8hPqrgJ2B/4908TEDTbe04d/OIo1EJ+tBHVamG4ykeSA==
+            =CPnO
+            -----END PGP MESSAGE-----
+          fp: A707B3FAB275E7AA3237110A64B839C17E31F151
+    version: 3.13.3
