@@ -2,7 +2,6 @@ domains:
   - name: 0scar.nl
     issuer: letsencrypt-servfail
   - name: bruinsma.it
-  - name: devopscar.nl
   - name: doktermarjolein.nl
   - name: lab.oscarr.nl
   - name: ninoo.nl

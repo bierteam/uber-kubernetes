@@ -55,7 +55,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: (Host(`oscarr.nl`) || Host(`0scar.nl`) || Host(`devopscar.nl`)) && (Path(`/.well-known/keybase.txt`) || Path(`/keybase.txt`))
+    - match: (Host(`oscarr.nl`) || Host(`0scar.nl`)) && (Path(`/.well-known/keybase.txt`) || Path(`/keybase.txt`))
       priority: 1000
       kind: Rule
       middlewares:
