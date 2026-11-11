@@ -22,6 +22,7 @@ spec:
         apps.oscarr.nl/security-txt: "true"
         apps.oscarr.nl/sealed-secrets: "true"
         apps.oscarr.nl/cilium: "true"
+        apps.oscarr.nl/external-dns: "true"
         argocd.argoproj.io/secret-type: cluster
       name: talos-cluster
       namespace: argocd

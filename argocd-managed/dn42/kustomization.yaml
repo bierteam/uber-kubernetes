@@ -5,8 +5,6 @@ resources:
   - knot.yaml
   - knot-keys.yaml
   - knot-tsig.yaml
-  - external-dns.yaml
-  - dnsendpoint-crd.yaml
 # hashed names, so editing a zone rolls the knot pod
 configMapGenerator:
   - name: knot-config

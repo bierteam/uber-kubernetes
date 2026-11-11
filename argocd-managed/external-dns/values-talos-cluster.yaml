@@ -1,0 +1,46 @@
+# Overrides for the talos-cluster: oscrx.dn42 and the fd69:420:cafe::/48 reverse
+# zone in knot (argocd-managed/dn42) over RFC2136, instead of Cloudflare.
+external-dns:
+  # upstream: TLSA over rfc2136 is in v0.24.0, the fork is only needed for Cloudflare
+  image:
+    repository: registry.k8s.io/external-dns/external-dns
+    tag: v0.24.0@sha256:a80a146d2540fa138565e404f0625157271071a06093021f27ae19d8316d10f9
+  provider:
+    name: rfc2136
+  sources:
+    - service
+    - gateway-httproute
+    # DNSEndpoints, e.g. TLSA records from the tlsa-dnsendpoint-controller
+    - crd
+  txtOwnerId: talos-cluster
+  interval: 1m
+  domainFilters:
+    - oscrx.dn42
+    - e.f.a.c.0.2.4.0.9.6.d.f.ip6.arpa
+  # the defaults plus PTR, which --create-ptr needs, and TLSA
+  managedRecordTypes:
+    - A
+    - AAAA
+    - CNAME
+    - PTR
+    - TLSA
+  extraArgs:
+    # PTRs for the AAAA records
+    - --create-ptr
+    # knot-update in the dn42 namespace
+    - --rfc2136-host=fd26:4340:84fe::53
+    - --rfc2136-port=53
+    - --rfc2136-zone=oscrx.dn42
+    - --rfc2136-zone=e.f.a.c.0.2.4.0.9.6.d.f.ip6.arpa
+    - --rfc2136-tsig-keyname=external-dns
+    - --rfc2136-tsig-secret-alg=hmac-sha256
+    - --rfc2136-axfr
+    # it writes TTL 0 otherwise
+    - --rfc2136-min-ttl=5m
+  env:
+    # the external-dns key from knot-tsig, see templates/secret.yaml
+    - name: EXTERNAL_DNS_RFC2136_TSIG_SECRET
+      valueFrom:
+        secretKeyRef:
+          name: rfc2136-tsig
+          key: secret

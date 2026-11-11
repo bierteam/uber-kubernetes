@@ -1,7 +1,7 @@
 # TSIG keys for updates to oscrx.dn42, sealed for talos-cluster: tsig.conf is
-# included by knot.conf, external-dns is the same external-dns secret for the
-# external-dns pod. The cert-manager key's secret is also sealed as dn42-tsig
-# in the cert-manager app. Generated in memory with
+# included by knot.conf, external-dns is the same external-dns secret, which the
+# external-dns app also has sealed as rfc2136-tsig. The cert-manager key's secret
+# is also sealed as dn42-tsig in the cert-manager app. Generated in memory with
 # head -c 32 /dev/urandom | base64 and piped straight into
 # kubeseal --context talos-cluster --controller-namespace kube-system --controller-name sealed-secrets-talos-cluster
 ---

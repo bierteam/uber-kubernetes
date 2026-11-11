@@ -126,3 +126,7 @@ applicationSets:
     docs: https://kubernetes.io/docs/reference/access-authn-authz/mutating-admission-policy/
     namespace: default
     helm: false # plain manifests, a cluster-scoped MutatingAdmissionPolicy
+  # Only for the clusters besides in-cluster, whose external-dns stays the
+  # Application above: moving it here would prune it with its CRD and records.
+  - name: external-dns
+    docs: https://github.com/kubernetes-sigs/external-dns
