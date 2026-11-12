@@ -49,8 +49,22 @@ ArgoCD token for the `homeassistant` account, which may only run the
 `create-job` action on this app's CronJob:
 
 ```sh
-argocd account generate-token --account homeassistant
+argocd account generate-token --account homeassistant --id <id>
 ```
+
+ArgoCD only accepts a token whose ID is listed in `accounts.homeassistant.tokens`
+in `argocd-secret`. That Secret is owned by the `argocd-secret` SealedSecret
+(`argocd-managed/argocd/templates/argocd-secret.yaml`), and the sealed-secrets
+controller undoes the entry `generate-token` writes within seconds. So after
+generating (or to revoke), seal the list yourself and commit it:
+
+```sh
+printf '%s' '[{"id":"<id>","iat":<iat from the token>}]' |
+  kubeseal --context unds --controller-namespace kube-system --controller-name sealed-secrets \
+    --raw --namespace argocd --name argocd-secret --from-file=/dev/stdin
+```
+
+The token itself (the JWT) lives only in Home Assistant's `secrets.yaml`.
 
 ## Home Assistant
 
