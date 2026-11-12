@@ -18,7 +18,11 @@ The `talos5-shutdown` CronJob is started the same way and runs
 `talosctl shutdown` against talos5, which cordons and drains it before powering
 off. It authenticates with a `talos.dev` ServiceAccount (role `os:operator`),
 which needs `patches/control-plane/talos-api-access.yaml` from
-`manual-install/kubernetes` applied to the control planes.
+`manual-install/kubernetes` applied to the control planes. It then waits until
+the node's `Ready` condition turns `Unknown` (the kubelet is gone) and deletes
+the talos5 Node, so a powered-off talos5 does not linger as a `NotReady` node.
+On the next boot the kubelet registers it again, with its labels and taints
+from the Talos machine config.
 
 ## One-time setup
 

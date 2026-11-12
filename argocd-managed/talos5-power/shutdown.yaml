@@ -9,8 +9,40 @@ spec:
   roles:
     - os:operator
 ---
+# Lets the Job wait for talos5 to go away and delete its Node afterwards.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: talos5-shutdown
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: talos5-shutdown
+rules:
+  - apiGroups: [""]
+    resources: ["nodes"]
+    resourceNames: ["talos5"]
+    verbs: ["get", "list", "watch", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: talos5-shutdown
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: talos5-shutdown
+subjects:
+  - kind: ServiceAccount
+    name: talos5-shutdown
+    namespace: talos5-power
+---
 # Never runs on its own, started like the talos5-boot CronJob through the "Create Job" action.
-# Talos cordons and drains talos5 before it powers off.
+# Talos cordons and drains talos5 before it powers off. Once the kubelet stops
+# reporting, the Job deletes the Node, so an off talos5 is not a NotReady node
+# that needs the out-of-service taint. It registers again on boot, its labels
+# and taints come from the Talos machine config.
 apiVersion: batch/v1
 kind: CronJob
 metadata:
@@ -25,10 +57,11 @@ spec:
     spec:
       ttlSecondsAfterFinished: 86400
       backoffLimit: 0
-      activeDeadlineSeconds: 300
+      activeDeadlineSeconds: 600
       template:
         spec:
           restartPolicy: Never
+          serviceAccountName: talos5-shutdown
           # The Talos API access feature only exists on the control planes, so
           # the pod talks to apid on its own control plane, which proxies to talos5.
           nodeSelector:
@@ -39,7 +72,7 @@ spec:
             runAsGroup: 65534
             seccompProfile:
               type: RuntimeDefault
-          containers:
+          initContainers:
             - name: shutdown
               image: ghcr.io/siderolabs/talosctl:v1.15.0-alpha.0@sha256:6ff2016eefb89a76c8d2e1b93717b0f0655b713b054e60269a554bc428c87945
               args:
@@ -72,6 +105,35 @@ spec:
                   mountPath: /var/run/secrets/talos.dev
                 - name: tmp
                   mountPath: /tmp
+            # The node controller marks Ready Unknown once the kubelet has missed
+            # its heartbeats, so the kubelet is gone and will not re-register.
+            - name: wait-offline
+              image: registry.k8s.io/kubectl:v1.37.2
+              args:
+                - wait
+                - --for=condition=Ready=Unknown
+                - --timeout=480s
+                - node/talos5
+              securityContext: &securityContext
+                allowPrivilegeEscalation: false
+                readOnlyRootFilesystem: true
+                capabilities:
+                  drop:
+                    - ALL
+              resources: &resources
+                requests:
+                  cpu: 10m
+                  memory: 32Mi
+                limits:
+                  memory: 64Mi
+          containers:
+            - name: delete-node
+              image: registry.k8s.io/kubectl:v1.37.2
+              args:
+                - delete
+                - node/talos5
+              securityContext: *securityContext
+              resources: *resources
           volumes:
             - name: talos-secrets
               secret:
