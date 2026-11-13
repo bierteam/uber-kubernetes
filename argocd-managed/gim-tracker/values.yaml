@@ -11,7 +11,7 @@ cluster:
   #         ensure: present
   cluster:
     # was the floating bullseye "16" tag; moving off bullseye changes glibc, so REINDEX after the switch
-    imageName: ghcr.io/cloudnative-pg/postgresql:16.15-system-trixie
+    imageName: ghcr.io/cloudnative-pg/postgresql:16.16-system-trixie
     postgresql:
       parameters:
         max_connections: "100"
