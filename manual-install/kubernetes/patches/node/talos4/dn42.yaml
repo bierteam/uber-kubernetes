@@ -23,6 +23,7 @@ links:
   - wg-headscarf
   - wg-routedbits
   - wg-yuyuko
+  - wg-yukifia
   - dn42-lo
 ---
 # The router's own address inside vrf-dn42, for the multihop session to the
@@ -293,5 +294,14 @@ configFiles:
         ipv6 {
           import where dn42_import(2, 25, 34);
           export where dn42_export(2, 25, 34);
+        };
+      }
+
+      protocol bgp yukifia_fr from dnpeers {
+        neighbor fe80::91 as 4242420091;
+        interface "wg-yukifia";
+        ipv6 {
+          import where dn42_import(4, 25, 34);
+          export where dn42_export(4, 25, 34);
         };
       }
