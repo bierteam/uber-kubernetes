@@ -1,0 +1,205 @@
+# Everything that has to sit next to bird on talos4, in the host network: the
+# looking glass (proxy and frontend) and the exporters VictoriaMetrics scrapes.
+# The proxy only listens on localhost, so the bird socket is only reachable
+# through the frontend.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agent
+spec:
+  replicas: 1
+  # host ports, so the old pod has to go first
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: agent
+  template:
+    metadata:
+      labels:
+        app: agent
+    spec:
+      nodeSelector:
+        kubernetes.io/hostname: talos4
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: proxy
+          image: xddxdd/bird-lgproxy-go:v1.4.8@sha256:1fbd3cd6a1b500cd3146d99d5db15457750fd73951479bf9f12eb1329775642c
+          env:
+            - name: BIRD_SOCKET
+              value: /var/run/bird/bird.ctl
+            - name: BIRDLG_LISTEN
+              value: 127.0.0.1:8000
+            - name: ALLOWED_IPS
+              value: 127.0.0.1
+            - name: BIRDLG_TRACEROUTE_BIN
+              value: /traceroute
+            # -i binds to the VRF, so traceroutes leave through the tunnels
+            # from fd69:420:cafe:ffff::1 instead of the LAN
+            - name: BIRDLG_TRACEROUTE_FLAGS
+              value: -q1 -N32 -w1 -i vrf-dn42
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              memory: 64Mi
+          securityContext:
+            # bird.ctl is root:root 0660
+            runAsUser: 0
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+              # SO_BINDTODEVICE for traceroute -i
+              add: [NET_RAW]
+          volumeMounts:
+            - name: bird
+              mountPath: /var/run/bird
+        - name: frontend
+          image: xddxdd/bird-lg-go:v1.4.8@sha256:0a37cafdc3d9ba436df5bdad876ef61c8a8134c34344006b78aa5ffb3671c328
+          env:
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+            - name: BIRDLG_LISTEN
+              value: "[$(HOST_IP)]:5000"
+            # display name<host>, the proxy above
+            - name: BIRDLG_SERVERS
+              value: nl-hou01<127.0.0.1>
+            - name: BIRDLG_PROXY_PORT
+              value: "8000"
+            - name: BIRDLG_NET_SPECIFIC_MODE
+              value: dn42
+            - name: BIRDLG_WHOIS
+              value: whois.dn42
+            - name: BIRDLG_DNS_INTERFACE
+              value: asn.dn42
+            - name: BIRDLG_PROTOCOL_FILTER
+              value: bgp
+            - name: BIRDLG_TITLE_BRAND
+              value: OSCRX-AS
+            - name: BIRDLG_NAVBAR_BRAND
+              value: OSCRX-AS · AS4242423818
+          ports:
+            - name: http
+              containerPort: 5000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              memory: 64Mi
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            runAsGroup: 65534
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+        - name: bird-exporter
+          image: ghcr.io/czerwonk/bird_exporter:1.7.1@sha256:694887d59b448ea67e5b1f04ca8978012c94ddeb2527b77f646301ae3f2551ce
+          env:
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          args:
+            - -bird.v2
+            - -bird.socket=/var/run/bird/bird.ctl
+            - -web.listen-address=[$(HOST_IP)]:9324
+          ports:
+            - name: bird-metrics
+              containerPort: 9324
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              memory: 64Mi
+          securityContext:
+            runAsUser: 0
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: bird
+              mountPath: /var/run/bird
+        # traffic counters of the tunnels; hostNetwork, as /proc/net/dev shows
+        # the reader's own network namespace
+        - name: node-exporter
+          image: quay.io/prometheus/node-exporter:v1.12.1@sha256:1b4e4438faca4dd7e001dd445d161a4a2091b0fededa84093b3a8dfeae1f1be0
+          env:
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          args:
+            - --collector.disable-defaults
+            - --collector.netdev
+            - --collector.netdev.device-include=^(wg-.*|enp1s0)$
+            - --web.listen-address=[$(HOST_IP)]:9100
+          ports:
+            - name: node-metrics
+              containerPort: 9100
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              memory: 64Mi
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            runAsGroup: 65534
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+      volumes:
+        # the bird2 extension's run directory
+        - name: bird
+          hostPath:
+            path: /var/run/bird
+            type: Directory
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  ipFamilies: [IPv6]
+  selector:
+    app: agent
+  ports:
+    - name: http
+      port: 5000
+      targetPort: http
+---
+# scraped by VictoriaMetrics (argocd-managed/victoria-metrics)
+apiVersion: v1
+kind: Service
+metadata:
+  name: metrics
+spec:
+  ipFamilies: [IPv6]
+  selector:
+    app: agent
+  ports:
+    - name: bird
+      port: 9324
+      targetPort: bird-metrics
+    - name: node
+      port: 9100
+      targetPort: node-metrics

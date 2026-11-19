@@ -84,6 +84,8 @@ configFiles:
 
       router id 10.38.18.4;
       log stderr all;
+      # full timestamps in show protocols, which bird_exporter turns into uptimes
+      timeformat protocol iso long;
 
       protocol device {
         scan time 10;

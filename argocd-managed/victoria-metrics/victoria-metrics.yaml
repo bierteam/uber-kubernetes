@@ -1,0 +1,85 @@
+# Single-node VictoriaMetrics: scrapes the targets in scrape.yaml itself and
+# serves its own UI on /vmui. Not exposed; reach it with
+#   kubectl -n victoria-metrics port-forward svc/victoria-metrics 8428
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: victoria-metrics
+spec:
+  replicas: 1
+  serviceName: victoria-metrics
+  selector:
+    matchLabels:
+      app: victoria-metrics
+  template:
+    metadata:
+      labels:
+        app: victoria-metrics
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+        runAsGroup: 65534
+        fsGroup: 65534
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: victoria-metrics
+          image: victoriametrics/victoria-metrics:v1.156.0@sha256:da8a90ac0912f16589be2b96a6441a2fca4bca415c83783d972d92e3b5b66970
+          args:
+            - -storageDataPath=/storage
+            - -retentionPeriod=1y
+            - -promscrape.config=/config/scrape.yaml
+            # listen on and scrape over IPv6
+            - -enableTCP6
+            - -httpListenAddr=[::]:8428
+          ports:
+            - name: http
+              containerPort: 8428
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+          resources:
+            requests:
+              cpu: 20m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: storage
+              mountPath: /storage
+            - name: config
+              mountPath: /config
+      volumes:
+        - name: config
+          configMap:
+            name: victoria-metrics-config
+  volumeClaimTemplates:
+    - metadata:
+        name: storage
+      spec:
+        # NFS on the Synology, so the pod isn't tied to one node
+        storageClassName: nfs-retain
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: victoria-metrics
+spec:
+  ipFamilies: [IPv6]
+  selector:
+    app: victoria-metrics
+  ports:
+    - name: http
+      port: 8428
+      targetPort: http

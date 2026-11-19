@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 30s
+
+scrape_configs:
+  # BGP session state, uptime and prefix counts from bird on talos4
+  - job_name: bird
+    static_configs:
+      - targets: [metrics.dn42-lg.svc.cluster.local:9324]
+        labels:
+          instance: nl-hou01
+  # traffic on the DN42 tunnels and the uplink of talos4
+  - job_name: node
+    static_configs:
+      - targets: [metrics.dn42-lg.svc.cluster.local:9100]
+        labels:
+          instance: nl-hou01

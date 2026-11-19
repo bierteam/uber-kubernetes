@@ -1,0 +1,160 @@
+---
+# lg.dn42.oscarr.nl on the internet, IPv6 only. The address has to be in the
+# talos_lb_pool alias on OPNsense for the WAN rules.
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  # The talos ClusterIssuer's HTTP-01 solver looks for a Gateway named `gateway`.
+  name: gateway
+  annotations:
+    link.argocd.argoproj.io/external-link: 'https://lg.dn42.oscarr.nl'
+spec:
+  gatewayClassName: cilium
+  addresses:
+    - type: IPAddress
+      value: "2a05:f080:0:3800:1b::7"
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: https
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: lg-dn42-oscarr-nl-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: lg-dn42-oscarr-nl
+spec:
+  secretName: lg-dn42-oscarr-nl-tls
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
+  dnsNames:
+    - lg.dn42.oscarr.nl
+---
+# lg.oscrx.dn42 inside DN42, with an address from the dn42 pool. external-dns
+# publishes the AAAA and PTR in knot from the HTTPRoute.
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: gateway-dn42
+  annotations:
+    link.argocd.argoproj.io/external-link: 'https://lg.oscrx.dn42'
+spec:
+  gatewayClassName: cilium
+  infrastructure:
+    # copied onto the LoadBalancer Service, which picks the dn42 pool
+    labels:
+      lb.oscarr.nl/pool: dn42
+  listeners:
+    - name: http
+      protocol: HTTP
+      port: 80
+      allowedRoutes:
+        namespaces:
+          from: Same
+    - name: https
+      protocol: HTTPS
+      port: 443
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: lg-oscrx-dn42-tls
+      allowedRoutes:
+        namespaces:
+          from: Same
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: lg-oscrx-dn42
+  annotations:
+    tlsa.oscarr.nl/enabled: "true"
+spec:
+  secretName: lg-oscrx-dn42-tls
+  issuerRef:
+    name: dn42
+    kind: ClusterIssuer
+  privateKey:
+    rotationPolicy: Always
+    algorithm: ECDSA
+  dnsNames:
+    - lg.oscrx.dn42
+---
+# ACME HTTP-01 solver routes (exact path match) still win over this prefix match.
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: lg-redirect
+spec:
+  parentRefs:
+    - name: gateway
+      sectionName: http
+  hostnames:
+    - lg.dn42.oscarr.nl
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: lg
+spec:
+  parentRefs:
+    - name: gateway
+      sectionName: https
+  hostnames:
+    - lg.dn42.oscarr.nl
+  rules:
+    - backendRefs:
+        - name: frontend
+          port: 5000
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: lg-dn42-redirect
+spec:
+  parentRefs:
+    - name: gateway-dn42
+      sectionName: http
+  hostnames:
+    - lg.oscrx.dn42
+  rules:
+    - filters:
+        - type: RequestRedirect
+          requestRedirect:
+            scheme: https
+            statusCode: 301
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: lg-dn42
+spec:
+  parentRefs:
+    - name: gateway-dn42
+      sectionName: https
+  hostnames:
+    - lg.oscrx.dn42
+  rules:
+    - backendRefs:
+        - name: frontend
+          port: 5000

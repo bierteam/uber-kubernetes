@@ -15,6 +15,10 @@ argocdApps:
   - name: dn42
     docs: https://github.com/bgp/stayrtr
     server: talos-cluster
+  - name: dn42-lg
+    docs: https://github.com/xddxdd/bird-lg-go
+    podSecurity: privileged # hostNetwork and the bird socket on talos4
+    server: talos-cluster
   # - name: dns-updater
   #   podSecurity: restricted
   - name: drinkn
@@ -94,6 +98,9 @@ argocdApps:
     folder: charts
     repository: wildlife-frontend
   - name: wildlife-database
+  - name: victoria-metrics
+    docs: https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/
+    server: talos-cluster
 
 # Rendered by templates/applicationset-template.yaml. Deployed to every cluster
 # whose ArgoCD cluster secret has the label `apps.oscarr.nl/<name>: "true"`, with
