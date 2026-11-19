@@ -8,6 +8,8 @@ loadBalancer:
         - "2a05:f080:0:3800:1b::/112"
         # routed /64 from the /56, announced to OPNsense over BGP
         - "2a05:f080:0:38ff::/64"
+      # skip each block's first address (38ff:: is the subnet-router anycast) and last
+      allowFirstLastIPs: "No"
       serviceSelector:
         matchExpressions:
           - key: lb.oscarr.nl/pool
@@ -18,6 +20,8 @@ loadBalancer:
     - name: dn42
       blocks:
         - "fd69:420:cafe:ff::/64"
+      # skip fd69:420:cafe:ff::, the subnet-router anycast address
+      allowFirstLastIPs: "No"
       serviceSelector:
         matchLabels:
           lb.oscarr.nl/pool: dn42

@@ -12,6 +12,9 @@ spec:
     {{- range .blocks }}
     - cidr: {{ . | quote }}
     {{- end }}
+  {{- with .allowFirstLastIPs }}
+  allowFirstLastIPs: {{ . | quote }}
+  {{- end }}
   {{- with .serviceSelector }}
   serviceSelector:
     {{- toYaml . | nindent 4 }}
