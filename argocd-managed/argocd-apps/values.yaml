@@ -89,6 +89,9 @@ argocdApps:
   # - name: valheim
   # - name: velero
   #   podSecurity: privileged
+  - name: victoria-metrics
+    docs: https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/
+    server: talos-cluster
   - name: vikunja
     docs: https://vikunja.io/
   - name: wildlife-api
@@ -98,9 +101,6 @@ argocdApps:
     folder: charts
     repository: wildlife-frontend
   - name: wildlife-database
-  - name: victoria-metrics
-    docs: https://docs.victoriametrics.com/victoriametrics/single-server-victoriametrics/
-    server: talos-cluster
 
 # Rendered by templates/applicationset-template.yaml. Deployed to every cluster
 # whose ArgoCD cluster secret has the label `apps.oscarr.nl/<name>: "true"`, with
