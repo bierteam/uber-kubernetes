@@ -34,3 +34,5 @@ machine:
     net.ipv6.conf.wg-dn724.accept_redirects: "0"
     net.ipv6.conf.wg-sironeko.accept_ra: "0"
     net.ipv6.conf.wg-sironeko.accept_redirects: "0"
+    net.ipv6.conf.wg-colby.accept_ra: "0"
+    net.ipv6.conf.wg-colby.accept_redirects: "0"

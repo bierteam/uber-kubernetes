@@ -30,6 +30,7 @@ links:
   - wg-zz
   - wg-dn724
   - wg-sironeko
+  - wg-colby
   - dn42-lo
 ---
 # The router's own address inside vrf-dn42, for the multihop session to the
@@ -364,6 +365,15 @@ configFiles:
       protocol bgp sironeko_ams1 from dnpeers {
         neighbor fe80::1573 as 4242421573;
         interface "wg-sironeko";
+        ipv6 {
+          import where dn42_import(2, 25, 34);
+          export where dn42_export(2, 25, 34);
+        };
+      }
+
+      protocol bgp colby_nlams1 from dnpeers {
+        neighbor fe80::2558:4 as 4242422558;
+        interface "wg-colby";
         ipv6 {
           import where dn42_import(2, 25, 34);
           export where dn42_export(2, 25, 34);
