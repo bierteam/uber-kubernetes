@@ -1,0 +1,41 @@
+apiVersion: v1alpha1
+kind: WireguardConfig
+name: wg-dn724
+# public key: 7kzGe5z5zkP/jdL5k3I52HkwEBmidCDHfj16b9jkWFg=
+privateKey: ENC[AES256_GCM,data:GhGrXnkjCwO9G8GApachVaO8uEbDGHHsFmQQCFl/t4cryjDFTza0o3WNmso=,iv:aVEqxiZ2owoRmTdtX/cPGkn6SNJks6vmrGsw1evnp/U=,tag:ouijhBKfuxSqhVs6NJx73w==,type:str]
+listenPort: 20129
+addresses:
+    - address: fe80::3818/64
+peers:
+    - publicKey: m724+s6dks1bHZbEj9JvQb17mAC45z1WkaHSTSgxcRk=
+      endpoint: '[2603:c022:c004:2604:0:cfee:b348:5492]:23818' # nl1.420129.xyz
+      persistentKeepaliveInterval: 25s
+      allowedIPs:
+        - fe80::/10
+        - fd00::/8
+sops:
+    encrypted_regex: ^privateKey$
+    lastmodified: "2026-11-22T17:30:37Z"
+    mac: ENC[AES256_GCM,data:l2Qnz79ckTV6jaDsVNHcXMEIbqiGFH3CUvbtq4WpK/rUsvfWjkTjLizXsjZsfOg7Qpu0TyUjz71kOWxAJ1ub9TU2fJOm3WUVTPtbSMZL++lMZkn1DyaedQMHu27BHF66KFw88fpNuTxI8RgtH61rxpfwotFIUY27VNemSwBNVd8=,iv:QL/H+JKDbhMoZ3INYBfCtMAC9JC0XWPLzm8ZLSNH6r4=,tag:8/lZBBUWzgNRQ0adjr/9jA==,type:str]
+    pgp:
+        - created_at: "2026-11-22T17:22:44Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA8JLx4cwGUNQARAAz3TImG2v40HuH+t6BIN/LQHw9SS5xCWg0UACcvODzIIU
+            MCs01Rhdem67qKhFDo/mRv95jRqjzaRGHpCaWylCWg8UrQfWUMvqub8nxvg3U1TM
+            9/pmjt7Kkob4uslh4w8/XkbRVWjU1qQOE6YmLar2rlsibrYu7phbhs10C7C3kKRv
+            h+TEKHmcE+OjqXCLLlORcPVipL5G8+xh8LOsdwZOflPBkohp6TVmYgUb80Bh1f8C
+            pgFLqVA0GSvVkcCV54h5eNvz87p2lzc1Enqpl5mrHhU6obD5ntJmzr2f0jKyAKdH
+            T5ZDFd49VkBfiZFs+qFJTHJIjVNahtISQKIkvnPpZbRZtH2FgXJKK2ExXj3DsKnC
+            /FoXX+RAjZ4vKkzkW1p0cqjolO+Vj3mSpNFWGKAo9Pv88ilnFoJ9o6+W7+azRfn4
+            U9hFYa4l8kErK33V3Cx8otcCZs4UgfOgSaFWRKs/jlFL2CXJxoneHbSCXO67a0BQ
+            dMOKFLNB3giyuOpconsK2jIn+Ybe75FAzLjMF43pmM+Aqeo4ijcF2lo+EHzAemtZ
+            kqL5SB2tKCyqvI67j1nMA4tVpzToFzR7DQw1FwKQdMoqjz/kx6cEhm3AvdIxVzmq
+            d/FiTLS8wi+rEL976Vzv/1t7q25NpetdTEYa59CaUzVnm0se/VtpVIUa3kLXK9DS
+            UQHJNQXtjKXck2EKfMdKo+vAwqkx4I1cGRXZ+7AfWNtWLXWOX5/t4tZGEGDpkEq6
+            efwNXFsOOXbbA1KkH1VoazlcXiFZ9yQ6znVEW6q+5hNVlQ==
+            =mWwd
+            -----END PGP MESSAGE-----
+          fp: A707B3FAB275E7AA3237110A64B839C17E31F151
+    version: 3.13.3

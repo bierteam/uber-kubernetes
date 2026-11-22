@@ -28,6 +28,8 @@ links:
   - wg-baragoon
   - wg-sidereal
   - wg-zz
+  - wg-dn724
+  - wg-sironeko
   - dn42-lo
 ---
 # The router's own address inside vrf-dn42, for the multihop session to the
@@ -347,5 +349,23 @@ configFiles:
         ipv6 {
           import where dn42_import(3, 25, 34);
           export where dn42_export(3, 25, 34);
+        };
+      }
+
+      protocol bgp dn724_nl1 from dnpeers {
+        neighbor fe80::129:1 as 4242420129;
+        interface "wg-dn724";
+        ipv6 {
+          import where dn42_import(2, 25, 34);
+          export where dn42_export(2, 25, 34);
+        };
+      }
+
+      protocol bgp sironeko_ams1 from dnpeers {
+        neighbor fe80::1573 as 4242421573;
+        interface "wg-sironeko";
+        ipv6 {
+          import where dn42_import(2, 25, 34);
+          export where dn42_export(2, 25, 34);
         };
       }
