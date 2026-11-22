@@ -24,3 +24,5 @@ machine:
     net.ipv6.conf.wg-yukifia.accept_redirects: "0"
     net.ipv6.conf.wg-lare.accept_ra: "0"
     net.ipv6.conf.wg-lare.accept_redirects: "0"
+    net.ipv6.conf.wg-baragoon.accept_ra: "0"
+    net.ipv6.conf.wg-baragoon.accept_redirects: "0"
