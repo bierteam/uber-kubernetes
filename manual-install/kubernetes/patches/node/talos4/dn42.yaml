@@ -127,6 +127,8 @@ configFiles:
         kernel table 42;
         scan time 20;
         learn off;
+        # the default overflows on full-table bursts
+        netlink rx buffer 8388608;
         ipv6 {
           import none;
           export filter {
