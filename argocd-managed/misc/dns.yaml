@@ -15,13 +15,14 @@ spec:
       recordType: CNAME
       targets:
         - kubernetes.oscarr.nl
-    - dnsName: ninoo.nl
-      recordTTL: 1
-      recordType: CAA
-      targets:
-        - 0 issue letsencrypt.org
-        - 0 issuewild letsencrypt.org
-        - 0 iodef mailto:caa@oscarr.nl
+    # CAA records are set by hand in Cloudflare and only written down here:
+    # the DNSEndpoint CRD has no CAA record type, and the ownership TXT of an
+    # apex record (owned-by-caa-<zone>) would fall outside the zone anyway.
+    # Keep these comments in step with Cloudflare. Only unds issues here (dns-01).
+    #   ninoo.nl CAA 0 issue "letsencrypt.org;validationmethods=dns-01;accounturi=https://acme-v02.api.letsencrypt.org/acme/acct/2048836347"
+    #   ninoo.nl CAA 0 issuewild "letsencrypt.org;validationmethods=dns-01;accounturi=https://acme-v02.api.letsencrypt.org/acme/acct/2048836347"
+    #   ninoo.nl CAA 0 issuemail ";"
+    #   ninoo.nl CAA 0 iodef "mailto:caa@oscarr.nl"
 ---
 apiVersion: externaldns.k8s.io/v1alpha1
 kind: DNSEndpoint
@@ -34,18 +35,18 @@ spec:
       recordType: CNAME
       targets:
         - kubernetes.oscarr.nl
-    - dnsName: oscarr.nl
-      recordTTL: 1
-      recordType: CAA
-      targets:
-        - 0 issue letsencrypt.org
-        - 0 issuewild letsencrypt.org
-        - 0 iodef mailto:caa@oscarr.nl
-    - dnsName: headscale.oscarr.nl
-      recordTTL: 1
-      recordType: CAA
-      targets:
-        - 0 issue letsencrypt.org;validationmethods=tls-alpn-01
+    # CAA, set by hand in Cloudflare (see ninoo.nl). Only the Let's Encrypt
+    # accounts of cert-manager on unds (all its Issuers share the `letsencrypt`
+    # key, dns-01) and talos-cluster (HTTP-01, e.g. lg.dn42.oscarr.nl), with
+    # any validation method:
+    #   oscarr.nl CAA 0 issue "letsencrypt.org;accounturi=https://acme-v02.api.letsencrypt.org/acme/acct/2048836347"
+    #   oscarr.nl CAA 0 issue "letsencrypt.org;accounturi=https://acme-v02.api.letsencrypt.org/acme/acct/3818123626"
+    #   oscarr.nl CAA 0 issuewild "letsencrypt.org;accounturi=https://acme-v02.api.letsencrypt.org/acme/acct/2048836347"
+    #   oscarr.nl CAA 0 issuewild "letsencrypt.org;accounturi=https://acme-v02.api.letsencrypt.org/acme/acct/3818123626"
+    #   oscarr.nl CAA 0 issuemail ";"
+    #   oscarr.nl CAA 0 iodef "mailto:caa@oscarr.nl"
+    # headscale gets its own certificate (its built-in ACME client, tls-alpn-01):
+    #   headscale.oscarr.nl CAA 0 issue "letsencrypt.org;validationmethods=tls-alpn-01;accounturi=https://acme-v02.api.letsencrypt.org/acme/acct/3788433866"
     # DN42 WireGuard endpoint on talos4, for peers that only accept a hostname
     - dnsName: nl-hou01.dn42.oscarr.nl
       recordTTL: 1
@@ -77,13 +78,13 @@ spec:
       targets:
         - kubernetes.oscarr.nl
 
-    - dnsName: doktermarjolein.nl
-      recordTTL: 1
-      recordType: CAA
-      targets:
-        - 0 issue letsencrypt.org
-        - 0 issuewild letsencrypt.org
-        - 0 iodef mailto:caa@oscarr.nl
+    # CAA, set by hand in Cloudflare (see ninoo.nl). Only unds issues here:
+    #   doktermarjolein.nl CAA 0 issue "letsencrypt.org;validationmethods=dns-01;accounturi=https://acme-v02.api.letsencrypt.org/acme/acct/2048836347"
+    #   doktermarjolein.nl CAA 0 issuewild "letsencrypt.org;validationmethods=dns-01;accounturi=https://acme-v02.api.letsencrypt.org/acme/acct/2048836347"
+    #   doktermarjolein.nl CAA 0 issuemail ";"
+    #   doktermarjolein.nl CAA 0 iodef "mailto:caa@oscarr.nl"
+    # and for the open-webui Certificate on talos-cluster (HTTP-01):
+    #   chat.doktermarjolein.nl CAA 0 issue "letsencrypt.org;validationmethods=http-01"
 
     # Open WebUI on the Talos cluster. AAAA is its Cilium Gateway, A is the
     # firewall's public v4, passed through by Traefik (see chat-doktermarjolein.yaml).
