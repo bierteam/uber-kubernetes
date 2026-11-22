@@ -7,7 +7,7 @@ listenPort: 20091
 addresses:
     - address: fe80::3818/64
 peers:
-    - publicKey: teBxz7+qONXXB5mViKdNUI3aYWGLT2ynyl8eS7VLLzY=
+    - publicKey: nK1JBK0/SpWc/2WFuCUKiQPZth//Rkr7hd1t6JHp9AE=
       endpoint: '[2a11:6c7:1900:2038::91]:53818' # ipv6.frrouter.dn42.yukifia.moe
       persistentKeepaliveInterval: 25s
       allowedIPs:
@@ -15,8 +15,8 @@ peers:
         - fd00::/8
 sops:
     encrypted_regex: ^privateKey$
-    lastmodified: "2026-11-19T13:46:35Z"
-    mac: ENC[AES256_GCM,data:th5tXlrsNjAxZAGN5z0VQwUdiFDD83C0EFJqR2jEwJ7iljSl1VEiGTmQmvYmIt7LUkmvSgl1KzEpdHpUqRaABsn/ohx/oL4Edfb6iuHqGblZzVN+ehUICNyQfuvN58YKtatx79KvsaBOawAJj5ugJyLx1APXI6OqCsNaDOqwQ8s=,iv:7i0zvQMsjkAZEgVWGT6k/99aPi4eifKLQLTa9xJVK3s=,tag:RZ+deml0Q6qC7kU6HsJxQg==,type:str]
+    lastmodified: "2026-11-22T08:49:57Z"
+    mac: ENC[AES256_GCM,data:C/C2+yT74b9mpbhOGn7QG4znemE4fRCeXJ2TMwubHJ+CkTwmCU/cJlEIaEWJuAvxtelRH0yaiXpBgrOaSSnUwtF1c2lSjr1YRg85g4w4Qx9e5VKhVsPgCk0p7lOCBU3N9yOOmf5IhMEsqFpEV9sRTYRuT7l4Fo3AW8AFcovu/SM=,iv:KKVL8co7nckDLVVgU67zIXJ5rDArVmX7ba9wxgJNje8=,tag:QkogvZEDJlo/izxyexQZsA==,type:str]
     pgp:
         - created_at: "2026-11-19T13:46:35Z"
           enc: |-

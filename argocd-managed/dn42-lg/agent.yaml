@@ -30,12 +30,18 @@ spec:
         - name: proxy
           image: xddxdd/bird-lgproxy-go:v1.4.8@sha256:1fbd3cd6a1b500cd3146d99d5db15457750fd73951479bf9f12eb1329775642c
           env:
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
             - name: BIRD_SOCKET
               value: /var/run/bird/bird.ctl
+            # on the node address that nl-hou01.dn42.oscarr.nl points at, for the
+            # frontend below only
             - name: BIRDLG_LISTEN
-              value: 127.0.0.1:8000
+              value: "[$(HOST_IP)]:8000"
             - name: ALLOWED_IPS
-              value: 127.0.0.1
+              value: $(HOST_IP)
             - name: BIRDLG_TRACEROUTE_BIN
               value: /traceroute
             # -i binds to the VRF, so traceroutes leave through the tunnels
@@ -69,9 +75,12 @@ spec:
                   fieldPath: status.hostIP
             - name: BIRDLG_LISTEN
               value: "[$(HOST_IP)]:5000"
-            # display name<host>, the proxy above
+            # the proxy above at nl-hou01.dn42.oscarr.nl; the name is also the URL
+            # path (/summary/nl-hou01)
             - name: BIRDLG_SERVERS
-              value: nl-hou01<127.0.0.1>
+              value: nl-hou01
+            - name: BIRDLG_DOMAIN
+              value: dn42.oscarr.nl
             - name: BIRDLG_PROXY_PORT
               value: "8000"
             - name: BIRDLG_NET_SPECIFIC_MODE
@@ -167,6 +176,43 @@ spec:
             readOnlyRootFilesystem: true
             capabilities:
               drop: [ALL]
+        # handshake age and per-peer transfer of the tunnels. The links report
+        # operstate unknown, so this is where a dead tunnel shows up.
+        - name: wireguard-exporter
+          image: mindflavor/prometheus-wireguard-exporter:3.6.6@sha256:3d46c76371f8272ee6d87c5bf9337f444527601e2812ebec7d3e0174cc7ceb6c
+          env:
+            - name: HOST_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.hostIP
+          args:
+            # no sudo: it runs as root and calls wg directly
+            - -a
+            - "false"
+            # wireguard_latest_handshake_delay_seconds
+            - -d
+            - "true"
+            - -l
+            - $(HOST_IP)
+            - -p
+            - "9586"
+          ports:
+            - name: wg-metrics
+              containerPort: 9586
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              memory: 64Mi
+          securityContext:
+            # wg show reads the devices over netlink, which needs CAP_NET_ADMIN
+            runAsUser: 0
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+              add: [NET_ADMIN]
       volumes:
         # the bird2 extension's run directory
         - name: bird
@@ -203,3 +249,6 @@ spec:
     - name: node
       port: 9100
       targetPort: node-metrics
+    - name: wireguard
+      port: 9586
+      targetPort: wg-metrics

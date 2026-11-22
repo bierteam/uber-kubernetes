@@ -36,6 +36,8 @@ apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: lg-dn42-oscarr-nl
+  annotations:
+    tlsa.oscarr.nl/enabled: "true"
 spec:
   secretName: lg-dn42-oscarr-nl-tls
   issuerRef:

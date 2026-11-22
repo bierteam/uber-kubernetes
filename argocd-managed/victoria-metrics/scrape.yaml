@@ -14,3 +14,9 @@ scrape_configs:
       - targets: [metrics.dn42-lg.svc.cluster.local:9100]
         labels:
           instance: nl-hou01
+  # handshake age and transfer per WireGuard peer on talos4
+  - job_name: wireguard
+    static_configs:
+      - targets: [metrics.dn42-lg.svc.cluster.local:9586]
+        labels:
+          instance: nl-hou01
