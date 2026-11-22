@@ -26,6 +26,7 @@ links:
   - wg-yukifia
   - wg-lare
   - wg-baragoon
+  - wg-sidereal
   - dn42-lo
 ---
 # The router's own address inside vrf-dn42, for the multihop session to the
@@ -327,5 +328,14 @@ configFiles:
         ipv6 {
           import where dn42_import(1, 25, 34);
           export where dn42_export(1, 25, 34);
+        };
+      }
+
+      protocol bgp sidereal_lon1 from dnpeers {
+        neighbor fe80::2016 as 4242422016;
+        interface "wg-sidereal";
+        ipv6 {
+          import where dn42_import(3, 25, 34);
+          export where dn42_export(3, 25, 34);
         };
       }
