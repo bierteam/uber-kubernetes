@@ -28,3 +28,5 @@ machine:
     net.ipv6.conf.wg-baragoon.accept_redirects: "0"
     net.ipv6.conf.wg-sidereal.accept_ra: "0"
     net.ipv6.conf.wg-sidereal.accept_redirects: "0"
+    net.ipv6.conf.wg-zz.accept_ra: "0"
+    net.ipv6.conf.wg-zz.accept_redirects: "0"
