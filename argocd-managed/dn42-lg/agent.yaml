@@ -214,11 +214,11 @@ spec:
               drop: [ALL]
               add: [NET_ADMIN]
       volumes:
-        # BIRD's run directory on talos4 (the dn42-bird DaemonSet; the bird2 extension before)
+        # BIRD's socket directory on talos4 (the dn42-bird DaemonSet; was /var/run/bird of the bird2 extension)
         - name: bird
           hostPath:
-            path: /var/run/bird
-            type: Directory
+            path: /var/run/dn42-bird
+            type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: Service
