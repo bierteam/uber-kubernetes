@@ -4,6 +4,8 @@ name: wg-yukifia
 # public key: TqSllrBX1Ia7rny8JjSVPVsut0u0gtBV3w+WCMOrpkA=
 privateKey: ENC[AES256_GCM,data:xcXk3JEB40Rn5pKg3bT+qGwBQkUoGas3gRwFBxkLEu+FmMJKNnF2MtkhWHM=,iv:U/nDUaUOCKf10VBQya/TIiadc/+Yu6gYfAy69PTzdjs=,tag:TdA+/pQjAU67yR4JEz3Ayg==,type:str]
 listenPort: 20091
+# their endpoint is behind a Route64 6in4 tunnel (MTU 1480)
+mtu: 1380
 addresses:
     - address: fe80::3818/64
 peers:
@@ -15,8 +17,8 @@ peers:
         - fd00::/8
 sops:
     encrypted_regex: ^privateKey$
-    lastmodified: "2026-11-22T08:49:57Z"
-    mac: ENC[AES256_GCM,data:C/C2+yT74b9mpbhOGn7QG4znemE4fRCeXJ2TMwubHJ+CkTwmCU/cJlEIaEWJuAvxtelRH0yaiXpBgrOaSSnUwtF1c2lSjr1YRg85g4w4Qx9e5VKhVsPgCk0p7lOCBU3N9yOOmf5IhMEsqFpEV9sRTYRuT7l4Fo3AW8AFcovu/SM=,iv:KKVL8co7nckDLVVgU67zIXJ5rDArVmX7ba9wxgJNje8=,tag:QkogvZEDJlo/izxyexQZsA==,type:str]
+    lastmodified: "2026-11-22T11:26:46Z"
+    mac: ENC[AES256_GCM,data:Fx7zBt4a4YwUonpPybS1HHAEZL5GcQxrAlRDV9LW+vpNbBlxiWQqH+KQwKjUXvDIb/Mh3pj1fDXSdIy5o3zXk2cNB1Bo9Tt0CI54MulxslI876xtsEGO1yDNKgBuOgWKsq1Di4Vn5cRGyvZk3y3P6fFIyzms7YzUFzs5BGnDArQ=,iv:ZNimJhz19bbRK6Yzm+jqMDonS2AD72d40JUJOdxQOXg=,tag:Yecq315VI5pQMqVLRgoXmg==,type:str]
     pgp:
         - created_at: "2026-11-19T13:46:35Z"
           enc: |-
