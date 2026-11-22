@@ -1,6 +1,5 @@
 ---
-# lg.dn42.oscarr.nl on the internet, IPv6 only. The address has to be in the
-# talos_lb_pool alias on OPNsense for the WAN rules.
+# lg.dn42.oscarr.nl on the internet, IPv6 only.
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:

@@ -2,6 +2,8 @@
 loadBalancer:
   enabled: true
   pools:
+    # Both blocks make up the talos_lb_pool alias on OPNsense, which the WAN
+    # rules open, so every address handed out here is reachable from the internet.
     - name: default-pool
       blocks:
         # inside the LAN /64, reachable through L2 announcements only

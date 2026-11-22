@@ -1,0 +1,169 @@
+---
+# Peering page for AS4242423818, at dn42.oscarr.nl on the internet and
+# oscrx.dn42 inside DN42 (the Gateways in gateway.yaml). A static page from
+# nginx; edit index.html below.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: peering
+data:
+  # the image only listens on IPv4, and the Service is IPv6 only
+  default.conf: |
+    server {
+      listen 8080;
+      listen [::]:8080;
+      server_name _;
+      root /usr/share/nginx/html;
+      add_header X-Content-Type-Options nosniff always;
+      add_header Content-Security-Policy "default-src 'none'; style-src 'unsafe-inline'" always;
+      location / {
+        try_files $uri $uri/ =404;
+      }
+    }
+  index.html: |
+    <!doctype html>
+    <html lang="en">
+    <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <title>OSCRX-AS · AS4242423818</title>
+    <style>
+      :root { --fg: #1b1b1b; --bg: #fdfdfd; --muted: #5c5c5c; --line: #dddddd; --code: #f1f1f1; --link: #0b57d0; }
+      @media (prefers-color-scheme: dark) {
+        :root { --fg: #e6e6e6; --bg: #141414; --muted: #a0a0a0; --line: #333333; --code: #222222; --link: #8ab4f8; }
+      }
+      body { margin: 0 auto; max-width: 44rem; padding: 2rem 1rem; font: 16px/1.55 system-ui, sans-serif; color: var(--fg); background: var(--bg); }
+      h1 { font-size: 1.6rem; margin: 0 0 .25rem; }
+      h2 { font-size: 1.15rem; margin: 2rem 0 .5rem; }
+      p.sub { margin: 0; color: var(--muted); }
+      a { color: var(--link); }
+      code { font: .92em ui-monospace, monospace; background: var(--code); padding: .1em .3em; border-radius: 3px; overflow-wrap: anywhere; }
+      table { border-collapse: collapse; width: 100%; }
+      th, td { text-align: left; vertical-align: top; padding: .4rem .6rem .4rem 0; border-bottom: 1px solid var(--line); }
+      th { font-weight: 600; white-space: nowrap; width: 11rem; }
+      ul { padding-left: 1.2rem; }
+    </style>
+    </head>
+    <body>
+    <h1>OSCRX-AS · AS4242423818</h1>
+    <p class="sub">A small IPv6-only DN42 network, run by Oscar (oscrx) from Houten, the Netherlands. Open for peering.</p>
+
+    <h2>Policy</h2>
+    <ul>
+      <li>WireGuard tunnels only.</li>
+      <li>IPv6 only: BGP over link-local, no IPv4. No MP-BGP or extended next hop needed.</li>
+      <li>Routes are ROA-filtered via RPKI, and DN42 link communities (latency, bandwidth, crypto) are set.</li>
+      <li>A full 1500-byte path to your endpoint is preferred; tell me if your tunnel needs a lower MTU.</li>
+    </ul>
+
+    <h2>Node</h2>
+    <table>
+      <tr><th>Name</th><td>nl-hou01</td></tr>
+      <tr><th>Location</th><td>Houten, Netherlands</td></tr>
+      <tr><th>Endpoint</th><td><code>nl-hou01.dn42.oscarr.nl</code><br><code>[2a05:f080:0:3800::1019]</code> (IPv6 only)</td></tr>
+      <tr><th>WireGuard port</th><td>2 + the last 4 digits of your ASN, e.g. 4242421234 → <code>21234</code></td></tr>
+      <tr><th>Link-local</th><td><code>fe80::3818</code></td></tr>
+      <tr><th>MTU</th><td>1420</td></tr>
+    </table>
+
+    <h2>Requesting a peering</h2>
+    <p>Each peer gets its own WireGuard key. Email <a href="mailto:oscar+dn42@oscarr.nl">oscar+dn42@oscarr.nl</a> with:</p>
+    <ul>
+      <li>your ASN and the node you'd like to peer with,</li>
+      <li>your endpoint (host and port),</li>
+      <li>your WireGuard public key,</li>
+      <li>your link-local address.</li>
+    </ul>
+    <p>You'll get our public key back once our side is set up.</p>
+
+    <h2>Services</h2>
+    <table>
+      <tr><th>Looking glass</th><td><a href="https://lg.dn42.oscarr.nl">lg.dn42.oscarr.nl</a> on the internet, <a href="https://lg.oscrx.dn42">lg.oscrx.dn42</a> inside DN42</td></tr>
+      <tr><th>DNS</th><td>Authoritative for <code>oscrx.dn42</code>, DNSSEC-signed: <code>ns1.oscrx.dn42</code> <code>fd69:420:cafe:ff::53</code>, <code>ns2.oscrx.dn42</code> <code>fd69:420:cafe:ff::5353</code></td></tr>
+    </table>
+
+    <h2>Links</h2>
+    <table>
+      <tr><th>Registry</th><td><a href="https://git.dn42.dev/dn42/registry/src/branch/master/data/aut-num/AS4242423818">AS4242423818</a> in the DN42 registry, or in the <a href="https://explorer.burble.com/#/aut-num/AS4242423818">registry explorer</a></td></tr>
+      <tr><th>PGP</th><td><code>A707 B3FA B275 E7AA 3237 110A 64B8 39C1 7E31 F151</code></td></tr>
+      <tr><th>Website</th><td><a href="https://oscarr.nl">oscarr.nl</a></td></tr>
+      <tr><th>LinkedIn</th><td><a href="https://www.linkedin.com/in/oscar-wieman">oscar-wieman</a></td></tr>
+    </table>
+    </body>
+    </html>
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: peering
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: peering
+  template:
+    metadata:
+      labels:
+        app: peering
+      annotations:
+        # bump to roll the pod after editing the page: subPath mounts never update
+        checksum/page: "3"
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 101
+        runAsGroup: 101
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: nginx
+          image: nginxinc/nginx-unprivileged:1.30.6-alpine-slim@sha256:5d8bb9437d74a600ec5dbf90c035451c724dc33eac8d3a71078f6f8612c345f6
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            requests:
+              cpu: 5m
+              memory: 8Mi
+            limits:
+              memory: 32Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+          volumeMounts:
+            - name: page
+              mountPath: /usr/share/nginx/html/index.html
+              subPath: index.html
+            - name: page
+              mountPath: /etc/nginx/conf.d/default.conf
+              subPath: default.conf
+            # pid file and temp paths
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: page
+          configMap:
+            name: peering
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: peering
+spec:
+  ipFamilies: [IPv6]
+  selector:
+    app: peering
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
