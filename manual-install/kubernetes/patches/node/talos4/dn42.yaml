@@ -24,6 +24,7 @@ links:
   - wg-routedbits
   - wg-yuyuko
   - wg-yukifia
+  - wg-lare
   - dn42-lo
 ---
 # The router's own address inside vrf-dn42, for the multihop session to the
@@ -307,5 +308,14 @@ configFiles:
         ipv6 {
           import where dn42_import(4, 25, 34);
           export where dn42_export(4, 25, 34);
+        };
+      }
+
+      protocol bgp lare_de01 from dnpeers {
+        neighbor fe80::3035:130 as 4242423035;
+        interface "wg-lare";
+        ipv6 {
+          import where dn42_import(3, 25, 34);
+          export where dn42_export(3, 25, 34);
         };
       }

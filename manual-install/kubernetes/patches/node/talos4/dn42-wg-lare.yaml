@@ -1,0 +1,41 @@
+apiVersion: v1alpha1
+kind: WireguardConfig
+name: wg-lare
+# public key: SG9OMppMoxA7L5mcdcF7alMVYT7JIxMvEkZn0q6svnQ=
+privateKey: ENC[AES256_GCM,data:+tPOSDSfGswHtRmbt7DufLXstJHD4z+gUvZ2T+08dj8U/46sQ0XUpwcXkik=,iv:OLYi+hkU8Nnjh5pL9lcViIaO5gh3ASSHjrSNnGWFVNA=,tag:D/3ivRfk3HtjzLFetbwV7A==,type:str]
+listenPort: 23035
+addresses:
+    - address: fe80::3818/64
+peers:
+    - publicKey: OL2LE2feDsFV+fOC4vo4u/1enuxf3m2kydwGRE2rKVs=
+      endpoint: '[2a04:e8c0:18:7c7::1]:23818' # de01.dn42.lare.cc
+      persistentKeepaliveInterval: 25s
+      allowedIPs:
+        - fe80::/10
+        - fd00::/8
+sops:
+    encrypted_regex: ^privateKey$
+    lastmodified: "2026-11-22T12:49:04Z"
+    mac: ENC[AES256_GCM,data:XYpxPnLc4ru1LlrlKLTnbPKe9X2F6xQtLsxuUROfnwRx/9TAqzEE/A8R2Zf2smkXx9JEV6PobjtvisvFRC1DKXtRhvxRvP+bcz3UNtJky//Gokl2MBzt6iST5ifagtZnYjtN3yri82PQxbmVfer5dLAQg13wiU4reC7pF7wTOjM=,iv:SugP3ekKWGzYpsfU/s8u7G1DQtyi7VWBfUgQWuO3SwA=,tag:zmPUI1fFwvRRwDroFoPKKg==,type:str]
+    pgp:
+        - created_at: "2026-11-22T12:43:16Z"
+          enc: |-
+            -----BEGIN PGP MESSAGE-----
+
+            hQIMA8JLx4cwGUNQARAAiARkkwALzUJwYsC5tlmX8W9NIMAOMdMSB6KHTHKgANJ+
+            eYkHBsW/8gofLn7rqlWeKjLx7GyXMb6GcvFs9Nc3RvVYU1pETc76uSxvndbF4BOW
+            33u6P6jdeCb1s5+lUVbQfAYBCTZkUEm5k6vwtmsq/QjgFlK7I9al0hwOQuQqomje
+            VS/Nm+As0Eym47LSDvyqXqmw3BqpatFCCD1K71PCLR03L/SnkwGcVnuughW42SDw
+            h+TEPAVBrwZTsrKg5ZzdU7pzaLemfcaq59jrTx2eYlTTSqP8SxmRd+9r0kKTJ7KH
+            NglrbZO5KdjYAL4XHSeCXCyKxQEShs+u8+V49OwYLbf16UIlZZjfYWefnYudhP8/
+            fKmkGJ3G18HxmiJp3W7C4V5qeuJk+yG/wrzfhRclzoUsr8m5nYnOwtC9DJ4cbnW9
+            2QvVON+4lxXI/wlQ+smgUZlX5YRLyi5IywYwaS7/fZShMtSYZDC3CcRs1Y7FcYwq
+            AcrKmthCqxOanBi0DRKVX2b792Yn4UW7QHWstGn8jHA0LrXWm1NAf+VUt5HHzoSK
+            +WocPyy3Q/B44BUyJeqccbv3I8Arxph6VzOEKCdyC9NXF7/MUeEJeBZ9oMsr1mZN
+            IBmWma8c4WbriaA49hbh8RXPwv+59nO8EKUugYZMXeHjc27gIguipq9w5Kl44LXS
+            UQELxUVRpzrJljZTgYdtQ6qYL99HMj7S3AQujxwTyUuphJbl1p9/LnuNt25Pfyjz
+            3Ap4QI7+hG+H1Np/MxnHV2K7txPFKtDg+z1L95Kt2jDrtw==
+            =GADe
+            -----END PGP MESSAGE-----
+          fp: A707B3FAB275E7AA3237110A64B839C17E31F151
+    version: 3.13.3
