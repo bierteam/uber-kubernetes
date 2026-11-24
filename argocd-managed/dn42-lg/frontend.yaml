@@ -1,7 +1,8 @@
 ---
-# The looking glass frontend, on the pod network: its whois (whois.dn42) and
-# ASN lookups (asn.dn42) need DN42, which the host network of talos4 only has
-# inside vrf-dn42. It talks to the proxy in agent.yaml for BIRD and traceroute.
+# The looking glass frontend, on the pod network of another node: its whois
+# (whois.dn42) and ASN lookups (asn.dn42) need DN42, which talos4's host
+# network only has inside vrf-dn42. It talks to the proxy in agent.yaml (on
+# talos4) for BIRD and traceroute.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,11 +17,17 @@ spec:
       labels:
         app: frontend
     spec:
-      # next to the proxy, so it reaches it from the pod range or the node's
-      # own address (both in the proxy's ALLOWED_IPS), never masqueraded to
-      # another node's
-      nodeSelector:
-        kubernetes.io/hostname: talos4
+      # Not on talos4: pods there don't reach DN42 (whois timed out) and come
+      # to the proxy from an address it refuses. From the other nodes both
+      # work, arriving from the pod range in the proxy's ALLOWED_IPS.
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: NotIn
+                    values: [talos4]
       automountServiceAccountToken: false
       securityContext:
         seccompProfile:
