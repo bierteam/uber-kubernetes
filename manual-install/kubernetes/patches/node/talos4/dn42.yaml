@@ -27,10 +27,24 @@ name: dn42-lo
 addresses:
   - address: fd69:420:cafe:ffff::1/128
 ---
+# Everything arriving from the tunnels is looked up in table 42 only. Cilium
+# puts the local table at pref 100, before the l3mdev rule (1000), so without
+# this a peer could reach the node's own addresses (apid, kubelet) through a
+# tunnel, and replies to talos4's pods (masqueraded to the node's
+# fd69:420:cafe:1:: address) would be delivered to the host instead of going
+# back via OPNsense into enp1s0, where Cilium undoes the masquerade. The VRF's
+# own addresses (tunnel fe80s, dn42-lo) are local routes in table 42 itself.
+apiVersion: v1alpha1
+kind: RoutingRuleConfig
+name: "90"
+iifName: vrf-dn42
+table: "42"
+---
 # Only traffic forwarded by OPNsense goes into vrf-dn42. talos4's own pods
-# reach DN42 via the default route and OPNsense's NAT like on the other nodes,
-# instead of leaving the tunnels with a pod address. Pod and service traffic
-# from the other nodes stays in the main table.
+# reach DN42 via the default route like on the other nodes (masqueraded to the
+# node's fd69:420:cafe:1:: address, routed back here by OPNsense), instead of
+# leaving the tunnels with a pod address. Pod and service traffic from the
+# other nodes stays in the main table.
 apiVersion: v1alpha1
 kind: RoutingRuleConfig
 name: "200"

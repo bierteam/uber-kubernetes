@@ -17,9 +17,9 @@ spec:
       labels:
         app: frontend
     spec:
-      # Not on talos4: pods there don't reach DN42 (whois timed out). From
-      # the other nodes it does, and reaches the proxy masqueraded to its
-      # node's address, which the proxy's ALLOWED_IPS lists.
+      # Not on talos4: from the other nodes it reaches the proxy masqueraded
+      # to its node's address, which the proxy's ALLOWED_IPS lists; on talos4
+      # it would connect from its pod address instead.
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
