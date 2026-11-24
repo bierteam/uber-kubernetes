@@ -2,7 +2,7 @@
 # looking glass proxy (BIRD's socket, traceroutes bound to vrf-dn42) and the
 # exporters VictoriaMetrics scrapes. The frontend runs on the pod network
 # (frontend.yaml), where whois.dn42 and asn.dn42 are reachable; the proxy only
-# accepts it and the node itself.
+# accepts it (from talos1-3's addresses) and the node itself.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -38,12 +38,12 @@ spec:
             - name: BIRD_SOCKET
               value: /var/run/bird/bird.ctl
             # on the node address that nl-hou01.dn42.oscarr.nl points at, for the
-            # frontend (frontend.yaml, on the pod network) only: the node itself
-            # and the cluster's pod range
+            # frontend (frontend.yaml) only. It runs on talos1-3 and arrives
+            # masqueraded to its node's address: those, plus talos4 itself.
             - name: BIRDLG_LISTEN
               value: "[$(HOST_IP)]:8000"
             - name: ALLOWED_IPS
-              value: $(HOST_IP),fd05:4786:835f::/48
+              value: $(HOST_IP),2a05:f080:0:3800::1000,2a05:f080:0:3800::1001,2a05:f080:0:3800::1002
             - name: BIRDLG_TRACEROUTE_BIN
               value: /traceroute
             # -i binds to the VRF, so traceroutes leave through the tunnels
