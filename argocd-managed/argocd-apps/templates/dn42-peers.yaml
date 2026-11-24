@@ -1,0 +1,62 @@
+# DN42Peer objects from the public peers repo (github.com/oscrx/dn42-peers).
+# Its own AppProject allows only the DN42Peer kind, only in the dn42-router
+# namespace of talos-cluster, so a bad merge there can never create anything
+# else. dn42-operator refuses to delete many tunnels at once, so a broken
+# sync that prunes everything is stopped there.
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: dn42-peers
+  namespace: argocd
+spec:
+  description: DN42Peer objects from oscrx/dn42-peers only
+  sourceRepos:
+    - https://github.com/oscrx/dn42-peers.git
+  destinations:
+    - name: talos-cluster
+      namespace: dn42-router
+  clusterResourceWhitelist: []
+  namespaceResourceWhitelist:
+    - group: dn42.oscarr.nl
+      kind: DN42Peer
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: dn42-peers
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/compare-options: ServerSideDiff=true,IncludeMutationWebhook=true
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: dn42-peers
+  destination:
+    name: talos-cluster
+    namespace: dn42-router
+  source:
+    repoURL: https://github.com/oscrx/dn42-peers.git
+    targetRevision: main
+    path: peers
+    directory:
+      include: "*.yaml"
+  # The operator writes status; ArgoCD owns only the spec.
+  ignoreDifferences:
+    - group: dn42.oscarr.nl
+      kind: DN42Peer
+      jsonPointers: [/status]
+  syncPolicy:
+    syncOptions:
+      - ServerSideApply=true
+      - CreateNamespace=false
+    automated:
+      prune: true
+      selfHeal: true
+    # The first sync can run before the dn42-router app has created the DN42Peer
+    # CRD ("no matches for kind"); retry instead of waiting for a new commit.
+    retry:
+      limit: 10
+      backoff:
+        duration: 30s
+        factor: 2
+        maxDuration: 10m

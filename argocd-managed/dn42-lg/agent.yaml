@@ -214,7 +214,7 @@ spec:
               drop: [ALL]
               add: [NET_ADMIN]
       volumes:
-        # the bird2 extension's run directory
+        # BIRD's run directory on talos4 (the dn42-bird DaemonSet; the bird2 extension before)
         - name: bird
           hostPath:
             path: /var/run/bird
