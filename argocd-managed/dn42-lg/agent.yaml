@@ -50,8 +50,9 @@ spec:
             # from fd69:420:cafe:ffff::1 instead of the LAN; that also means only
             # DN42 targets are reachable. -6: DN42 is IPv6 only here, so names
             # resolve to their AAAA (not to an IPv4 address that can't work).
+            # -I: ICMP probes; UDP probes in the VRF got no answers at all.
             - name: BIRDLG_TRACEROUTE_FLAGS
-              value: -6 -q1 -N32 -w1 -i vrf-dn42
+              value: -6 -I -q1 -N32 -w1 -i vrf-dn42
           resources:
             requests:
               cpu: 5m
