@@ -16,6 +16,8 @@ dn42-operator:
     # TransitHealthy; dn42-operator README "Transit probe").
     transitProbe:
       source: fd69:420:cafe:ffff::1
+      # snippets import with dn42_import_transit (defined in bird.conf below)
+      birdArg: true
   # The keys are templates/secret-keys.yaml (SealedSecret dn42-wireguard-keys).
   bird:
     config:
