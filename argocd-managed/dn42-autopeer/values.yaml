@@ -24,6 +24,13 @@ dn42-autopeer:
     # gets this, including that provider's operators.
     admin:
       enabled: true
+    # Each peering links to its session in our looking glass (the dn42-lg
+    # app); the .dn42 name links the .dn42 one.
+    lookingGlass:
+      url: https://lg.dn42.oscarr.nl
+      server: nl-hou01
+      hostURLs:
+        autopeer.oscrx.dn42: https://lg.oscrx.dn42
     router:
       asn: 4242423818
       name: oscrx
