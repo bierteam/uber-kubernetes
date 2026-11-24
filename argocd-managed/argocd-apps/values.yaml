@@ -19,6 +19,9 @@ argocdApps:
     docs: https://github.com/oscrx/dn42-operator
     podSecurity: privileged # hostNetwork, WireGuard links and BIRD on talos4
     server: talos-cluster
+  - name: dn42-autopeer
+    docs: https://github.com/oscrx/dn42-operator
+    server: talos-cluster # PodSecurity restricted (the default): the public front end
   - name: dn42-lg
     docs: https://github.com/xddxdd/bird-lg-go
     podSecurity: privileged # hostNetwork and the bird socket on talos4

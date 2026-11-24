@@ -1,0 +1,11 @@
+apiVersion: v2
+name: dn42-autopeer-wrapper
+type: application
+version: 1.0.0
+dependencies:
+  # Self-service peering for the DN42 router: log in with a DN42 identity
+  # provider, prove ASN ownership, get a PR in github.com/oscrx/dn42-peers.
+  # https://github.com/oscrx/dn42-operator
+  - name: dn42-autopeer
+    version: 0.3.0
+    repository: oci://ghcr.io/oscrx/charts

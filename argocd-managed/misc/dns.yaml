@@ -65,6 +65,12 @@ spec:
       recordType: AAAA
       targets:
         - 2a05:f080:0:3800:1b::8
+    # DN42 autopeering, the Gateway in the dn42-autopeer app (IPv6 only)
+    - dnsName: autopeer.dn42.oscarr.nl
+      recordTTL: 1
+      recordType: AAAA
+      targets:
+        - 2a05:f080:0:3800:1b::9
 ---
 apiVersion: externaldns.k8s.io/v1alpha1
 kind: DNSEndpoint

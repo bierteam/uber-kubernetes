@@ -1,0 +1,71 @@
+# autopeer.dn42.oscarr.nl (and autopeer.oscrx.dn42 inside DN42). Changes go
+# out as PRs in github.com/oscrx/dn42-peers through the GitHub App; the app
+# only reads DN42Peer objects in dn42-router, for its status page.
+# Secrets (SealedSecret dn42-autopeer, templates/secret.yaml): cookie-key,
+# github-app.pem, iedon-client-secret, registry-token.
+dn42-autopeer:
+  peersNamespace: dn42-router
+  gitSync:
+    enabled: true
+    username: TODO(you)            # the git.dn42.dev account registry-token belongs to
+  config:
+    listen: ":8080"
+    publicURL: https://autopeer.dn42.oscarr.nl
+    extraPublicURLs:
+      - https://autopeer.oscrx.dn42
+    cookieKeyFile: /secrets/cookie-key
+    sessionTTL: 1h
+    limits:
+      perLoginPerHour: 3
+      totalPerHour: 20
+    router:
+      asn: 4242423818
+      name: oscrx
+      # The endpoint on the peering page; port = 2 + the last 4 digits of the ASN.
+      endpointHost: nl-hou01.dn42.oscarr.nl
+      # Shared key of self-service peers ("autopeer" in dn42-wireguard-keys).
+      publicKey: aCZojtW7GqVYx1998M3rqt0pXKheSDnm6WymLRBDVgA=
+      linkLocal: fe80::3818
+    registry:
+      path: /registry-root/registry
+      refresh: 10m
+      pull: false
+    github:
+      owner: oscrx
+      repo: dn42-peers
+      baseBranch: main
+      peersDir: peers
+      appID: 0                     # TODO(you): the autopeer GitHub App
+      installationID: 0            # TODO(you)
+      appLogin: dn42-autopeer[bot] # TODO(you): "<app-slug>[bot]"; must match APP_LOGIN in dn42-peers' check.yaml
+      privateKeyFile: /secrets/github-app.pem
+    kubernetes:
+      enabled: true
+      namespace: dn42-router
+    providers:
+      # OAuth.dn42 / Auth42 by iEdon (AS4242422189), discovery verified
+      # 2026-11-24: PKCE S256, client_secret_basic/post, scope dn42 adds the
+      # "dn42" claim (asn: number, active_mnt, mnt_by) to the ID token and
+      # userinfo. Callbacks must be https on auth.iedon.net.
+      - name: iedon
+        displayName: OAuth.dn42 (iEdon)
+        issuer: https://auth.iedon.net
+        clientID: TODO(you)
+        clientSecretFile: /secrets/iedon-client-secret
+        scopes: [openid, dn42]
+        claims:
+          subject: sub
+          asn: dn42.asn
+          mntner: dn42.active_mnt
+      # Kioubit (AS4242423914), discovery verified 2026-11-24: issuer
+      # dn42.g-load.eu, PKCE S256, public clients allowed, scope dn42 adds a
+      # "dn42" claim. Its field names are unverified until a real login.
+      - name: kioubit
+        displayName: Kioubit
+        issuer: https://dn42.g-load.eu
+        clientID: TODO(you)
+        scopes: [openid, dn42]
+        claims:
+          subject: sub
+          asn: dn42.asn
+          mntner: dn42.mnt
