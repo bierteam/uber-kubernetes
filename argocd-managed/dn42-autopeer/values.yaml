@@ -18,6 +18,13 @@ dn42-autopeer:
     limits:
       perLoginPerHour: 3
       totalPerHour: 20
+    # Logins showing AS4242423818 are admins: add, edit and remove peerings
+    # for any DN42 ASN, auto-merged like any autopeer PR. Anyone who can get
+    # either provider to vouch for AS4242423818 gets this, including that
+    # provider's operators.
+    admin:
+      enabled: true
+      providers: [iedon, kioubit]
     router:
       asn: 4242423818
       name: oscrx
@@ -51,6 +58,8 @@ dn42-autopeer:
         scopes: [openid, dn42]
         claims:
           subject: sub
+          # sub is an opaque hash; show the mntner instead.
+          name: dn42.active_mnt
           asn: dn42.asn
       # Kioubit (AS4242423914), discovery verified 2026-11-24: issuer
       # dn42.g-load.eu, PKCE S256, public client (no secret), scope dn42 adds a
