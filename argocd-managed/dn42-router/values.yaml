@@ -32,6 +32,13 @@ dn42-operator:
         define OWNNETv6 = fd69:420:cafe::/48;
         define OWNNETSETv6 = [fd69:420:cafe::/48+];
 
+        # Peers we only use for their own networks, never as transit: their
+        # routes to anyone else get local_pref 10, a last resort.
+        # 4242421732 baragoon: tags every route latency 1, so it won nearly the
+        # whole table, and drops our packets when the replies come back over
+        # another peer (TLS to anything behind it stalled 5-8s).
+        define NO_TRANSIT_AS = [4242421732];
+
         router id 10.38.18.4;
         log stderr all;
         # full timestamps in show protocols, which bird_exporter turns into uptimes
@@ -128,8 +135,18 @@ dn42-operator:
             print "[dn42] ROA check failed for ", net, " ASN ", bgp_path.last;
             return false;
           }
-          # prefer low-latency paths over short ones: latency 2 gets 180, 5 gets 150
-          bgp_local_pref = 200 - 10 * update_link(lat, bw, crypto);
+          int lat_worst = update_link(lat, bw, crypto);
+          if bgp_path.first ~ NO_TRANSIT_AS && bgp_path.len > 1 then {
+            bgp_local_pref = 10;
+            return true;
+          }
+          # Latency first (one tier is 10), path length second (5 per extra AS),
+          # so a peer under-reporting latency doesn't win every prefix and
+          # direct peers win their own: latency 2 direct gets 180, latency 2
+          # over three ASes 170. Floor of 20 keeps prepended paths positive.
+          int lp = 200 - 10 * lat_worst - 5 * (bgp_path.len - 1);
+          if lp < 20 then lp = 20;
+          bgp_local_pref = lp;
           return true;
         }
 
