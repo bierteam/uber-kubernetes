@@ -19,12 +19,11 @@ dn42-autopeer:
       perLoginPerHour: 3
       totalPerHour: 20
     # Logins showing AS4242423818 are admins: add, edit and remove peerings
-    # for any DN42 ASN, auto-merged like any autopeer PR. Anyone who can get
-    # either provider to vouch for AS4242423818 gets this, including that
-    # provider's operators.
+    # for any DN42 ASN, auto-merged like any autopeer PR. Through every
+    # provider: anyone who can get one of them to vouch for AS4242423818
+    # gets this, including that provider's operators.
     admin:
       enabled: true
-      providers: [iedon, kioubit]
     router:
       asn: 4242423818
       name: oscrx
