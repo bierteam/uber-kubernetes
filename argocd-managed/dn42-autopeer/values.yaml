@@ -72,3 +72,17 @@ dn42-autopeer:
         claims:
           subject: sub
           asn: dn42.asn
+      # HExpNetwork WebAuth (AS4242420298), docs at
+      # https://auth42.hexpnet.work/doc.html, discovery checked 2026-11-24:
+      # the same Auth42 software as OAuth.dn42 (pairwise sub, dn42 claim with
+      # asn and active_mnt). Registered as a public client: PKCE only, no
+      # secret (it shows one anyway; unused).
+      - name: hexp
+        displayName: HExpNetwork WebAuth
+        issuer: https://auth42.hexpnet.work
+        clientID: NO7LGErf6H2vfNcI
+        scopes: [openid, dn42]
+        claims:
+          subject: sub
+          name: dn42.active_mnt
+          asn: dn42.asn
