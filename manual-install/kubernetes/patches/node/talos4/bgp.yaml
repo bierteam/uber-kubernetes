@@ -4,5 +4,5 @@ apiVersion: v1alpha1
 kind: KubeNodeConfig
 labels:
   bgp.oscarr.nl/peer: "false"
-  # Runs the DN42 router DaemonSets (argocd-managed/dn42/router) here.
+  # Runs the DN42 router DaemonSets (argocd-managed/dn42-router) here.
   dn42.oscarr.nl/router: "true"

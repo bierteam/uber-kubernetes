@@ -13,7 +13,7 @@ apiVersion: v1alpha1
 kind: VRFConfig
 name: vrf-dn42
 table: "42"
-# The wg-* tunnels are created in this VRF by dn42-operator (argocd-managed/dn42),
+# The wg-* tunnels are created in this VRF by dn42-operator (argocd-managed/dn42-router),
 # marked with alias managed-by=dn42-operator; Talos leaves them alone.
 links:
   - dn42-lo
