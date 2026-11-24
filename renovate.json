@@ -27,6 +27,11 @@
   ],
   "packageRules": [
     {
+      "description": "dn42-operator chart: never automerge. A new chart can carry a new BIRD (dn42-bird is OnDelete: every BGP session restarts at the next pod delete or reboot) or operator behaviour; review and roll it out by hand.",
+      "matchPackageNames": ["dn42-operator", "ghcr.io/oscrx/charts/dn42-operator"],
+      "automerge": false
+    },
+    {
       "description": "PostgreSQL major upgrades need a planned migration",
       "matchPackageNames": [
         "ghcr.io/cloudnative-pg/postgresql",

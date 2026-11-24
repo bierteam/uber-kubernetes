@@ -1,0 +1,172 @@
+# The DN42 router on talos4. Idle until a node is labelled
+# dn42.oscarr.nl/router=true (the chart's default nodeSelector); talos4 gets
+# the label from its Talos config. Peers come from github.com/oscrx/dn42-peers
+# (Application dn42-peers in argocd-apps), into this namespace.
+dn42-operator:
+  operator:
+    # One router node: keep the tunnels up across operator restarts and API
+    # outages. Set both true once a standby exists (a tunnel key must never be
+    # live on two nodes).
+    cleanupOnShutdown: false
+    teardownOnLeaseLoss: false
+    # endpointService: dn42-endpoint   # once the floating endpoint exists
+  # The keys are templates/secret-keys.yaml (SealedSecret dn42-wireguard-keys).
+  bird:
+    config:
+      # The chart creates the fixed-name ConfigMap dn42-bird-conf from this.
+      # Edits reach BIRD through dn42-operator (configure check, then
+      # configure), never as a restart.
+      create: true
+      content: |
+        # bird.conf for the dn42-bird DaemonSet. Taken over unchanged from the
+        # talos4 bird2 extension (manual-install/kubernetes/patches/node/talos4/dn42.yaml)
+        # minus the hand-written peer sessions: dn42-operator renders one
+        # "protocol bgp peer_<name> from dnpeers" per DN42Peer into
+        # /etc/bird/peers. Don't define symbols starting with peer_ here.
+        #
+        # Edits reach BIRD without a restart: the ConfigMap has a fixed name and is
+        # mounted as a directory, and dn42-operator runs "configure check" and then
+        # "configure" when this file changes. A config BIRD rejects is not loaded.
+
+        define OWNAS = 4242423818;
+        define OWNNETv6 = fd69:420:cafe::/48;
+        define OWNNETSETv6 = [fd69:420:cafe::/48+];
+
+        router id 10.38.18.4;
+        log stderr all;
+        # full timestamps in show protocols, which bird_exporter turns into uptimes
+        timeformat protocol iso long;
+
+        protocol device {
+          scan time 10;
+        }
+
+        function is_self_net_v6() -> bool {
+          return net ~ OWNNETSETv6;
+        }
+
+        function is_valid_network_v6() -> bool {
+          return net ~ [ fd00::/8{44,64} ];
+        }
+
+        # cluster pod and service ranges
+        function is_cluster_net_v6() -> bool {
+          return net ~ [ fd05:4786:835f::/48+, fd26:4340:84fe::/112+ ];
+        }
+
+        roa6 table dn42_roa6;
+
+        protocol rpki stayrtr {
+          roa6 { table dn42_roa6; };
+          remote fd26:4340:84fe::8282 port 8282;
+          refresh 600;
+          retry 30;
+          expire 7200;
+        }
+
+        protocol static {
+          route OWNNETv6 unreachable;
+          ipv6 {
+            import all;
+            export none;
+          };
+        }
+
+        protocol kernel {
+          vrf "vrf-dn42";
+          kernel table 42;
+          scan time 20;
+          learn off;
+          # the default overflows on full-table bursts
+          netlink rx buffer 8388608;
+          ipv6 {
+            import none;
+            export filter {
+              if source = RTS_STATIC then reject;
+              accept;
+            };
+          };
+        }
+
+        # DN42 link communities (dn42.eu/howto/BGP-communities). Each route carries
+        # the worst latency, bandwidth and crypto seen along its path, so every
+        # hop replaces the value with the worse of it and its own link's.
+        function update_latency(int own) -> int {
+          int v = own;
+          for pair c in bgp_community do
+            if c ~ [(64511, 1..9)] && c.data > v then v = c.data;
+          bgp_community.delete([(64511, 1..9)]);
+          bgp_community.add((64511, v));
+          return v;
+        }
+
+        function update_bandwidth(int own) {
+          int v = own;
+          for pair c in bgp_community do
+            if c ~ [(64511, 21..29)] && c.data < v then v = c.data;
+          bgp_community.delete([(64511, 21..29)]);
+          bgp_community.add((64511, v));
+        }
+
+        function update_crypto(int own) {
+          int v = own;
+          for pair c in bgp_community do
+            if c ~ [(64511, 31..34)] && c.data < v then v = c.data;
+          bgp_community.delete([(64511, 31..34)]);
+          bgp_community.add((64511, v));
+        }
+
+        function update_link(int lat; int bw; int crypto) -> int {
+          update_bandwidth(bw);
+          update_crypto(crypto);
+          return update_latency(lat);
+        }
+
+        function dn42_import(int lat; int bw; int crypto) -> bool {
+          if !is_valid_network_v6() || is_self_net_v6() || is_cluster_net_v6() then return false;
+          if roa_check(dn42_roa6, net, bgp_path.last) != ROA_VALID then {
+            print "[dn42] ROA check failed for ", net, " ASN ", bgp_path.last;
+            return false;
+          }
+          # prefer low-latency paths over short ones: latency 2 gets 180, 5 gets 150
+          bgp_local_pref = 200 - 10 * update_link(lat, bw, crypto);
+          return true;
+        }
+
+        function dn42_export(int lat; int bw; int crypto) -> bool {
+          if !is_valid_network_v6() || !(source ~ [RTS_STATIC, RTS_BGP]) then return false;
+          if source = RTS_STATIC then {
+            bgp_community.add((64511, 41));   # region: Europe
+            bgp_community.add((64511, 1528)); # country: Netherlands
+          }
+          update_link(lat, bw, crypto);
+          return true;
+        }
+
+        template bgp dnpeers {
+          vrf "vrf-dn42";
+          local as OWNAS;
+          path metric on;
+          ipv6 {
+            # keeps received routes so ROA updates re-run the import filter
+            import table on;
+            import limit 9000 action block;
+          };
+        }
+
+        # DN42 Global Route Collector: feeds the maps and lg.collector.dn42. It
+        # never sends routes, and add paths shows it every path, not only the best.
+        protocol bgp route_collector {
+          vrf "vrf-dn42";
+          local fd69:420:cafe:ffff::1 as OWNAS;
+          neighbor fd42:d42:d42:179::1 as 4242422602;
+          multihop;
+          ipv6 {
+            add paths tx;
+            import none;
+            export where is_valid_network_v6() && source ~ [RTS_STATIC, RTS_BGP];
+          };
+        }
+
+        # Peer sessions, rendered by dn42-operator from the DN42Peer objects.
+        include "/etc/bird/peers/*.conf";

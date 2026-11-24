@@ -1,0 +1,10 @@
+apiVersion: v2
+name: dn42-router-wrapper
+type: application
+version: 1.0.0
+dependencies:
+  # BIRD + dn42-operator (two DaemonSets), RBAC and the DN42Peer CRD.
+  # https://github.com/oscrx/dn42-operator
+  - name: dn42-operator
+    version: 0.2.0
+    repository: oci://ghcr.io/oscrx/charts
