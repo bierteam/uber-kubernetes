@@ -59,7 +59,7 @@ spec:
       recordType: AAAA
       targets:
         - 2a05:f080:0:3800:1b::7
-    # DN42 peering page, the Gateway in the dn42-peering app (IPv6 only)
+    # DN42 peering page, the Gateway in the dn42-homepage app (IPv6 only)
     - dnsName: dn42.oscarr.nl
       recordTTL: 1
       recordType: AAAA

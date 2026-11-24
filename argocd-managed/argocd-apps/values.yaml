@@ -26,7 +26,7 @@ argocdApps:
     docs: https://github.com/xddxdd/bird-lg-go
     podSecurity: privileged # hostNetwork and the bird socket on talos4
     server: talos-cluster
-  - name: dn42-peering
+  - name: dn42-homepage
     docs: https://github.com/nginx/docker-nginx-unprivileged
     server: talos-cluster
   # - name: dns-updater

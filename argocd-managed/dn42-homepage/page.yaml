@@ -1,11 +1,11 @@
 ---
-# Peering page for AS4242423818, at dn42.oscarr.nl on the internet and
+# Home page of AS4242423818, at dn42.oscarr.nl on the internet and
 # oscrx.dn42 inside DN42 (the Gateways in gateway.yaml). A static page from
 # nginx; edit index.html below.
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: peering
+  name: homepage
 data:
   # the image only listens on IPv4, and the Service is IPv6 only
   default.conf: |
@@ -68,15 +68,14 @@ data:
     </table>
 
     <h2>Requesting a peering</h2>
-    <p><strong>Automatic:</strong> <a href="https://autopeer.dn42.oscarr.nl">autopeer.dn42.oscarr.nl</a> (inside DN42: <a href="https://autopeer.oscrx.dn42">autopeer.oscrx.dn42</a>). Log in with OAuth.dn42 or Kioubit, fill in your endpoint and key, and you get your config right away; the peering goes live once it is merged. Automatic peerings share one WireGuard key on our side.</p>
-    <p><strong>By email</strong>, with a WireGuard key of its own: email <a href="mailto:oscar+dn42@oscarr.nl">oscar+dn42@oscarr.nl</a> with:</p>
+    <p><a href="https://autopeer.dn42.oscarr.nl">autopeer.dn42.oscarr.nl</a> (inside DN42: <a href="https://autopeer.oscrx.dn42">autopeer.oscrx.dn42</a>) sets it up for you:</p>
     <ul>
-      <li>your ASN and the node you'd like to peer with,</li>
-      <li>your endpoint (host and port),</li>
-      <li>your WireGuard public key,</li>
-      <li>your link-local address.</li>
+      <li>Log in with OAuth.dn42, Kioubit or HExpNetwork WebAuth; the login proves which ASNs you maintain.</li>
+      <li>Fill in your endpoint, WireGuard public key and link-local address.</li>
+      <li>You get your side of the config right away. The request becomes a pull request in <a href="https://github.com/oscrx/dn42-peers">oscrx/dn42-peers</a>, merged automatically once its checks pass; the tunnel and session come up within a few minutes.</li>
+      <li>Log in again any time to see the session's state, or to change or remove your peering.</li>
     </ul>
-    <p>You'll get our public key back once our side is set up.</p>
+    <p>Can't use the login? Email <a href="mailto:oscar+dn42@oscarr.nl">oscar+dn42@oscarr.nl</a> with your ASN, endpoint (host and port), WireGuard public key and link-local address.</p>
 
     <h2>Services</h2>
     <table>
@@ -97,19 +96,19 @@ data:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: peering
+  name: homepage
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: peering
+      app: homepage
   template:
     metadata:
       labels:
-        app: peering
+        app: homepage
       annotations:
         # bump to roll the pod after editing the page: subPath mounts never update
-        checksum/page: "3"
+        checksum/page: "4"
     spec:
       automountServiceAccountToken: false
       securityContext:
@@ -152,18 +151,18 @@ spec:
       volumes:
         - name: page
           configMap:
-            name: peering
+            name: homepage
         - name: tmp
           emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: peering
+  name: homepage
 spec:
   ipFamilies: [IPv6]
   selector:
-    app: peering
+    app: homepage
   ports:
     - name: http
       port: 8080
