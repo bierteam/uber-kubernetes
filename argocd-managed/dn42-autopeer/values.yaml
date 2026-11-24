@@ -31,7 +31,7 @@ dn42-autopeer:
       # The endpoint on the peering page; port = 2 + the last 4 digits of the ASN.
       endpointHost: nl-hou01.dn42.oscarr.nl
       # Shared key of self-service peers ("autopeer" in dn42-wireguard-keys).
-      publicKey: aCZojtW7GqVYx1998M3rqt0pXKheSDnm6WymLRBDVgA=
+      publicKey: oscrxfobHgtewi+xMJQPNNSEpbBi4XilU7upqJ6Xi2w=
       linkLocal: fe80::3818
     github:
       owner: oscrx
