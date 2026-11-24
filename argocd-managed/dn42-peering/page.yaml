@@ -68,7 +68,8 @@ data:
     </table>
 
     <h2>Requesting a peering</h2>
-    <p>Each peer gets its own WireGuard key. Email <a href="mailto:oscar+dn42@oscarr.nl">oscar+dn42@oscarr.nl</a> with:</p>
+    <p><strong>Automatic:</strong> <a href="https://autopeer.dn42.oscarr.nl">autopeer.dn42.oscarr.nl</a> (inside DN42: <a href="https://autopeer.oscrx.dn42">autopeer.oscrx.dn42</a>). Log in with OAuth.dn42 or Kioubit, fill in your endpoint and key, and you get your config right away; the peering goes live once it is merged. Automatic peerings share one WireGuard key on our side.</p>
+    <p><strong>By email</strong>, with a WireGuard key of its own: email <a href="mailto:oscar+dn42@oscarr.nl">oscar+dn42@oscarr.nl</a> with:</p>
     <ul>
       <li>your ASN and the node you'd like to peer with,</li>
       <li>your endpoint (host and port),</li>
