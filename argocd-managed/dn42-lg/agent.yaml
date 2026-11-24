@@ -51,8 +51,11 @@ spec:
             # DN42 targets are reachable. -6: DN42 is IPv6 only here, so names
             # resolve to their AAAA (not to an IPv4 address that can't work).
             # -I: ICMP probes; UDP probes in the VRF got no answers at all.
+            # -s: the tunnels only have link-local addresses, so without it the
+            # probes left from fe80::3818 and the first peer couldn't forward
+            # them (!H); our DN42 address can be routed back.
             - name: BIRDLG_TRACEROUTE_FLAGS
-              value: -6 -I -q1 -N32 -w1 -i vrf-dn42
+              value: -6 -I -q1 -N32 -w1 -i vrf-dn42 -s fd69:420:cafe:ffff::1
           resources:
             requests:
               cpu: 5m
