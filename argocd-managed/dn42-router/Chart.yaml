@@ -6,5 +6,5 @@ dependencies:
   # BIRD + dn42-operator (two DaemonSets), RBAC and the DN42Peer CRD.
   # https://github.com/oscrx/dn42-operator
   - name: dn42-operator
-    version: 0.2.0
+    version: 0.3.7
     repository: oci://ghcr.io/oscrx/charts
