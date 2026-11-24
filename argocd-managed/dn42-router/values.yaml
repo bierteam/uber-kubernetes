@@ -40,13 +40,6 @@ dn42-operator:
         define OWNNETv6 = fd69:420:cafe::/48;
         define OWNNETSETv6 = [fd69:420:cafe::/48+];
 
-        # Peers we only use for their own networks, never as transit: their
-        # routes to anyone else get local_pref 10, a last resort.
-        # 4242421732 baragoon: tags every route latency 1, so it won nearly the
-        # whole table, and drops our packets when the replies come back over
-        # another peer (TLS to anything behind it stalled 5-8s).
-        define NO_TRANSIT_AS = [4242421732];
-
         router id 10.38.18.4;
         log stderr all;
         # full timestamps in show protocols, which bird_exporter turns into uptimes
@@ -144,10 +137,6 @@ dn42-operator:
             return false;
           }
           int lat_worst = update_link(lat, bw, crypto);
-          if bgp_path.first ~ NO_TRANSIT_AS && bgp_path.len > 1 then {
-            bgp_local_pref = 10;
-            return true;
-          }
           # Latency first (one tier is 10), path length second (5 per extra AS),
           # so a peer under-reporting latency doesn't win every prefix and
           # direct peers win their own: latency 2 direct gets 180, latency 2
@@ -161,7 +150,9 @@ dn42-operator:
         # dn42-operator's import with the transit probe's verdict
         # (operator.transitProbe.birdArg): a peer whose firewall breaks TCP
         # when the replies return via another peer keeps its own networks,
-        # but its transit routes become a last resort.
+        # but its transit routes become a last resort. (baragoon, AS4242421732,
+        # was the first: it tags every route latency 1, won nearly the whole
+        # table, and TLS to anything behind it stalled 5-8s.)
         function dn42_import_transit(int lat; int bw; int crypto; bool transit_ok) -> bool {
           if !dn42_import(lat, bw, crypto) then return false;
           if !transit_ok && bgp_path.len > 1 then bgp_local_pref = 10;
