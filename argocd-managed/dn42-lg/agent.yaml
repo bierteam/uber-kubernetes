@@ -37,13 +37,15 @@ spec:
                   fieldPath: status.hostIP
             - name: BIRD_SOCKET
               value: /var/run/bird/bird.ctl
-            # on the node address that nl-hou01.dn42.oscarr.nl points at, for the
-            # frontend (frontend.yaml) only. It runs on talos1-3 and arrives
-            # masqueraded to its node's address: those, plus talos4 itself.
+            # on the node address that nl-hou01.dn42.oscarr.nl points at. That is
+            # a LAN address (NetworkPolicies don't cover hostNetwork), so only
+            # the cluster may connect: the frontend (frontend.yaml) arrives from
+            # its pod address on talos4, masqueraded to its node's address from
+            # talos1-3.
             - name: BIRDLG_LISTEN
               value: "[$(HOST_IP)]:8000"
             - name: ALLOWED_IPS
-              value: $(HOST_IP),2a05:f080:0:3800::1000,2a05:f080:0:3800::1001,2a05:f080:0:3800::1002
+              value: $(HOST_IP),fd05:4786:835f::/48,2a05:f080:0:3800::1000,2a05:f080:0:3800::1001,2a05:f080:0:3800::1002
             - name: BIRDLG_TRACEROUTE_BIN
               value: /traceroute
             # -i binds to the VRF, so traceroutes leave through the tunnels
