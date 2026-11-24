@@ -1,0 +1,87 @@
+---
+# The looking glass frontend, on the pod network: its whois (whois.dn42) and
+# ASN lookups (asn.dn42) need DN42, which the host network of talos4 only has
+# inside vrf-dn42. It talks to the proxy in agent.yaml for BIRD and traceroute.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      # next to the proxy, so it reaches it from the pod range or the node's
+      # own address (both in the proxy's ALLOWED_IPS), never masqueraded to
+      # another node's
+      nodeSelector:
+        kubernetes.io/hostname: talos4
+      automountServiceAccountToken: false
+      securityContext:
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: frontend
+          image: xddxdd/bird-lg-go:v1.4.8@sha256:0a37cafdc3d9ba436df5bdad876ef61c8a8134c34344006b78aa5ffb3671c328
+          env:
+            - name: BIRDLG_LISTEN
+              value: "[::]:5000"
+            # the proxy (agent.yaml) at nl-hou01.dn42.oscarr.nl, port 8000; the
+            # name is also the URL path (/summary/nl-hou01)
+            - name: BIRDLG_SERVERS
+              value: nl-hou01
+            - name: BIRDLG_DOMAIN
+              value: dn42.oscarr.nl
+            - name: BIRDLG_PROXY_PORT
+              value: "8000"
+            - name: BIRDLG_NET_SPECIFIC_MODE
+              value: dn42
+            - name: BIRDLG_WHOIS
+              value: whois.dn42
+            - name: BIRDLG_DNS_INTERFACE
+              value: asn.dn42
+            - name: BIRDLG_PROTOCOL_FILTER
+              value: bgp
+            - name: BIRDLG_TITLE_BRAND
+              value: OSCRX-AS
+            - name: BIRDLG_NAVBAR_BRAND
+              value: OSCRX-AS · AS4242423818
+          ports:
+            - name: http
+              containerPort: 5000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            requests:
+              cpu: 5m
+              memory: 16Mi
+            limits:
+              memory: 64Mi
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 65534
+            runAsGroup: 65534
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: [ALL]
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+spec:
+  ipFamilies: [IPv6]
+  selector:
+    app: frontend
+  ports:
+    - name: http
+      port: 5000
+      targetPort: http

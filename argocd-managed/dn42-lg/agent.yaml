@@ -1,7 +1,8 @@
 # Everything that has to sit next to bird on talos4, in the host network: the
-# looking glass (proxy and frontend) and the exporters VictoriaMetrics scrapes.
-# The proxy only listens on localhost, so the bird socket is only reachable
-# through the frontend.
+# looking glass proxy (BIRD's socket, traceroutes bound to vrf-dn42) and the
+# exporters VictoriaMetrics scrapes. The frontend runs on the pod network
+# (frontend.yaml), where whois.dn42 and asn.dn42 are reachable; the proxy only
+# accepts it and the node itself.
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -37,11 +38,12 @@ spec:
             - name: BIRD_SOCKET
               value: /var/run/bird/bird.ctl
             # on the node address that nl-hou01.dn42.oscarr.nl points at, for the
-            # frontend below only
+            # frontend (frontend.yaml, on the pod network) only: the node itself
+            # and the cluster's pod range
             - name: BIRDLG_LISTEN
               value: "[$(HOST_IP)]:8000"
             - name: ALLOWED_IPS
-              value: $(HOST_IP)
+              value: $(HOST_IP),fd05:4786:835f::/48
             - name: BIRDLG_TRACEROUTE_BIN
               value: /traceroute
             # -i binds to the VRF, so traceroutes leave through the tunnels
@@ -66,56 +68,6 @@ spec:
           volumeMounts:
             - name: bird
               mountPath: /var/run/bird
-        - name: frontend
-          image: xddxdd/bird-lg-go:v1.4.8@sha256:0a37cafdc3d9ba436df5bdad876ef61c8a8134c34344006b78aa5ffb3671c328
-          env:
-            - name: HOST_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.hostIP
-            - name: BIRDLG_LISTEN
-              value: "[$(HOST_IP)]:5000"
-            # the proxy above at nl-hou01.dn42.oscarr.nl; the name is also the URL
-            # path (/summary/nl-hou01)
-            - name: BIRDLG_SERVERS
-              value: nl-hou01
-            - name: BIRDLG_DOMAIN
-              value: dn42.oscarr.nl
-            - name: BIRDLG_PROXY_PORT
-              value: "8000"
-            - name: BIRDLG_NET_SPECIFIC_MODE
-              value: dn42
-            - name: BIRDLG_WHOIS
-              value: whois.dn42
-            - name: BIRDLG_DNS_INTERFACE
-              value: asn.dn42
-            - name: BIRDLG_PROTOCOL_FILTER
-              value: bgp
-            - name: BIRDLG_TITLE_BRAND
-              value: OSCRX-AS
-            - name: BIRDLG_NAVBAR_BRAND
-              value: OSCRX-AS · AS4242423818
-          ports:
-            - name: http
-              containerPort: 5000
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-          resources:
-            requests:
-              cpu: 5m
-              memory: 16Mi
-            limits:
-              memory: 64Mi
-          securityContext:
-            runAsNonRoot: true
-            runAsUser: 65534
-            runAsGroup: 65534
-            allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop: [ALL]
         - name: bird-exporter
           image: ghcr.io/czerwonk/bird_exporter:1.7.1@sha256:694887d59b448ea67e5b1f04ca8978012c94ddeb2527b77f646301ae3f2551ce
           env:
@@ -219,19 +171,6 @@ spec:
           hostPath:
             path: /var/run/dn42-bird
             type: DirectoryOrCreate
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: frontend
-spec:
-  ipFamilies: [IPv6]
-  selector:
-    app: agent
-  ports:
-    - name: http
-      port: 5000
-      targetPort: http
 ---
 # scraped by VictoriaMetrics (argocd-managed/victoria-metrics)
 apiVersion: v1
