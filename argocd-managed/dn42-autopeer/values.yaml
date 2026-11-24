@@ -2,12 +2,12 @@
 # out as PRs in github.com/oscrx/dn42-peers through the GitHub App; the app
 # only reads DN42Peer objects in dn42-router, for its status page.
 # Secrets (SealedSecret dn42-autopeer, templates/secret.yaml): cookie-key,
-# github-app.pem, iedon-client-secret, registry-token.
+# github-app.pem, iedon-client-secret.
+# No registry: both providers return the ASN in their "dn42" claim, so there
+# is no mntner -> ASN lookup and no registry clone (git-sync stays off). The
+# peers repo's check still validates every PR against the live registry.
 dn42-autopeer:
   peersNamespace: dn42-router
-  gitSync:
-    enabled: true
-    username: TODO(you)            # the git.dn42.dev account registry-token belongs to
   config:
     listen: ":8080"
     publicURL: https://autopeer.dn42.oscarr.nl
@@ -26,10 +26,6 @@ dn42-autopeer:
       # Shared key of self-service peers ("autopeer" in dn42-wireguard-keys).
       publicKey: aCZojtW7GqVYx1998M3rqt0pXKheSDnm6WymLRBDVgA=
       linkLocal: fe80::3818
-    registry:
-      path: /registry-root/registry
-      refresh: 10m
-      pull: false
     github:
       owner: oscrx
       repo: dn42-peers
@@ -56,7 +52,6 @@ dn42-autopeer:
         claims:
           subject: sub
           asn: dn42.asn
-          mntner: dn42.active_mnt
       # Kioubit (AS4242423914), discovery verified 2026-11-24: issuer
       # dn42.g-load.eu, PKCE S256, public clients allowed, scope dn42 adds a
       # "dn42" claim. Its field names are unverified until a real login.
@@ -68,4 +63,3 @@ dn42-autopeer:
         claims:
           subject: sub
           asn: dn42.asn
-          mntner: dn42.mnt
