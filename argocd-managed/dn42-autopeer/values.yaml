@@ -31,9 +31,9 @@ dn42-autopeer:
       repo: dn42-peers
       baseBranch: main
       peersDir: peers
-      appID: 0                     # TODO(you): the autopeer GitHub App
-      installationID: 0            # TODO(you)
-      appLogin: dn42-autopeer[bot] # TODO(you): "<app-slug>[bot]"; must match APP_LOGIN in dn42-peers' check.yaml
+      appID: 5903223
+      installationID: 185362615
+      appLogin: dn42-autopeer[bot] # must match APP_LOGIN in dn42-peers' check.yaml
       privateKeyFile: /secrets/github-app.pem
     kubernetes:
       enabled: true
@@ -46,7 +46,7 @@ dn42-autopeer:
       - name: iedon
         displayName: OAuth.dn42 (iEdon)
         issuer: https://auth.iedon.net
-        clientID: TODO(you)
+        clientID: 4436e3858c783da025d0b24a6d625414
         clientSecretFile: /secrets/iedon-client-secret
         scopes: [openid, dn42]
         claims:
