@@ -10,6 +10,12 @@ dn42-operator:
     cleanupOnShutdown: false
     teardownOnLeaseLoss: false
     # endpointService: dn42-endpoint   # once the floating endpoint exists
+    # Probes TCP through each peer from our router address and demotes the
+    # transit routes of peers whose firewall drops our packets when the
+    # replies come back via another peer (status.transit, condition
+    # TransitHealthy; dn42-operator README "Transit probe").
+    transitProbe:
+      source: fd69:420:cafe:ffff::1
   # The keys are templates/secret-keys.yaml (SealedSecret dn42-wireguard-keys).
   bird:
     config:
@@ -147,6 +153,16 @@ dn42-operator:
           int lp = 200 - 10 * lat_worst - 5 * (bgp_path.len - 1);
           if lp < 20 then lp = 20;
           bgp_local_pref = lp;
+          return true;
+        }
+
+        # dn42-operator's import with the transit probe's verdict
+        # (operator.transitProbe.birdArg): a peer whose firewall breaks TCP
+        # when the replies return via another peer keeps its own networks,
+        # but its transit routes become a last resort.
+        function dn42_import_transit(int lat; int bw; int crypto; bool transit_ok) -> bool {
+          if !dn42_import(lat, bw, crypto) then return false;
+          if !transit_ok && bgp_path.len > 1 then bgp_local_pref = 10;
           return true;
         }
 
