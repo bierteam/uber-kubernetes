@@ -54,7 +54,7 @@ data:
       <li>WireGuard tunnels only.</li>
       <li>IPv6 only: BGP over link-local, no IPv4. No MP-BGP or extended next hop needed.</li>
       <li>Routes are ROA-filtered via RPKI, and DN42 link communities (latency, bandwidth, crypto) are set.</li>
-      <li>A full 1500-byte path to your endpoint is preferred; tell me if your tunnel needs a lower MTU.</li>
+      <li>A full 1500-byte path to your endpoint is preferred. If your tunnel needs a lower MTU, set it when you request the peering (or change it later).</li>
     </ul>
 
     <h2>Node</h2>
@@ -64,14 +64,14 @@ data:
       <tr><th>Endpoint</th><td><code>nl-hou01.dn42.oscarr.nl</code><br><code>[2a05:f080:0:3800::1019]</code> (IPv6 only)</td></tr>
       <tr><th>WireGuard port</th><td>2 + the last 4 digits of your ASN, e.g. 4242421234 → <code>21234</code></td></tr>
       <tr><th>Link-local</th><td><code>fe80::3818</code></td></tr>
-      <tr><th>MTU</th><td>1420</td></tr>
+      <tr><th>MTU</th><td>1420 by default, lower per peering</td></tr>
     </table>
 
     <h2>Requesting a peering</h2>
     <p><a href="https://autopeer.dn42.oscarr.nl">autopeer.dn42.oscarr.nl</a> (inside DN42: <a href="https://autopeer.oscrx.dn42">autopeer.oscrx.dn42</a>) sets it up for you:</p>
     <ul>
       <li>Log in with OAuth.dn42, Kioubit or HExpNetwork WebAuth; the login proves which ASNs you maintain.</li>
-      <li>Fill in your endpoint, WireGuard public key and link-local address.</li>
+      <li>Fill in your endpoint, WireGuard public key, link-local address and, if needed, a lower MTU.</li>
       <li>You get your side of the config right away. The request becomes a pull request in <a href="https://github.com/oscrx/dn42-peers">oscrx/dn42-peers</a>, merged automatically once its checks pass; the tunnel and session come up within a few minutes.</li>
       <li>Log in again any time to see the session's state, or to change or remove your peering.</li>
     </ul>
@@ -108,7 +108,7 @@ spec:
         app: homepage
       annotations:
         # bump to roll the pod after editing the page: subPath mounts never update
-        checksum/page: "4"
+        checksum/page: "5"
     spec:
       automountServiceAccountToken: false
       securityContext:
