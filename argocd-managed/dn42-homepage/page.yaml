@@ -75,7 +75,7 @@ data:
       <li>You get your side of the config right away. The request becomes a pull request in <a href="https://github.com/oscrx/dn42-peers">oscrx/dn42-peers</a>, merged automatically once its checks pass; the tunnel and session come up within a few minutes.</li>
       <li>Log in again any time to see the session's state, or to change or remove your peering.</li>
     </ul>
-    <p>Can't use the login? Email <a href="mailto:oscar+dn42@oscarr.nl">oscar+dn42@oscarr.nl</a> with your ASN, endpoint (host and port), WireGuard public key and link-local address.</p>
+    <p>Can't use the login? Email <a href="mailto:dn42@oscarr.nl">dn42@oscarr.nl</a> with your ASN, endpoint (host and port), WireGuard public key and link-local address.</p>
 
     <h2>Services</h2>
     <table>
@@ -108,7 +108,7 @@ spec:
         app: homepage
       annotations:
         # bump to roll the pod after editing the page: subPath mounts never update
-        checksum/page: "5"
+        checksum/page: "6"
     spec:
       automountServiceAccountToken: false
       securityContext:
