@@ -86,6 +86,7 @@ data:
     <h2>Links</h2>
     <table>
       <tr><th>Registry</th><td><a href="https://git.dn42.dev/dn42/registry/src/branch/master/data/aut-num/AS4242423818">AS4242423818</a> in the DN42 registry, or in the <a href="https://explorer.burble.com/#/aut-num/AS4242423818">registry explorer</a></td></tr>
+      <tr><th>Deployment</th><td>Peerings in <a href="https://github.com/oscrx/dn42-peers">oscrx/dn42-peers</a>, run by <a href="https://github.com/oscrx/dn42-operator">dn42-operator</a>; public, read-only Argo CD: <a href="https://argocd.lab.oscarr.nl/applications/argocd/dn42-peers">dn42-peers</a>, <a href="https://argocd.lab.oscarr.nl/applications/argocd/dn42-router">dn42-router</a></td></tr>
       <tr><th>PGP</th><td><code>A707 B3FA B275 E7AA 3237 110A 64B8 39C1 7E31 F151</code></td></tr>
       <tr><th>Website</th><td><a href="https://oscarr.nl">oscarr.nl</a></td></tr>
       <tr><th>LinkedIn</th><td><a href="https://www.linkedin.com/in/oscar-wieman">oscar-wieman</a></td></tr>
@@ -108,7 +109,7 @@ spec:
         app: homepage
       annotations:
         # bump to roll the pod after editing the page: subPath mounts never update
-        checksum/page: "6"
+        checksum/page: "7"
     spec:
       automountServiceAccountToken: false
       securityContext:
