@@ -108,7 +108,7 @@ spec:
             # The node controller marks Ready Unknown once the kubelet has missed
             # its heartbeats, so the kubelet is gone and will not re-register.
             - name: wait-offline
-              image: registry.k8s.io/kubectl:v1.37.2
+              image: registry.k8s.io/kubectl:v1.37.3
               args:
                 - wait
                 - --for=condition=Ready=Unknown
@@ -128,7 +128,7 @@ spec:
                   memory: 64Mi
           containers:
             - name: delete-node
-              image: registry.k8s.io/kubectl:v1.37.2
+              image: registry.k8s.io/kubectl:v1.37.3
               args:
                 - delete
                 - node/talos5
