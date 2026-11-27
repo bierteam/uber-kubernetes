@@ -77,7 +77,7 @@ spec:
             - name: bird
               mountPath: /var/run/bird
         - name: bird-exporter
-          image: ghcr.io/czerwonk/bird_exporter:1.7.1@sha256:694887d59b448ea67e5b1f04ca8978012c94ddeb2527b77f646301ae3f2551ce
+          image: ghcr.io/czerwonk/bird_exporter:1.7.2@sha256:9e78532c9401548d2f272641e1d94c0e318f2e7103ed7584e8668b570930972c
           env:
             - name: HOST_IP
               valueFrom:
